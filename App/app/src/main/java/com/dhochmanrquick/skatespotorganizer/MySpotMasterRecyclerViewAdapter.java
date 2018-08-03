@@ -65,8 +65,8 @@ public class MySpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<MySpot
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mIdView = (TextView) view.findViewById(R.id.spot_title_tv);
+            mContentView = (TextView) view.findViewById(R.id.spot_description_tv);
         }
 
         @Override
