@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dhochmanrquick.skatespotorganizer.SpotMasterFragment.OnListFragmentInteractionListener;
@@ -36,8 +38,22 @@ public class MySpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<MySpot
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mSpotNameTextView.setText(mValues.get(position).spotName);
+        holder.mSpotDescriptionTextView.setText(mValues.get(position).spotDescription);
+        holder.mSpotImageImageView.setImageResource(mValues.get(position).spotImage);
+
+        holder.mExpandButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(holder.mSupportingTextTextView.getVisibility()== View.VISIBLE){
+                    holder.mExpandButton.setImageResource(R.drawable.ic_expand_more_black_36dp);
+                    holder.mSupportingTextTextView.setVisibility(View.GONE);
+                } else {
+                    holder.mSupportingTextTextView.setVisibility(View.VISIBLE);
+                    holder.mExpandButton.setImageResource(R.drawable.ic_expand_less_black_36dp);
+                }
+            }
+        });
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,20 +74,26 @@ public class MySpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<MySpot
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mSpotNameTextView;
+        public final TextView mSpotDescriptionTextView;
+        public final ImageView mSpotImageImageView;
+        public final ImageButton mExpandButton;
+        public final TextView mSupportingTextTextView;
         public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.spot_title_tv);
-            mContentView = (TextView) view.findViewById(R.id.spot_description_tv);
+            mSpotNameTextView = (TextView) view.findViewById(R.id.spot_title_tv);
+            mSpotDescriptionTextView = (TextView) view.findViewById(R.id.spot_description_tv);
+            mSpotImageImageView = (ImageView) view.findViewById(R.id.spot_image_iv);
+            mExpandButton = (ImageButton) view.findViewById(R.id.expand_button);
+            mSupportingTextTextView = (TextView) view.findViewById(R.id.supporting_text);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mSpotDescriptionTextView.getText() + "'";
         }
     }
 }
