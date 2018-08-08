@@ -2,13 +2,15 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.UUID;
+
 public class Spot {
 
     public enum Type{
         LEDGE, STAIRS, GAP, HANDRAIL
     }
 
-    private int mId;
+    private UUID mId;
     private String mName;
     private LatLng mLatLng;
     private Type mType;
@@ -19,8 +21,8 @@ public class Spot {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Spot(int id, String name, LatLng latLng, Type type, String description /*ImageView image*/) {
-        mId = id;
+    public Spot(String name, LatLng latLng, Type type, String description /*ImageView image*/) {
+        mId = UUID.randomUUID();
         mName = name;
         mLatLng = latLng;
         mType = type;
@@ -28,7 +30,7 @@ public class Spot {
 //        mImage = image;
     }
 
-    public int getId() {
+    public UUID getId() {
         return mId;
     }
 

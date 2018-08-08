@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -19,6 +20,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 
 /**
@@ -145,7 +148,7 @@ public class PartialMapFragment extends Fragment implements
 //            Toast.makeText(this, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
 //        }
 
-        googleMap.setPadding(200, 200, 200, 200);
+        googleMap.setPadding(0, 0, 0, 100);
 
         // Respond to a user tapping on a POI
 //        mMap.setOnPoiClickListener(this);
@@ -155,14 +158,12 @@ public class PartialMapFragment extends Fragment implements
 
         // Create dummy spots
         Spot bulgwangLedge_Spot = new Spot(
-                0,
                 "Bulgwang Downledge Spot",
                 new LatLng(37.61595, 126.92478),
                 Spot.Type.LEDGE,
                 "Small marble downledge.");
 
         Spot pajuLedge_Spot = new Spot(
-                1,
                 "Paju Ledge Spot",
                 new LatLng(37.707672, 126.747231),
                 Spot.Type.LEDGE,
@@ -196,6 +197,11 @@ public class PartialMapFragment extends Fragment implements
 //            }
 //        });
 
+        DummyContent dummyContent = DummyContent.get(getActivity());
+        List<Spot> spots = dummyContent.getSpots();
+        Spot spot1 = spots.get(0);
+        Spot spot2 = spots.get(1);
+
         // Add a marker in Sydney and move the camera
         Marker marker1 = googleMap.addMarker(new MarkerOptions()
                 .position(bulgwangLedge_Spot.getLatLng())
@@ -208,6 +214,11 @@ public class PartialMapFragment extends Fragment implements
                 .title(pajuLedge_Spot.getName())
                 .snippet(pajuLedge_Spot.getDescription()));
         marker2.setTag(1);
+
+        Marker marker3 = googleMap.addMarker(new MarkerOptions()
+                .position(spot1.getLatLng())
+                .title(spot1.getName())
+                .snippet(spot1.getDescription()));
 
 //        marker1.showInfoWindow();
 //        marker2.showInfoWindow();

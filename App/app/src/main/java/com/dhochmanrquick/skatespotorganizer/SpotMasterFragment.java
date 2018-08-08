@@ -6,12 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
@@ -69,7 +69,8 @@ public class SpotMasterFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            // Create the adapter and pass it the list of dummy Spots
+            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
         }
         return view;
     }
@@ -104,6 +105,6 @@ public class SpotMasterFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Spot item);
     }
 }

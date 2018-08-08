@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(Spot item) {
         Toast.makeText(this,
                 "Spot number " + item + " has been selected",
                 Toast.LENGTH_SHORT).show();
