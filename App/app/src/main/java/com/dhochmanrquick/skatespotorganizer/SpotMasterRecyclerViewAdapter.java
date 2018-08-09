@@ -17,7 +17,7 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MySpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<MySpotMasterRecyclerViewAdapter.ViewHolder> {
+public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMasterRecyclerViewAdapter.ViewHolder> {
 
     // Inner class: ViewHolder (this could also be declared in the SpotMasterFragment)
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -46,8 +46,8 @@ public class MySpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<MySpot
     private final LayoutInflater mInflater;
 
     // Constructor (called from SpotMasterFragment); sets member variables
-//    public MySpotMasterRecyclerViewAdapter(List<Spot> spots, OnListFragmentInteractionListener listener) {
-    MySpotMasterRecyclerViewAdapter(Context context, OnListFragmentInteractionListener listener) {
+//    public SpotMasterRecyclerViewAdapter(List<Spot> spots, OnListFragmentInteractionListener listener) {
+    SpotMasterRecyclerViewAdapter(Context context, OnListFragmentInteractionListener listener) {
         mInflater = LayoutInflater.from(context);
         mListener = listener;
     }

@@ -9,12 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class SpotMasterFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private SpotViewModel mSpotViewModel;
-    private MySpotMasterRecyclerViewAdapter adapter;
+    private SpotMasterRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,8 +75,8 @@ public class SpotMasterFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             // Create the adapter and pass it the list of dummy Spots
-//            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
-            adapter = new MySpotMasterRecyclerViewAdapter(getContext(), mListener);
+//            recyclerView.setAdapter(new SpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
+            adapter = new SpotMasterRecyclerViewAdapter(getContext(), mListener);
             recyclerView.setAdapter(adapter);
         }
 

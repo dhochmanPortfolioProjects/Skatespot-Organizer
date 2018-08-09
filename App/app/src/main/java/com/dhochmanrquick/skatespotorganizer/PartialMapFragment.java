@@ -11,17 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
 
 
 /**
@@ -197,10 +191,10 @@ public class PartialMapFragment extends Fragment implements
 //            }
 //        });
 
-        DummyContent dummyContent = DummyContent.get(getActivity());
-        List<Spot> spots = dummyContent.getSpots();
-        Spot spot1 = spots.get(0);
-        Spot spot2 = spots.get(1);
+//        DummyContent dummyContent = DummyContent.get(getActivity());
+//        List<Spot> spots = dummyContent.getSpots();
+//        Spot spot1 = spots.get(0);
+//        Spot spot2 = spots.get(1);
 
         // Add a marker in Sydney and move the camera
 //        Marker marker1 = googleMap.addMarker(new MarkerOptions()

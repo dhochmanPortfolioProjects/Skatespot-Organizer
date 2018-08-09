@@ -1,8 +1,11 @@
-package com.dhochmanrquick.skatespotorganizer;
+package com.dhochmanrquick.skatespotorganizer.data;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+
+import com.dhochmanrquick.skatespotorganizer.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotRepository;
 
 import java.util.List;
 
@@ -22,7 +25,7 @@ public class SpotViewModel extends AndroidViewModel {
     }
 
     // A "getter" method for all the words. This completely hides the implementation from the UI.
-    LiveData<List<Spot>> getAllSpots() { return mAllSpots; }
+    public LiveData<List<Spot>> getAllSpots() { return mAllSpots; }
 
     // A wrapper insert() method that calls the Repository's insert() method.
     // In this way, the implementation of insert() is completely hidden from the UI.

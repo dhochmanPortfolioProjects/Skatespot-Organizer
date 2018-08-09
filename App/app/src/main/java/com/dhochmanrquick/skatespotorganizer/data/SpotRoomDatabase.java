@@ -1,4 +1,4 @@
-package com.dhochmanrquick.skatespotorganizer;
+package com.dhochmanrquick.skatespotorganizer.data;
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
@@ -8,7 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
+import com.dhochmanrquick.skatespotorganizer.Spot;
 
 @Database(entities = {Spot.class}, version = 1)
 public abstract class SpotRoomDatabase extends RoomDatabase {
@@ -19,7 +19,7 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
     private static SpotRoomDatabase INSTANCE;
 
     // Make the SpotRoomDatabase a singleton to prevent having multiple instances of the database opened at the same time.
-    static SpotRoomDatabase getDatabase(final Context context) {
+    public static SpotRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (SpotRoomDatabase.class) {
                 if (INSTANCE == null) {
