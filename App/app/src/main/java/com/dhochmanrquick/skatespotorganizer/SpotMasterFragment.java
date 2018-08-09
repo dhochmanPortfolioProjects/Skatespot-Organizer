@@ -1,7 +1,10 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,6 +31,9 @@ public class SpotMasterFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private SpotViewModel mSpotViewModel;
+    private MySpotMasterRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,9 +77,27 @@ public class SpotMasterFragment extends Fragment {
             }
             // Create the adapter and pass it the list of dummy Spots
 //            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
-            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(getContext(), mListener));
-
+            adapter = new MySpotMasterRecyclerViewAdapter(getContext(), mListener);
+            recyclerView.setAdapter(adapter);
         }
+
+        // Use ViewModelProviders to associate your ViewModel with your UI controller.
+        // When the app first starts, the ViewModelProviders will create the ViewModel.
+        // When the activity is destroyed, for example through a configuration change,
+        // the ViewModel persists. When the activity is re-created,
+        // the ViewModelProviders return the existing ViewModel.
+        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+
+        // An observer for the LiveData returned by getAllWords().
+        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable final List<Spot> words) {
+                // Update the cached copy of the words in the adapter.
+                adapter.setWords(words);
+            }
+        });
+
         return view;
     }
 

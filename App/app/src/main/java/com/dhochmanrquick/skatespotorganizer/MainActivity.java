@@ -1,8 +1,11 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, SpotMasterFragment.newInstance(1))
                 .commit();
+
     }
 
     @Override
