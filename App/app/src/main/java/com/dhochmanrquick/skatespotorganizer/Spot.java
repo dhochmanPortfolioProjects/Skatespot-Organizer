@@ -69,6 +69,10 @@ public class Spot {
         return mDescription;
     }
 
+    public void setId(@NonNull int id) {
+        mId = id;
+    }
+
     public void setDescription(String description) {
         mDescription = description;
     }
