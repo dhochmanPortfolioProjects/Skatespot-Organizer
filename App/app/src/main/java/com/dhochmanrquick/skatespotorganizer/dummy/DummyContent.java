@@ -53,9 +53,11 @@ public class DummyContent {
         return mSpots;
     }
 
-    public Spot getSpot(UUID id) {
-        for (Spot spot : mSpots) {
-            if (spot.getId().equals(id)) {
+//    public Spot getSpot(UUID id) {
+        public Spot getSpot(int id) {
+            for (Spot spot : mSpots) {
+//            if (spot.getId().equals(id)) {
+            if (spot.getId() == id) {
                 return spot;
             }
         }
