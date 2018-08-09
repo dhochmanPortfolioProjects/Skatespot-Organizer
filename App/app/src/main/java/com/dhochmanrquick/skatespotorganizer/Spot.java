@@ -12,8 +12,8 @@ public class Spot {
 
     private UUID mId;
     private String mName;
-    private LatLng mLatLng;
-    private Type mType;
+//    private LatLng mLatLng;
+//    private Type mType;
     private String mDescription;
 //    private ImageView mImage;
 
@@ -21,11 +21,11 @@ public class Spot {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Spot(String name, LatLng latLng, Type type, String description /*ImageView image*/) {
+    public Spot(String name, /*LatLng latLng, Type type,*/ String description /*ImageView image*/) {
         mId = UUID.randomUUID();
         mName = name;
-        mLatLng = latLng;
-        mType = type;
+//        mLatLng = latLng;
+//        mType = type;
         mDescription = description;
 //        mImage = image;
     }
@@ -38,13 +38,13 @@ public class Spot {
         return mName;
     }
 
-    public LatLng getLatLng() {
-        return mLatLng;
-    }
-
-    public Type getType() {
-        return mType;
-    }
+//    public LatLng getLatLng() {
+//        return mLatLng;
+//    }
+//
+//    public Type getType() {
+//        return mType;
+//    }
 
     public String getDescription() {
         return mDescription;

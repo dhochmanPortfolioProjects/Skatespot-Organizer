@@ -42,8 +42,8 @@ public class DummyContent {
         mSpots = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Spot spot = new Spot("Spot " + i,
-                    new LatLng(new Random().nextDouble(), new Random().nextDouble()),
-                    Spot.Type.GAP,
+//                    new LatLng(new Random().nextDouble(), new Random().nextDouble()),
+//                    Spot.Type.GAP,
                     "Amazing gap spot" + i);
             mSpots.add(spot);
         }
