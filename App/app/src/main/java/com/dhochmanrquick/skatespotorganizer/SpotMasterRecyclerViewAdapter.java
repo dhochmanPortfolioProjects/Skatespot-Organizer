@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dhochmanrquick.skatespotorganizer.SpotMasterFragment.OnListFragmentInteractionListener;
@@ -21,18 +22,20 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
 
     // Inner class: ViewHolder (this could also be declared in the SpotMasterFragment)
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public Spot mItem;
         public final View mView;
         public final TextView mSpotTitle_TextView;
         public final TextView mSpotDescription_TextView;
-        public Spot mItem;
+        public final ImageView mSpotImage_ImageView;
 
         // Constructor: Get the Views for this list item. The view passed in has already been inflated
         // so no need to inflate it here.
         public ViewHolder(View view) {
             super(view);
-            mView = view; // fragment_spotmaster_item inflated
+            mView = view; // fragment_spotmaster_list_item inflated
             mSpotTitle_TextView = view.findViewById(R.id.spot_title_tv);
             mSpotDescription_TextView = view.findViewById(R.id.spot_description_tv);
+            mSpotImage_ImageView = view.findViewById(R.id.spot_image_iv);
         }
 
 //        @Override
@@ -65,7 +68,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         // Inflate the list item view to be held by a ViewHolder and then create the ViewHolder with that View (this could also be done
         // in the ViewHolder's constructor
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_spotmaster_item, parent, false);
+                .inflate(R.layout.fragment_spotmaster_list_item, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -77,6 +80,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         holder.mItem = spot;
         holder.mSpotTitle_TextView.setText(spot.getName());
         holder.mSpotDescription_TextView.setText(spot.getDescription());
+        holder.mSpotImage_ImageView.setImageResource(R.drawable.spot1_landscape);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
