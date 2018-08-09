@@ -70,7 +70,9 @@ public class SpotMasterFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             // Create the adapter and pass it the list of dummy Spots
-            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
+//            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
+            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(getContext(), mListener));
+
         }
         return view;
     }
