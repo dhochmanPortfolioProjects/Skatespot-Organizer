@@ -1,5 +1,6 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -15,6 +16,8 @@ public interface SpotDao {
     @Query("DELETE FROM spot_table")
     void deleteAll();
 
+    // Use a return value of type LiveData in your method description, and Room generates all
+    // necessary code to update the LiveData when the database is updated.
     @Query("SELECT * from spot_table")
-    List<Spot> getAll();
+    LiveData<List<Spot>> getAll();
 }
