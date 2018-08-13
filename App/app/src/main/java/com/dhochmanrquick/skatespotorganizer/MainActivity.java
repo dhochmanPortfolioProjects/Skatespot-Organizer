@@ -10,8 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
-
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
         PartialMapFragment.OnFragmentInteractionListener,
@@ -55,10 +53,11 @@ public class MainActivity extends AppCompatActivity implements
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, SpotMasterFragment.newInstance(1))
                 .commit();
+
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(Spot item) {
         Toast.makeText(this,
                 "Spot number " + item + " has been selected",
                 Toast.LENGTH_SHORT).show();
