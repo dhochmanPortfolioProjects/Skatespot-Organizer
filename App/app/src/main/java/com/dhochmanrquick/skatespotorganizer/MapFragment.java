@@ -252,7 +252,8 @@ public class MapFragment extends Fragment implements
                 // Set markers:
                 for (Spot spot: spots) {
                     googleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                             .title(spot.getName())
                             .snippet(spot.getDescription()));
                 }

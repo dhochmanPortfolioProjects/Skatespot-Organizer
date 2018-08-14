@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Random;
 
 @Database(entities = {Spot.class}, version = 1)
@@ -61,9 +63,9 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
             // Create list of dummy Spots and populate it
             for (int i = 0; i < 20; i++) {
                 Spot spot = new Spot("Spot " + i,
-//                    new LatLng(new Random().nextDouble(), new Random().nextDouble()),
-                        new Random().nextDouble() * 200 % 180,
-                        new Random().nextDouble() * 100 % 90,
+                    new LatLng(new Random().nextDouble() * 200 % 180, new Random().nextDouble() * 100 % 90),
+//                        new Random().nextDouble() * 200 % 180,
+//                        new Random().nextDouble() * 100 % 90,
 //                    Spot.Type.GAP,
                         "Amazing gap spot" + i);
                 mDao.insert(spot);

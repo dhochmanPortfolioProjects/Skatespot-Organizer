@@ -28,8 +28,11 @@ public class Spot {
     @ColumnInfo(name = "name")
     private String mName;
 
+    // Without @Embedded annotation, error: Cannot figure out how to save this field into database.
+    // You can consider adding a type converter for it.
 //    @Embedded
 //    private LatLng mLatLng;
+
     @NonNull
     @ColumnInfo(name = "longitude")
     private double mLongitude;
@@ -50,12 +53,15 @@ public class Spot {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Spot(String name, double longitude, double latitude, /*, Type type,*/ String description /*ImageView image*/) {
+    @Ignore
+    public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description /*ImageView image*/) {
 //        mId = UUID.randomUUID();
         mName = name;
+        mLatitude = latLng.latitude;
+        mLongitude = latLng.longitude;
 //        mLatLng = latLng;
-        mLongitude = longitude;
-        mLatitude = latitude;
+//        mLongitude = longitude;
+//        mLatitude = latitude;
 
 //        mType = type;
         mDescription = description;
@@ -83,6 +89,7 @@ public class Spot {
 
     public LatLng getLatLng() {
         return new LatLng(mLatitude, mLongitude);
+//        return mLatLng;
     }
 //
 //    public Type getType() {
@@ -107,6 +114,12 @@ public class Spot {
 
     public void setLatitude(double latitude) {
         mLatitude = latitude;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        mLatitude = latLng.latitude;
+        mLongitude = latLng.longitude;
+//        mLatLng = latLng;
     }
 
     public void setDescription(String description) {
