@@ -5,8 +5,6 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.dhochmanrquick.skatespotorganizer.Spot;
-
 import java.util.List;
 
 @Dao

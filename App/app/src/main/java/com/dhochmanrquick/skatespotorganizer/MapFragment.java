@@ -1,5 +1,8 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,22 +14,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PartialMapFragment.OnFragmentInteractionListener} interface
+ * {@link MapFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PartialMapFragment#newInstance} factory method to
+ * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PartialMapFragment extends Fragment implements
+public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         /*GoogleMap.OnPoiClickListener,*/
         GoogleMap.OnMarkerClickListener {
@@ -35,7 +45,9 @@ public class PartialMapFragment extends Fragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    public PartialMapFragment() {
+    private SpotViewModel mSpotViewModel;
+
+    public MapFragment() {
         // Required empty public constructor
     }
 
@@ -43,11 +55,11 @@ public class PartialMapFragment extends Fragment implements
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment PartialMapFragment.
+     * @return A new instance of fragment MapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartialMapFragment newInstance() {
-        return new PartialMapFragment();
+    public static MapFragment newInstance() {
+        return new MapFragment();
     }
 
     @Override
@@ -122,7 +134,9 @@ public class PartialMapFragment extends Fragment implements
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+//    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) { // Declared final because LiveData Observer onChanged()
+
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
 
         // Sets the map type to be "hybrid"
@@ -142,7 +156,7 @@ public class PartialMapFragment extends Fragment implements
 //            Toast.makeText(this, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
 //        }
 
-        googleMap.setPadding(0, 0, 0, 100);
+        googleMap.setPadding(0, 0, 0, 50);
 
         // Respond to a user tapping on a POI
 //        mMap.setOnPoiClickListener(this);
@@ -154,12 +168,16 @@ public class PartialMapFragment extends Fragment implements
         Spot bulgwangLedge_Spot = new Spot(
                 "Bulgwang Downledge Spot",
 //                new LatLng(37.61595, 126.92478),
+                37.61595,
+                126.92478,
 //                Spot.Type.LEDGE,
                 "Small marble downledge.");
 
         Spot pajuLedge_Spot = new Spot(
                 "Paju Ledge Spot",
 //                new LatLng(37.707672, 126.747231),
+                126.747231,
+                37.707672,
 //                Spot.Type.LEDGE,
                 "3 perfect marble ledges in a row. Nice flat ground.");
 
@@ -203,11 +221,11 @@ public class PartialMapFragment extends Fragment implements
 //                .snippet(bulgwangLedge_Spot.getDescription()));
 //        marker1.setTag(0);
 //
-//        Marker marker2 = googleMap.addMarker(new MarkerOptions()
-//                .position(pajuLedge_Spot.getLatLng())
-//                .title(pajuLedge_Spot.getName())
-//                .snippet(pajuLedge_Spot.getDescription()));
-//        marker2.setTag(1);
+        Marker marker2 = googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(pajuLedge_Spot.getLatitude(), pajuLedge_Spot.getLongitude()))
+                .title(pajuLedge_Spot.getName())
+                .snippet(pajuLedge_Spot.getDescription()));
+        marker2.setTag(1);
 //
 //        Marker marker3 = googleMap.addMarker(new MarkerOptions()
 //                .position(spot1.getLatLng())
@@ -216,7 +234,32 @@ public class PartialMapFragment extends Fragment implements
 
 //        marker1.showInfoWindow();
 //        marker2.showInfoWindow();
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(bulgwangLedge_Spot.getLatLng())); // Set camera position to Marker
+
+        // Use ViewModelProviders to associate your ViewModel with your UI controller.
+        // When the app first starts, the ViewModelProviders will create the ViewModel.
+        // When the activity is destroyed, for example through a configuration change,
+        // the ViewModel persists. When the activity is re-created,
+        // the ViewModelProviders return the existing ViewModel.
+        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+
+        // An observer for the LiveData returned by getAllWords().
+        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable final List<Spot> spots) {
+                // Update the cached copy of the words in the adapter.
+//                adapter.setWords(words);
+                // Set markers:
+                for (Spot spot: spots) {
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+                            .title(spot.getName())
+                            .snippet(spot.getDescription()));
+                }
+            }
+        });
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
     }
 
     /**

@@ -10,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
+
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
-        PartialMapFragment.OnFragmentInteractionListener,
+        MapFragment.OnFragmentInteractionListener,
         RatedSpotsFragment.OnFragmentInteractionListener {
 
     private FragmentManager mFragmentManager;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements
                     selectedFragment = SpotMasterFragment.newInstance(1);
                     break;
                 case R.id.navigation_dashboard:
-                    selectedFragment = PartialMapFragment.newInstance();
+                    selectedFragment = MapFragment.newInstance();
                     break;
                 case R.id.navigation_notifications:
                     selectedFragment = RatedSpotsFragment.newInstance();

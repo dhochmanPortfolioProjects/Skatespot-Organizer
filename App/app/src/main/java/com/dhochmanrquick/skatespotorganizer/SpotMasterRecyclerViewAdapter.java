@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dhochmanrquick.skatespotorganizer.SpotMasterFragment.OnListFragmentInteractionListener;
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
 //import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent.DummyItem;
 
 import java.util.List;

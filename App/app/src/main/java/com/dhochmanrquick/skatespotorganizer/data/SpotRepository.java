@@ -4,10 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
-import com.dhochmanrquick.skatespotorganizer.Spot;
-import com.dhochmanrquick.skatespotorganizer.data.SpotDao;
-import com.dhochmanrquick.skatespotorganizer.data.SpotRoomDatabase;
-
 import java.util.List;
 
 public class SpotRepository {

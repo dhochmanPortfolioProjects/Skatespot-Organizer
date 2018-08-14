@@ -4,9 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.dhochmanrquick.skatespotorganizer.Spot;
-import com.dhochmanrquick.skatespotorganizer.data.SpotRepository;
-
 import java.util.List;
 
 public class SpotViewModel extends AndroidViewModel {

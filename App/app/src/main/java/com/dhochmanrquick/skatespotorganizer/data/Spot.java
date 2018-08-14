@@ -1,7 +1,9 @@
-package com.dhochmanrquick.skatespotorganizer;
+package com.dhochmanrquick.skatespotorganizer.data;
 
 import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -25,7 +27,17 @@ public class Spot {
     @NonNull
     @ColumnInfo(name = "name")
     private String mName;
+
+//    @Embedded
 //    private LatLng mLatLng;
+    @NonNull
+    @ColumnInfo(name = "longitude")
+    private double mLongitude;
+
+    @NonNull
+    @ColumnInfo(name = "latitude")
+    private double mLatitude;
+
 //    private Type mType;
 
     @NonNull
@@ -33,14 +45,18 @@ public class Spot {
     private String mDescription;
 //    private ImageView mImage;
 
+//    @Ignore
     public Spot() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public Spot(String name, /*LatLng latLng, Type type,*/ String description /*ImageView image*/) {
+    public Spot(String name, double longitude, double latitude, /*, Type type,*/ String description /*ImageView image*/) {
 //        mId = UUID.randomUUID();
         mName = name;
 //        mLatLng = latLng;
+        mLongitude = longitude;
+        mLatitude = latitude;
+
 //        mType = type;
         mDescription = description;
 //        mImage = image;
@@ -57,9 +73,17 @@ public class Spot {
         return mName;
     }
 
-//    public LatLng getLatLng() {
-//        return mLatLng;
-//    }
+    public double getLongitude() {
+        return mLongitude;
+    }
+
+    public double getLatitude() {
+        return mLatitude;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(mLatitude, mLongitude);
+    }
 //
 //    public Type getType() {
 //        return mType;
@@ -73,11 +97,20 @@ public class Spot {
         mId = id;
     }
 
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void setLongitude(double longitude) {
+        mLongitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        mLatitude = latitude;
+    }
+
     public void setDescription(String description) {
         mDescription = description;
     }
 
-    public void setName(String name) {
-        mName = name;
-    }
 }
