@@ -165,21 +165,21 @@ public class MapFragment extends Fragment implements
         googleMap.setOnMarkerClickListener(this);
 
         // Create dummy spots
-        Spot bulgwangLedge_Spot = new Spot(
-                "Bulgwang Downledge Spot",
-//                new LatLng(37.61595, 126.92478),
-                37.61595,
-                126.92478,
-//                Spot.Type.LEDGE,
-                "Small marble downledge.");
-
-        Spot pajuLedge_Spot = new Spot(
-                "Paju Ledge Spot",
-//                new LatLng(37.707672, 126.747231),
-                126.747231,
-                37.707672,
-//                Spot.Type.LEDGE,
-                "3 perfect marble ledges in a row. Nice flat ground.");
+//        Spot bulgwangLedge_Spot = new Spot(
+//                "Bulgwang Downledge Spot",
+////                new LatLng(37.61595, 126.92478),
+//                37.61595,
+//                126.92478,
+////                Spot.Type.LEDGE,
+//                "Small marble downledge.");
+//
+//        Spot pajuLedge_Spot = new Spot(
+//                "Paju Ledge Spot",
+////                new LatLng(37.707672, 126.747231),
+//                126.747231,
+//                37.707672,
+////                Spot.Type.LEDGE,
+//                "3 perfect marble ledges in a row. Nice flat ground.");
 
         // Save spots to the database
 //        FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -221,11 +221,11 @@ public class MapFragment extends Fragment implements
 //                .snippet(bulgwangLedge_Spot.getDescription()));
 //        marker1.setTag(0);
 //
-        Marker marker2 = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(pajuLedge_Spot.getLatitude(), pajuLedge_Spot.getLongitude()))
-                .title(pajuLedge_Spot.getName())
-                .snippet(pajuLedge_Spot.getDescription()));
-        marker2.setTag(1);
+//        Marker marker2 = googleMap.addMarker(new MarkerOptions()
+//                .position(new LatLng(pajuLedge_Spot.getLatitude(), pajuLedge_Spot.getLongitude()))
+//                .title(pajuLedge_Spot.getName())
+//                .snippet(pajuLedge_Spot.getDescription()));
+//        marker2.setTag(1);
 //
 //        Marker marker3 = googleMap.addMarker(new MarkerOptions()
 //                .position(spot1.getLatLng())
@@ -259,7 +259,7 @@ public class MapFragment extends Fragment implements
             }
         });
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
     }
 
     /**

@@ -72,4 +72,11 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
             return null;
         }
     }
+
+    // When using the database debug library, this method must be overriden; otherwise
+    // error: SpotRoomDatabase_Impl is not abstract and does not override abstract method clearAllTables() in RoomDatabase
+    @Override
+    public void clearAllTables() {
+        // TODO: 8/14/18 Implement method
+    }
 }
