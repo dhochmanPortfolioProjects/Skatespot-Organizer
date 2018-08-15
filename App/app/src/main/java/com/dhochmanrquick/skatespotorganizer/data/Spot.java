@@ -99,6 +99,7 @@ public class Spot {
      * Google Maps API.
      */
     public Spot() {
+
     }
 
     /**
@@ -116,8 +117,12 @@ public class Spot {
      *                    height but goes out over 3 stairs. One is a waist-tall ledge."
      */
     @Ignore
-    public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description /*ImageView image*/) {
+    public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description /*ImageView image*/)
+    throws IllegalArgumentException {
 //        mId = UUID.randomUUID();
+        if (name.isEmpty()){
+            throw new IllegalArgumentException();
+        }
         mName = name;
         mLatitude = latLng.latitude;
         mLongitude = latLng.longitude;
