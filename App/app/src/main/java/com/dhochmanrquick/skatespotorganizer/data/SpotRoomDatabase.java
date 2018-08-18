@@ -8,9 +8,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.dhochmanrquick.skatespotorganizer.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Random;
+
 
 @Database(entities = {Spot.class}, version = 1)
 public abstract class SpotRoomDatabase extends RoomDatabase {
@@ -20,8 +22,11 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
 
     private static SpotRoomDatabase INSTANCE;
 
+    private static Context mContext;
+
     // Make the SpotRoomDatabase a singleton to prevent having multiple instances of the database opened at the same time.
     public static SpotRoomDatabase getDatabase(final Context context) {
+        mContext = context;
         if (INSTANCE == null) {
             synchronized (SpotRoomDatabase.class) {
                 if (INSTANCE == null) {
@@ -61,13 +66,16 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
             mDao.deleteAll();
 
             // Create list of dummy Spots and populate it
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 10; i++) {
                 Spot spot = new Spot("Spot " + i,
                     new LatLng(new Random().nextDouble() * 200 % 180, new Random().nextDouble() * 100 % 90),
 //                        new Random().nextDouble() * 200 % 180,
 //                        new Random().nextDouble() * 100 % 90,
 //                    Spot.Type.GAP,
-                        "Amazing gap spot" + i);
+                        "Amazing gap spot" + i,
+                        (i % 2 == 0) ? R.drawable.dangsan_spot_landscape : R.drawable.paju_spot_landscape
+//                        mContext.getResources().getDrawable(R.drawable.dangsan_spot_landscape)
+                );
                 mDao.insert(spot);
             }
 

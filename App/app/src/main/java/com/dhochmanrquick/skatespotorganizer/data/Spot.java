@@ -6,6 +6,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -85,9 +86,12 @@ public class Spot {
     @ColumnInfo(name = "description")
     private String mDescription;
 
+
     // Todo: Integrate these fields into Room and the rest of the app
     //    private Type mType;
-    //    private ImageView mImage;
+//    private ImageView mImage;
+
+    private int mImageID;
 
     /* END Fields *********************************************************************************/
 
@@ -118,10 +122,10 @@ public class Spot {
      * @throws IllegalArgumentException if name is the empty String
      */
     @Ignore
-    public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description /*ImageView image*/)
+    public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description, int imageID)
     /*throws IllegalArgumentException*/ {
 //        mId = UUID.randomUUID();
-        if (name.isEmpty()){
+        if (name.isEmpty()) {
             throw new IllegalArgumentException();
         }
         mName = name;
@@ -130,12 +134,13 @@ public class Spot {
 //        mLatLng = latLng;
 //        mLongitude = longitude;
 //        mLatitude = latitude;
-        if (description.isEmpty()){
+        if (description.isEmpty()) {
             throw new IllegalArgumentException();
         }
         mDescription = description;
 //        mType = type;
 //        mImage = image;
+        mImageID = imageID;
     }
 
     /**
@@ -145,20 +150,21 @@ public class Spot {
      * An optional description may be provided; if not, "No description" will be assigned
      * to the new <code>Spot</code> in this constructor.
      *
-     * @param name        a string containing the name of a <code>Spot</code> (i.e., "Singil",
-     *                    "Empire Ledges", "Beer Banks")
-     * @param latLng      the geographic coordinates
+     * @param name   a string containing the name of a <code>Spot</code> (i.e., "Singil",
+     *               "Empire Ledges", "Beer Banks")
+     * @param latLng the geographic coordinates
      * @throws IllegalArgumentException if name is the empty String
      */
     @Ignore
-    public Spot(String name, LatLng latLng /*double longitude, double latitude,*/ /*, Type type,*/){
-        if (name.isEmpty()){
+    public Spot(String name, LatLng latLng/*, ImageView image*/ /*double longitude, double latitude,*/ /*, Type type,*/) {
+        if (name.isEmpty()) {
             throw new IllegalArgumentException();
         }
         mName = name;
         mLatitude = latLng.latitude;
         mLongitude = latLng.longitude;
         mDescription = "No description";
+//        mImage = image;
     }
 
     /* END Constructors ***************************************************************************/
@@ -167,16 +173,14 @@ public class Spot {
     /* Getter methods *****************************************************************************/
 
     /**
-     *
-     * @return  the unique spot ID
+     * @return the unique spot ID
      */
     public int getId() {
         return mId;
     }
 
     /**
-     *
-     * @return  the string containing the spot's name
+     * @return the string containing the spot's name
      */
     public String getName() {
         return mName;
@@ -185,7 +189,7 @@ public class Spot {
     /**
      * This method is required by Room.
      *
-     * @return  the double representing the longitude coordinate of the spot
+     * @return the double representing the longitude coordinate of the spot
      */
     public double getLongitude() {
         return mLongitude;
@@ -194,7 +198,7 @@ public class Spot {
     /**
      * This method is required by Room.
      *
-     * @return  the double representing the latitude coordinate of the spot
+     * @return the double representing the latitude coordinate of the spot
      */
     public double getLatitude() {
         return mLatitude;
@@ -204,7 +208,7 @@ public class Spot {
      * Gets the latitude and longitude coordinates of the spot and returns them in a LatLng
      * object.
      *
-     * @return  a LatLng object containing two doubles representing the latitude and longitude
+     * @return a LatLng object containing two doubles representing the latitude and longitude
      * coordinates of the spot
      */
     public LatLng getLatLng() {
@@ -213,8 +217,7 @@ public class Spot {
     }
 
     /**
-     *
-     * @return  the string containing the description of the spot
+     * @return the string containing the description of the spot
      */
     public String getDescription() {
         return mDescription;
@@ -224,6 +227,12 @@ public class Spot {
 //    public Type getType() {
 //        return mType;
 //    }
+
+    public int getImageID() {
+        return mImageID;
+    }
+
+
     /* END Getter methods *************************************************************************/
 
 
@@ -234,7 +243,7 @@ public class Spot {
      * <code>Spot</code>, should be immutable. However, Room requires that each field have a public
      * setter.
      *
-     * @param id    an int representing the spot ID number
+     * @param id an int representing the spot ID number
      */
     public void setId(@NonNull int id) {
         mId = id;
@@ -246,7 +255,7 @@ public class Spot {
      * The intended use of this method is to allow the user to edit the name of a <code>Spot</code>
      * after creation.
      *
-     * @param name  a string containing the spot name
+     * @param name a string containing the spot name
      */
     public void setName(String name) {
         mName = name;
@@ -280,9 +289,9 @@ public class Spot {
      * Sets the latitude and longitude fields by extracting those values from the LatLng object
      * passed in as an argument.
      * <p>
-     *     This is mainly just a convenience method.
+     * This is mainly just a convenience method.
      *
-     * @param latLng    a LatLng object representing the geographical location of a spot
+     * @param latLng a LatLng object representing the geographical location of a spot
      */
     public void setLatLng(LatLng latLng) {
         mLatitude = latLng.latitude;
@@ -291,11 +300,15 @@ public class Spot {
     }
 
     /**
-     *
      * @param description a string description of the spot
      */
     public void setDescription(String description) {
         mDescription = description;
     }
+
+    public void setImageID(int imageID) {
+        mImageID = imageID;
+    }
+
     /* END Setter methods *************************************************************************/
 }
