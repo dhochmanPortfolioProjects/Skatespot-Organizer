@@ -96,17 +96,17 @@ public class Spot {
 
     /**
      * Default, empty constructor required for calls to DataSnapshot.getValue(User.class) used by the
-     * Google Maps API.
+     * Google Maps API. This should not be used by anything else.
      */
     public Spot() {
-
+        // Todo: See if there's a way to prevent external access to this constructor
     }
 
     /**
      * Constructor to create a new <code>Spot</code> object.
      * <p>
-     * Each <code>Spot</code> requires, at a minimum, a name, latitude-longitude coordinates,
-     * and a description.
+     * Each <code>Spot</code> requires, at a minimum, a name and latitude-longitude coordinates. This
+     * constructor also expects a String description of the <code>Spot</code>.
      *
      * @param name        a string containing the name of a <code>Spot</code> (i.e., "Singil",
      *                    "Empire Ledges", "Beer Banks")
@@ -115,10 +115,11 @@ public class Spot {
      *                    "A spot with several good ledges. One is a little lower than knee height
      *                    and has ends on both sides. One is an outledge that starts at the same
      *                    height but goes out over 3 stairs. One is a waist-tall ledge."
+     * @throws IllegalArgumentException if name is the empty String
      */
     @Ignore
     public Spot(String name, LatLng latLng, /*double longitude, double latitude,*/ /*, Type type,*/ String description /*ImageView image*/)
-    throws IllegalArgumentException {
+    /*throws IllegalArgumentException*/ {
 //        mId = UUID.randomUUID();
         if (name.isEmpty()){
             throw new IllegalArgumentException();
@@ -129,10 +130,37 @@ public class Spot {
 //        mLatLng = latLng;
 //        mLongitude = longitude;
 //        mLatitude = latitude;
+        if (description.isEmpty()){
+            throw new IllegalArgumentException();
+        }
         mDescription = description;
 //        mType = type;
 //        mImage = image;
     }
+
+    /**
+     * Constructor to create a new <code>Spot</code> object, without including a description.
+     * <p>
+     * Each <code>Spot</code> requires, at a minimum, a name and latitude-longitude coordinates.
+     * An optional description may be provided; if not, "No description" will be assigned
+     * to the new <code>Spot</code> in this constructor.
+     *
+     * @param name        a string containing the name of a <code>Spot</code> (i.e., "Singil",
+     *                    "Empire Ledges", "Beer Banks")
+     * @param latLng      the geographic coordinates
+     * @throws IllegalArgumentException if name is the empty String
+     */
+    @Ignore
+    public Spot(String name, LatLng latLng /*double longitude, double latitude,*/ /*, Type type,*/){
+        if (name.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+        mName = name;
+        mLatitude = latLng.latitude;
+        mLongitude = latLng.longitude;
+        mDescription = "No description";
+    }
+
     /* END Constructors ***************************************************************************/
 
 
