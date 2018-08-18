@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -269,23 +270,25 @@ public class MapFragment extends Fragment implements
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-//        Intent spot_Intent = new Intent(this, SpotDetailActivity.class);
+//        Intent spot_Intent = new Intent(this, NewSpotActivity.class);
+        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
+
 //        spot_Intent.setData(marker.getTag());
 //        spot_Intent.putExtra("Spot", (Integer) (marker.getTag()));
-//        startActivity(spot_Intent);
+        startActivity(spot_Intent);
 
         // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
+//        Integer clickCount = (Integer) marker.getTag();
 
         // Check if a click count was set, then display the click count.
-        if (clickCount != null) {
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
-            Toast.makeText(getContext(),
-                    marker.getTitle() +
-                            " has been clicked " + clickCount + " times.",
-                    Toast.LENGTH_SHORT).show();
-        }
+//        if (clickCount != null) {
+//            clickCount = clickCount + 1;
+//            marker.setTag(clickCount);
+//            Toast.makeText(getContext(),
+//                    marker.getTitle() +
+//                            " has been clicked " + clickCount + " times.",
+//                    Toast.LENGTH_SHORT).show();
+//        }
 
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the

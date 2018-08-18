@@ -232,7 +232,6 @@ public class Spot {
         return mImageID;
     }
 
-
     /* END Getter methods *************************************************************************/
 
 

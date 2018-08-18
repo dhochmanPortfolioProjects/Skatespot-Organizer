@@ -11,5 +11,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="rated_spots_fragment">Rated Spots fragment</string>
+    <string name="spot_name_hint">Spot name</string>
 
 </resources>

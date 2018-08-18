@@ -82,7 +82,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         holder.mSpotTitle_TextView.setText(spot.getName());
         holder.mSpotDescription_TextView.setText(spot.getDescription());
 //        holder.mSpotImage_ImageView.setImageResource(R.drawable.paju_spot_landscape);
-        holder.mSpotImage_ImageView.setImageResource(spot.getImageID());
+        holder.mSpotImage_ImageView.setImageResource(spot.getImageID()); 
 
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

@@ -66,7 +66,7 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
             mDao.deleteAll();
 
             // Create list of dummy Spots and populate it
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
                 Spot spot = new Spot("Spot " + i,
                     new LatLng(new Random().nextDouble() * 200 % 180, new Random().nextDouble() * 100 % 90),
 //                        new Random().nextDouble() * 200 % 180,
