@@ -1,4 +1,4 @@
-package com.dhochmanrquick.skatespotorganizer;
+package com.dhochmanrquick.skatespotorganizer.utils;
 
 import android.app.Activity;
 import android.app.Application;

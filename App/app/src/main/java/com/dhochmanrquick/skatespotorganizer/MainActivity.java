@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create_new_spot_menu:
-                Intent intent = new Intent(getBaseContext(),NewSpotActivity.class);
+                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
                 startActivity(intent);
                 return true;
         }

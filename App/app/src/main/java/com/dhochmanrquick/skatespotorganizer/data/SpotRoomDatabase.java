@@ -44,10 +44,10 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
     // whenever the app is started. (Because you cannot do Room database operations on the UI thread,
     // onOpen() creates and executes an AsyncTask to add content to the database).
     private static RoomDatabase.Callback sRoomDatabaseCallback =
-            new RoomDatabase.Callback(){
+            new RoomDatabase.Callback() {
 
                 @Override
-                public void onOpen (@NonNull SupportSQLiteDatabase db){
+                public void onOpen(@NonNull SupportSQLiteDatabase db) {
                     super.onOpen(db);
                     new PopulateDbAsync(INSTANCE).execute();
                 }
@@ -65,19 +65,44 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
         protected Void doInBackground(final Void... params) {
             mDao.deleteAll();
 
-            // Create list of dummy Spots and populate it
-            for (int i = 0; i < 3; i++) {
-                Spot spot = new Spot("Spot " + i,
-                    new LatLng(new Random().nextDouble() * 200 % 180, new Random().nextDouble() * 100 % 90),
-//                        new Random().nextDouble() * 200 % 180,
-//                        new Random().nextDouble() * 100 % 90,
-//                    Spot.Type.GAP,
-                        "Amazing gap spot" + i,
-                        (i % 2 == 0) ? R.drawable.dangsan_spot_landscape : R.drawable.paju_spot_landscape
-//                        mContext.getResources().getDrawable(R.drawable.dangsan_spot_landscape)
-                );
-                mDao.insert(spot);
-            }
+            // Create list of randomly located dummy Spots and populate it
+//            for (int i = 0; i < 3; i++) {
+//                Spot spot = new Spot("Spot " + i,
+//                    new LatLng(new Random().nextDouble() * 200 % 180, new Random().nextDouble() * 100 % 90),
+////                        new Random().nextDouble() * 200 % 180,
+////                        new Random().nextDouble() * 100 % 90,
+////                    Spot.Type.GAP,
+//                        "Amazing gap spot" + i,
+//                        (i % 2 == 0) ? R.drawable.dangsan_spot_landscape : R.drawable.paju_spot_landscape
+////                        mContext.getResources().getDrawable(R.drawable.dangsan_spot_landscape)
+//                );
+//                mDao.insert(spot);
+//            }
+
+            // Prepopulate database with a few real spots
+            Spot bulgwangLedge_Spot = new Spot(
+                    "Bulgwang Downledge Spot",
+                    new LatLng(37.61595, 126.92478),
+//                Spot.Type.LEDGE,
+                    "Small marble downledge.",
+                    R.drawable.bulgwang_spot_landscape);
+
+            Spot pajuLedge_Spot = new Spot(
+                    "Paju Ledge Spot",
+                    new LatLng(37.707672, 126.747231),
+//                Spot.Type.LEDGE,
+                    "3 perfect marble ledges in a row. Nice flat ground.",
+                    R.drawable.paju_spot_landscape);
+
+            Spot dangsan_Spot = new Spot(
+                    "Dangsan Ledge Spot",
+                    new LatLng(37.532908, 126.903882),
+                    "A few curved ledges. One skinny ledge that looks fun.",
+                    R.drawable.dangsan_spot_landscape);
+
+            mDao.insert(bulgwangLedge_Spot);
+            mDao.insert(pajuLedge_Spot);
+            mDao.insert(dangsan_Spot);
 
             return null;
         }

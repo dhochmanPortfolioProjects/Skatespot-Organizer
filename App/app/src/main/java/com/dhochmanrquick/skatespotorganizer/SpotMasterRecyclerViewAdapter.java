@@ -1,7 +1,5 @@
 package com.dhochmanrquick.skatespotorganizer;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +11,7 @@ import android.widget.TextView;
 
 import com.dhochmanrquick.skatespotorganizer.SpotMasterFragment.OnListFragmentInteractionListener;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
-import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 //import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent.DummyItem;
 
 import java.io.File;

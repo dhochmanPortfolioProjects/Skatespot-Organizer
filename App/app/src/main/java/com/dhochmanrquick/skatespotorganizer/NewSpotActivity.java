@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
@@ -31,11 +33,18 @@ public class NewSpotActivity extends AppCompatActivity {
     private Spot mNewSpot;
     private SpotViewModel mSpotViewModel;
     private static final int REQUEST_PHOTO = 2;
+    private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_spot);
+
+        Location location = getIntent().getParcelableExtra(EXTRA_CURRENT_LOCATION);
+        if (location != null) {
+            ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + location.getLatitude());
+            ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + location.getLongitude());
+        }
 
         // Get ViewModel (abstract data layer)
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);

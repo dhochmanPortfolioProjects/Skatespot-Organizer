@@ -1,15 +1,19 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.Manifest;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.dhochmanrquick.skatespotorganizer.utils.PermissionUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -27,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -39,14 +45,31 @@ import java.util.List;
  */
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
+        GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMyLocationClickListener,
         /*GoogleMap.OnPoiClickListener,*/
         GoogleMap.OnMarkerClickListener {
 
-    private final static int MY_LOCATION_REQUEST_CODE = 0;
+    /**
+     * Request code for location permission request.
+     *
+     * @see #onRequestPermissionsResult(int, String[], int[])
+     */
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
+    private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
+
+    /**
+     * Flag indicating whether a requested permission has been denied after returning in
+     * {@link #onRequestPermissionsResult(int, String[], int[])}.
+     */
+    private boolean mPermissionDenied = false;
 
     private OnFragmentInteractionListener mListener;
 
     private SpotViewModel mSpotViewModel;
+
+    private GoogleMap mMap;
 
     public MapFragment() {
         // Required empty public constructor
@@ -71,13 +94,15 @@ public class MapFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Retrieve and inflate the content view that renders the map for this fragment
         return inflater.inflate(R.layout.fragment_partial_map, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        MapView mapView = view.findViewById(R.id.map);
+        // Within your UI, a map will be represented by either a MapFragment or MapView object.
+        // Here, we use a MapView object.
+        MapView mapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
@@ -133,12 +158,15 @@ public class MapFragment extends Fragment implements
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * <p><
+     * Within your UI, a map will be represented by either a MapFragment or MapView object.
+
      */
     @Override
 //    public void onMapReady(GoogleMap googleMap) {
-    public void onMapReady(final GoogleMap googleMap) { // Declared final because LiveData Observer onChanged()
+    public void onMapReady(GoogleMap googleMap) { // Declared final because LiveData Observer onChanged()
 
-        // Within your UI, a map will be represented by either a MapFragment or MapView object.
+        mMap = googleMap;
 
         // Sets the map type to be "hybrid"
 //        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -150,14 +178,43 @@ public class MapFragment extends Fragment implements
         //mMap.setMyLocationEnabled(true); // Works with pre-API 23 permissions model
 
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//            mMap.setMyLocationEnabled(true);
-//        } else {
-//            // Show rationale and request permission.
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // Access to the location has been granted to the app.
+            mMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
 //            Toast.makeText(this, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(((MainActivity)getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Access to the location has been granted to the app.
+                mMap.setMyLocationEnabled(true);
+                Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
+            } else {
+                // Permission was denied. Display an error message.
+                Toast.makeText(getContext(), "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+
+//        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            // Permission to access the location is missing.
+//            PermissionUtils.requestPermission(getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
+//                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+//        } else if (mMap != null) {
+//            // Access to the location has been granted to the app.
+//            mMap.setMyLocationEnabled(true);
 //        }
 
-        googleMap.setPadding(0, 0, 0, 50);
+        // public final void setPadding (int left, int top, int right, int bottom)
+        googleMap.setPadding(0, 50, 0, 50);
 
         // Respond to a user tapping on a POI
 //        mMap.setOnPoiClickListener(this);
@@ -188,7 +245,6 @@ public class MapFragment extends Fragment implements
 //
 //        DatabaseReference messagesRef = myRef.child("spots").child("" + bulgwangLedge_Spot.getId());
 //        messagesRef.setValue(bulgwangLedge_Spot);
-
 
 //        messagesRef = myRef.child("spots").child("" + pajuLedge_Spot.getId());
 //        messagesRef.setValue(pajuLedge_Spot);
@@ -252,7 +308,8 @@ public class MapFragment extends Fragment implements
 //                adapter.setWords(words);
                 // Set markers:
                 for (Spot spot: spots) {
-                    googleMap.addMarker(new MarkerOptions()
+//                    googleMap.addMarker(new MarkerOptions()
+                    mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
                             .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                             .title(spot.getName())
@@ -293,6 +350,44 @@ public class MapFragment extends Fragment implements
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    // Access to the location has been granted to the app.
+                    mMap.setMyLocationEnabled(true);
+                    Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
+                } else {
+                    // Permission was denied. Display an error message.
+                    Toast.makeText(getContext(), "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
+//        Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getContext(), NewSpotActivity.class);
+        intent.putExtra(EXTRA_CURRENT_LOCATION, location);
+        startActivity(intent);
+//        location.getLongitude();
+    }
+
+
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
         return false;
     }
 }
