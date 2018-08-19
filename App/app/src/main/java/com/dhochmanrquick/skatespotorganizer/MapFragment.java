@@ -271,11 +271,11 @@ public class MapFragment extends Fragment implements
     public boolean onMarkerClick(final Marker marker) {
 
 //        Intent spot_Intent = new Intent(this, NewSpotActivity.class);
-        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
+//        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
 
 //        spot_Intent.setData(marker.getTag());
 //        spot_Intent.putExtra("Spot", (Integer) (marker.getTag()));
-        startActivity(spot_Intent);
+//        startActivity(spot_Intent);
 
         // Retrieve the data from the marker.
 //        Integer clickCount = (Integer) marker.getTag();
