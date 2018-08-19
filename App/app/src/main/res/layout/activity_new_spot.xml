@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:hint="Description"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/new_spot_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
