@@ -91,7 +91,9 @@ public class Spot {
     //    private Type mType;
 //    private ImageView mImage;
 
-    private int mImageID;
+    private int mImageID = 0;
+
+//    private ImageView mPhotoView;
 
     /* END Fields *********************************************************************************/
 
@@ -310,4 +312,8 @@ public class Spot {
     }
 
     /* END Setter methods *************************************************************************/
+
+    public String getPhotoFilename() {
+        return "IMG_" + getName() + ".jpg";
+    }
 }

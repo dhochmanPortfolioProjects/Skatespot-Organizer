@@ -1,6 +1,9 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +13,10 @@ import android.widget.TextView;
 
 import com.dhochmanrquick.skatespotorganizer.SpotMasterFragment.OnListFragmentInteractionListener;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 //import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent.DummyItem;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -48,15 +53,17 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
     private List<Spot> mSpots; // Note that this variable caches the the master list of Dummy spots
     private final OnListFragmentInteractionListener mListener;
     private final LayoutInflater mInflater;
+    Context mContext;
 
     // Constructor (called from SpotMasterFragment); sets member variables
 //    public SpotMasterRecyclerViewAdapter(List<Spot> spots, OnListFragmentInteractionListener listener) {
     SpotMasterRecyclerViewAdapter(Context context, OnListFragmentInteractionListener listener) {
+        mContext = context;
         mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
 
-    void setWords(List<Spot> spots){
+    void setWords(List<Spot> spots) {
         mSpots = spots;
         notifyDataSetChanged();
     }
@@ -74,7 +81,6 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
     }
 
 
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Spot spot = mSpots.get(position); // Get the Spot at the position requested by the RecyclerView
@@ -82,7 +88,29 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         holder.mSpotTitle_TextView.setText(spot.getName());
         holder.mSpotDescription_TextView.setText(spot.getDescription());
 //        holder.mSpotImage_ImageView.setImageResource(R.drawable.paju_spot_landscape);
-        holder.mSpotImage_ImageView.setImageResource(spot.getImageID()); 
+//        holder.mSpotImage_ImageView.setImageResource(spot.getImageID());
+
+//        ViewModel mSpotViewModel = ViewModelProviders.of(mContext.getApplicationInfo().getActivity()).get(SpotViewModel.class);
+//        ViewModel mSpotViewModel = ViewModelProviders.
+
+
+
+
+//        PictureUtils.getPhotoFile(mContext.getApplicationContext(), spot);
+//        holder.mSpotImage_ImageView.setImageBitmap(bitmap);
+
+        if (spot.getImageID() == 0) {
+            File filesDir = mContext.getFilesDir();
+            File photoFile = new File(filesDir, spot.getPhotoFilename());
+        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+            holder.mSpotImage_ImageView.setImageBitmap(bitmap);
+        } else {
+            holder.mSpotImage_ImageView.setImageResource(spot.getImageID());
+        }
+
+//        spot.getImageID() == 0 ? holder.mSpotImage_ImageView.setImageBitmap(bitmap) : holder == null;
+
 
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
