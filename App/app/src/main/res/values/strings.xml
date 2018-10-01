@@ -2,8 +2,8 @@
     <string name="app_name">Skatespot Organizer</string>
 
     <!--Bottom Navigation-->
-    <string name="title_my_spots">My Spots</string>
-    <string name="title_map">Map</string>
+    <string name="title_my_spots">List View</string>
+    <string name="title_map">Map View</string>
     <string name="title_rated">Rated Spots</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -28,11 +28,11 @@ public class MainActivity extends AppCompatActivity implements
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    selectedFragment = SpotMasterFragment.newInstance(1);
-                    break;
-                case R.id.navigation_dashboard:
+                case R.id.bottom_navigation_map:
                     selectedFragment = MapFragment.newInstance();
+                    break;
+                case R.id.bottom_navigation_list:
+                    selectedFragment = SpotMasterFragment.newInstance(1);
                     break;
                 case R.id.navigation_notifications:
                     selectedFragment = RatedSpotsFragment.newInstance();
@@ -50,14 +50,17 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get BottomNavigationView widget nested inside activity_main.xml
         BottomNavigationView navigation = findViewById(R.id.navigation);
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SpotMasterFragment.newInstance(1))
+//                .replace(R.id.fragment_container, SpotMasterFragment.newInstance(1))
+                // Load MapFragment as starting fragment instead of SpotMasterFragment
+                .replace(R.id.fragment_container, MapFragment.newInstance())
                 .commit();
-
     }
 
     @Override
