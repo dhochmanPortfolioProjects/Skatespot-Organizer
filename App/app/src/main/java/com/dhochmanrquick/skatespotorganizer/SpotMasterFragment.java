@@ -86,10 +86,14 @@ public class SpotMasterFragment extends Fragment {
         // When the activity is destroyed, for example through a configuration change,
         // the ViewModel persists. When the activity is re-created,
         // the ViewModelProviders return the existing ViewModel.
+        //
+        // This creates the ViewModel and stores it in the local variable mSpotViewModel.
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
         // An observer for the LiveData returned by getAllWords().
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        // Whenever the data changes, the onChanged() callback is invoked, which calls the adapter's setWord()
+        // method to update the adapter's cached data and refresh the displayed list.
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable final List<Spot> words) {
@@ -100,7 +104,6 @@ public class SpotMasterFragment extends Fragment {
 
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {

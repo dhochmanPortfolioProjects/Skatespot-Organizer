@@ -13,23 +13,40 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Random;
 
-
-@Database(entities = {Spot.class}, version = 1)
+/**
+ * The Room database class for the Spot SQLite table. Room is a database layer on top of SQLite database
+ * that takes care of mundane tasks that you used to handle
+ * with an SQLiteOpenHelper. Database holder that serves as an access point to the underlying SQLite
+ * database. The Room database uses the DAO to issue queries to the SQLite database. Your Room class
+ * must be abstract and extend RoomDatabase. Usually, you only need one instance of the Room database
+ * for the whole app.
+ *
+ * @author Daniel Hochman
+ * @author Rob Quick
+ */
+@Database(entities = {Spot.class}, version = 1) // Annotate the class to be a Room database,
+// declare the entities that belong in the database and set the version number. Listing the entities will create tables in the database.
 public abstract class SpotRoomDatabase extends RoomDatabase {
 
     // Define the DAOs that work with the database. Provide an abstract "getter" method for each @Dao.
+    // So far, the only DAO needed is SpotDao. This method returns that DAO.
     public abstract SpotDao getSpotDao();
 
-    private static SpotRoomDatabase INSTANCE;
+    private static SpotRoomDatabase INSTANCE; // The Singleton instance of this SpotRoomDatabase
 
     private static Context mContext;
 
-    // Make the SpotRoomDatabase a singleton to prevent having multiple instances of the database opened at the same time.
+    // A static (factory) method that returns the singleton instance of the database. The SpotRoomDatabase
+    // is a singleton to prevent having multiple instances of the database opened at the same time.
+    // This method is called by SpotRepository's constructor
     public static SpotRoomDatabase getDatabase(final Context context) {
         mContext = context;
-        if (INSTANCE == null) {
+        if (INSTANCE == null) { // If no instance of the database exists yet, create it and return it
             synchronized (SpotRoomDatabase.class) {
                 if (INSTANCE == null) {
+                    // Create database here: This code uses Room's database builder to create a
+                    // RoomDatabase object in the application context from the SpotRoomDatabase
+                    // class and names it "spot_database".
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             SpotRoomDatabase.class, "spot_database")
                             .addCallback(sRoomDatabaseCallback) // add the callback to the database build sequence right before calling .build().
@@ -37,7 +54,7 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
                 }
             }
         }
-        return INSTANCE;
+        return INSTANCE; // Else; return the already instantiated singleton SpotRoomDatabase object
     }
 
     // A RoomDatabase.Callback overriding onOpen() to delete all content and repopulate the database

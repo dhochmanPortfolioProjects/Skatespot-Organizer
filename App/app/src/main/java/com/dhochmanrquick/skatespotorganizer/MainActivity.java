@@ -1,9 +1,12 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,11 +16,16 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
         MapFragment.OnFragmentInteractionListener,
         RatedSpotsFragment.OnFragmentInteractionListener {
+
+//    private SpotViewModel mSpotViewModel;
 
     private FragmentManager mFragmentManager;
 
@@ -61,13 +69,48 @@ public class MainActivity extends AppCompatActivity implements
                 // Load MapFragment as starting fragment instead of SpotMasterFragment
                 .replace(R.id.fragment_container, MapFragment.newInstance())
                 .commit();
+
+
+        // Use ViewModelProviders to associate your ViewModel with your UI controller.
+        // When the app first starts, the ViewModelProviders will create the ViewModel.
+        // When the activity is destroyed, for example through a configuration change,
+        // the ViewModel persists. When the activity is re-created,
+        // the ViewModelProviders return the existing ViewModel.
+        //
+        // This creates the ViewModel and stores it in the local variable mSpotViewModel.
+//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+
+        // An observer for the LiveData returned by getAllWords().
+        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        // Whenever the data changes, the onChanged() callback is invoked, which calls the adapter's setWord()
+        // method to update the adapter's cached data and refresh the displayed list.
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable final List<Spot> words) {
+//                // Update the cached copy of the words in the adapter.
+//                adapter.setWords(words);
+//            }
+//        });
     }
 
+    /**
+     * The callback for the list items displayed by the SpotMasterFragment.
+     *
+     * This is called from SpotMasterRecyclerViewAdapter when a list item is clicked. This method
+     * receives the Spot that has been clicked on.
+     *
+     * Is this also the callback for the MapFragment and RatedSpotsFragment?
+     * @param item
+     */
     @Override
     public void onListFragmentInteraction(Spot item) {
-        Toast.makeText(this,
-                "Spot number " + item + " has been selected",
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this,
+//                "Spot " + item.getName() + " ID " + item.getId() + " has been selected",
+//                Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(getBaseContext(), SpotDetailActivity.class);
+        intent.putExtra("com.dhochmanrquick.skatespotorganizer", item.getId());
+        startActivity(intent);
     }
 
     @Override

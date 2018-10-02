@@ -17,30 +17,30 @@
         android:id="@+id/new_spot_latitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Latitude"/>
+        android:hint="Latitude" />
 
     <EditText
         android:id="@+id/new_spot_longtitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Longitude"/>
+        android:hint="Longitude" />
 
     <EditText
         android:id="@+id/new_spot_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"/>
+        android:hint="Description" />
 
     <ImageButton
         android:id="@+id/new_spot_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_camera_alt_black_24dp"/>
+        android:src="@drawable/ic_camera_alt_black_24dp" />
 
     <Button
         android:id="@+id/new_spot_create_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create new spot"/>
+        android:text="Create new spot" />
 
 </LinearLayout>
