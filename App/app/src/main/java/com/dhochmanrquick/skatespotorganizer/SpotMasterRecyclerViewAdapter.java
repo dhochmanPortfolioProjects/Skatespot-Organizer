@@ -37,8 +37,8 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         public ViewHolder(View view) {
             super(view);
             mView = view; // fragment_spotmaster_list_item inflated
-            mSpotTitle_TextView = view.findViewById(R.id.spot_title_tv);
-            mSpotDescription_TextView = view.findViewById(R.id.spot_description_tv);
+            mSpotTitle_TextView = view.findViewById(R.id.spot_detail_title_tv);
+            mSpotDescription_TextView = view.findViewById(R.id.spot_detail_description_tv);
             mSpotImage_ImageView = view.findViewById(R.id.spot_image_iv);
         }
 

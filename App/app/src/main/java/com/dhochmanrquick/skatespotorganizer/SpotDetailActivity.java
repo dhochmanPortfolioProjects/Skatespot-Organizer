@@ -38,9 +38,8 @@ public class SpotDetailActivity extends AppCompatActivity {
         mSpotViewModel.getSpot(id).observe(this, new Observer<Spot>() {
             @Override
             public void onChanged(@Nullable Spot spot) { // Should this be final?
-                ((TextView) findViewById(R.id.spot_detail_title_tv)).setText("Name: " + spot.getName()
-                + "\nId: " + spot.getId()
-                + "\nDescription: " + spot.getDescription());
+                ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
+                ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
                 File filesDir = getFilesDir(); // Get handle to directory for private application files
                 File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
                 Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);

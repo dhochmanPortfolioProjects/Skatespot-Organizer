@@ -94,7 +94,7 @@ public class Spot {
     //    private Type mType;
 //    private ImageView mImage;
 
-    private int mImageID = 0;
+    private int mImageID = 0; // What is this?
 
 //    private ImageView mPhotoView;
 

@@ -14,7 +14,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@+id/spot_title_tv"
+            app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"
             app:layout_constraintDimensionRatio="H,16:9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +22,7 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:id="@+id/spot_title_tv"
+            android:id="@+id/spot_detail_title_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -30,26 +30,26 @@
             android:layout_marginTop="24dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="#DE000000"
-            app:layout_constraintBottom_toTopOf="@+id/spot_description_tv"
+            app:layout_constraintBottom_toTopOf="@+id/spot_detail_description_tv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spot_image_iv" />
 
         <TextView
-            android:id="@+id/spot_description_tv"
+            android:id="@+id/spot_detail_description_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#8A000000"
-            app:layout_constraintBottom_toTopOf="@+id/action_button_1"
+            app:layout_constraintBottom_toTopOf="@+id/spot_detail_button_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_title_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/spot_detail_title_tv" />
 
         <Button
-            android:id="@+id/action_button_1"
+            android:id="@+id/spot_detail_button_1"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:text="action 1"
             app:layout_constraintBottom_toTopOf="@+id/supporting_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_description_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv" />
 
         <Button
             android:id="@+id/action_button_2"
@@ -75,8 +75,8 @@
             android:paddingStart="8dp"
             android:textColor="#DE000000"
             android:text="action 2"
-            app:layout_constraintStart_toEndOf="@+id/action_button_1"
-            app:layout_constraintTop_toTopOf="@+id/action_button_1" />
+            app:layout_constraintStart_toEndOf="@+id/spot_detail_button_1"
+            app:layout_constraintTop_toTopOf="@+id/spot_detail_button_1" />
 
         <ImageButton
             android:id="@+id/expand_button"
@@ -86,7 +86,7 @@
             android:layout_marginEnd="8dp"
             android:background="#00FFFFFF"
             android:padding="6dp"
-            app:layout_constraintBottom_toBottomOf="@+id/action_button_1"
+            app:layout_constraintBottom_toBottomOf="@+id/spot_detail_button_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_expand_more_black_36dp" />
 
@@ -106,7 +106,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/action_button_1" />
+            app:layout_constraintTop_toBottomOf="@+id/spot_detail_button_1" />
 
     </android.support.constraint.ConstraintLayout>
 
