@@ -17,6 +17,8 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
@@ -67,7 +69,7 @@ public class MapFragment extends Fragment implements
 
     private OnFragmentInteractionListener mListener;
 
-    private SpotViewModel mSpotViewModel;
+    private SpotViewModel mSpotViewModel; // The ViewModel (the app's data)
 
     private GoogleMap mMap;
 
@@ -94,12 +96,20 @@ public class MapFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // Use ViewModelProviders to associate your ViewModel with your UI controller.
+        // When the app first starts, the ViewModelProviders will create the ViewModel.
+        // When the activity is destroyed, for example through a configuration change,
+        // the ViewModel persists. When the activity is re-created,
+        // the ViewModelProviders return the existing ViewModel.
+        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+
         // Retrieve and inflate the content view that renders the map for this fragment
         return inflater.inflate(R.layout.fragment_partial_map, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         // Here, we use a MapView object.
         MapView mapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
@@ -107,6 +117,35 @@ public class MapFragment extends Fragment implements
         mapView.onResume();
         mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
         super.onViewCreated(view, savedInstanceState);
+
+        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
+                String searchString = searchString_EditText.getText().toString();
+                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
+
+                // An observer for the LiveData returned by getAllWords().
+                // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
+//                    @Override
+//                    public void onChanged(@Nullable final List<Spot> spots) {
+//                        // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//                        // Set markers:
+//                        for (Spot spot: spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//                            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
+//                        }
+//                    }
+//                });
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -320,6 +359,7 @@ public class MapFragment extends Fragment implements
 
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
     }
+
 
     /**
      * Called when the user clicks a marker.
