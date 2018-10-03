@@ -5,13 +5,43 @@
     android:layout_height="match_parent"
     tools:context=".MapFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/partial_map_fragment" />
+        android:orientation="vertical">
 
-    <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"-->
+        <!-- TODO: Update blank fragment layout -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/partial_map_fragment" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            >
+
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="80dp"
+                android:hint="Search by spot name or area"/>
+
+            <ImageButton
+                android:id="@+id/search_ic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_search_black_24dp" />
+
+        </RelativeLayout>
+
+
+        <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"-->
         <!--xmlns:tools="http://schemas.android.com/tools"-->
         <!--android:id="@+id/map"-->
         <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
@@ -24,9 +54,11 @@
         <!--tools:context=".MainActivity"-->
         <!--/>-->
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
 </FrameLayout>

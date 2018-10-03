@@ -49,7 +49,7 @@ public class Spot {
     @NonNull
     @ColumnInfo(name = "id")
     private int mId;
-//    private UUID mId;
+//    private UUID mId; // This convenience class does not work well with Room
 
     /**
      * The name of a spot. Examples of spot names are:
@@ -316,6 +316,12 @@ public class Spot {
 
     /* END Setter methods *************************************************************************/
 
+    /**
+     * A method to create and return a file path which can be converted into a URI and exported to
+     * other apps (namely, camera apps) so that they can store image files to this file.
+     *
+     * @return  The filename of the photo of this Spot
+     */
     public String getPhotoFilename() {
         return "IMG_" + getName() + ".jpg";
     }
