@@ -58,7 +58,6 @@ public class MapFragment extends Fragment implements
      * @see #onRequestPermissionsResult(int, String[], int[])
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
 
     /**
@@ -66,11 +65,8 @@ public class MapFragment extends Fragment implements
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
     private boolean mPermissionDenied = false;
-
     private OnFragmentInteractionListener mListener;
-
     private SpotViewModel mSpotViewModel; // The ViewModel (the app's data)
-
     private GoogleMap mMap;
 
     public MapFragment() {
@@ -110,6 +106,7 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
+        // 10.3.2018: Had to make view final in order to use it in the below OnClickListener
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         // Here, we use a MapView object.
         MapView mapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
@@ -118,13 +115,15 @@ public class MapFragment extends Fragment implements
         mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
         super.onViewCreated(view, savedInstanceState);
 
+        // Set OnClickListener for the search button: Get text from EditText, query the ViewModel
+        // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
         ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
                 String searchString = searchString_EditText.getText().toString();
-                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
 
                 mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
                     @Override
@@ -134,8 +133,11 @@ public class MapFragment extends Fragment implements
 //                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
 //                                .title(spot.getName())
 //                                .snippet(spot.getDescription()));
-                        if (spot != null)
+                        if (spot != null) {
                             Toast.makeText(getContext(), spot.getName() + " found!", Toast.LENGTH_LONG).show();
+                            // Set camera position to Marker TODO: Animate this transition smoothly
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(spot.getLatLng()));
+                        }
                         else {
                             Toast.makeText(getContext(), "Spot not found!", Toast.LENGTH_LONG).show();
                         }
@@ -441,7 +443,7 @@ public class MapFragment extends Fragment implements
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
