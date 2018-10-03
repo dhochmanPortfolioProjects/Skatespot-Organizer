@@ -38,6 +38,11 @@ public class SpotRepository {
         return mSpotDao.getSpot(id);
     }
 
+    // A wrapper for getSpot() defined in the DAO
+    public LiveData<Spot> getSpot(String name) {
+        return mSpotDao.getSpot(name);
+    }
+
     // A wrapper for getAllSpots() defined in the DAO; effectively a getter method for the mAllSpots member variable.
     public LiveData<List<Spot>> getAllSpots() {
         return mAllSpots;

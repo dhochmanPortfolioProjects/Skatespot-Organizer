@@ -126,6 +126,23 @@ public class MapFragment extends Fragment implements
                 String searchString = searchString_EditText.getText().toString();
                 Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
 
+                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
+                    @Override
+                    public void onChanged(@Nullable Spot spot) {
+//                        mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                .title(spot.getName())
+//                                .snippet(spot.getDescription()));
+                        if (spot != null)
+                            Toast.makeText(getContext(), spot.getName() + " found!", Toast.LENGTH_LONG).show();
+                        else {
+                            Toast.makeText(getContext(), "Spot not found!", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+
                 // An observer for the LiveData returned by getAllWords().
                 // The onChanged() method fires when the observed data changes and the activity is in the foreground.
 //                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
@@ -185,6 +202,7 @@ public class MapFragment extends Fragment implements
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+
     }
 
     /**
@@ -199,7 +217,6 @@ public class MapFragment extends Fragment implements
      * installed Google Play services and returned to the app.
      * <p><
      * Within your UI, a map will be represented by either a MapFragment or MapView object.
-
      */
     @Override
 //    public void onMapReady(GoogleMap googleMap) {
@@ -225,7 +242,7 @@ public class MapFragment extends Fragment implements
             // Show rationale and request permission.
 //            Toast.makeText(this, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
             // Permission to access the location is missing.
-            PermissionUtils.requestPermission(((MainActivity)getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
+            PermissionUtils.requestPermission(((MainActivity) getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
 
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -346,7 +363,7 @@ public class MapFragment extends Fragment implements
                 // Update the cached copy of the words in the adapter.
 //                adapter.setWords(words);
                 // Set markers:
-                for (Spot spot: spots) {
+                for (Spot spot : spots) {
 //                    googleMap.addMarker(new MarkerOptions()
                     mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
@@ -420,7 +437,6 @@ public class MapFragment extends Fragment implements
         startActivity(intent);
 //        location.getLongitude();
     }
-
 
 
     @Override

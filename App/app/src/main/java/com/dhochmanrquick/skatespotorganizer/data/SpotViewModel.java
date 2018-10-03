@@ -57,6 +57,10 @@ public class SpotViewModel extends AndroidViewModel {
         return mRepository.getSpot(id);
     }
 
+    public LiveData<Spot> getSpot(String name) {
+        return mRepository.getSpot(name);
+    }
+
     // A "getter" method for all the spots. Indirectly, this wraps the repository's getAllSpots() method
     // (which in turn wraps the DAO's getAll(). This completely hides the implementation from the UI.
     public LiveData<List<Spot>> getAllSpots() { return mAllSpots; }

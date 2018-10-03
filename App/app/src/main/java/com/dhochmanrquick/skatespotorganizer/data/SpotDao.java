@@ -44,9 +44,17 @@ public interface SpotDao {
     // id method parameter.
     // Room allows you to return any Java-based object (POJO) from your queries as long as the set of
     // result columns can be mapped into the returned object.
-
     @Query("SELECT * FROM spot_table WHERE id = :id")
     LiveData<Spot> getSpot(int id);
+
+    /**
+     * Overloaded method to get spot by name.
+     *
+     * @param name  The Spot name
+     * @return      The Spot found with a matching name
+     */
+    @Query("SELECT * FROM spot_table WHERE name = :name")
+    LiveData<Spot> getSpot(String name);
 
     @Query("DELETE FROM spot_table")
     void deleteAll();
