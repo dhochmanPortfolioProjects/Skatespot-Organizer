@@ -92,15 +92,14 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
 //        ViewModel mSpotViewModel = ViewModelProviders.
 
 
-
-
 //        PictureUtils.getPhotoFile(mContext.getApplicationContext(), spot);
 //        holder.mSpotImage_ImageView.setImageBitmap(bitmap);
 
-        if (spot.getImageID() == 0) {
-            File filesDir = mContext.getFilesDir();
-            File photoFile = new File(filesDir, spot.getPhotoFilename());
-        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+        // Set Spot's ImageView as a Bitmap
+        if (spot.getImageID() == 0) { // What is this?
+            File filesDir = mContext.getFilesDir(); // Get handle to directory for private application files
+            File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
             holder.mSpotImage_ImageView.setImageBitmap(bitmap);
         } else {
@@ -108,7 +107,6 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         }
 
 //        spot.getImageID() == 0 ? holder.mSpotImage_ImageView.setImageBitmap(bitmap) : holder == null;
-
 
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
