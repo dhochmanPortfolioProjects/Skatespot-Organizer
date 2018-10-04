@@ -89,7 +89,7 @@
         app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
         map:uiCompass="true"
         map:uiZoomControls="true"
-        map:cameraZoom="13"
+        map:cameraZoom="15"
         />
 
 </android.support.constraint.ConstraintLayout>
