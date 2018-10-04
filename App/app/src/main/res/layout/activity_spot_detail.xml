@@ -77,16 +77,19 @@
     <!--map:uiZoomControls="true"-->
     <!--tools:context=".SpotDetailActivity" />-->
 
-    <com.google.android.gms.maps.MapView
+    <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/spotmap"
         android:layout_width="280dp"
-        android:layout_height="280dp"
+        android:layout_height="200dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
+        map:uiCompass="true"
+        map:uiZoomControls="true"
+        map:cameraZoom="13"
         />
 
 </android.support.constraint.ConstraintLayout>

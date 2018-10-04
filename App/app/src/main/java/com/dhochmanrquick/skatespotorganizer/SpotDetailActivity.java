@@ -40,12 +40,16 @@ public class SpotDetailActivity extends AppCompatActivity
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
+        // When using the API in fully interactive mode, users of the MapView class must forward the
+        // following activity lifecycle methods to the corresponding methods in the MapView class:
+        // onCreate(), onStart(), onResume(), onPause(), onStop(), onDestroy(), onSaveInstanceState(),
+        // and onLowMemory().
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
         // Use getMapAsync() to set the callback on the fragment.
         // Note: getMapAsync() must be called from the main thread, and the callback will be executed
         // in the main thread. If Google Play services is not installed on the user's device, the
         // callback will not be triggered until the user installs Play services.
-        mapView.onCreate(savedInstanceState);
-        mapView.onResume();
         mapView.getMapAsync(this);
 
         // Retrieve intent extra
@@ -72,6 +76,7 @@ public class SpotDetailActivity extends AppCompatActivity
                         .title(mSpot.getName())
                         .snippet(mSpot.getDescription()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(mSpot.getLatLng()));
+
             }
         });
 
