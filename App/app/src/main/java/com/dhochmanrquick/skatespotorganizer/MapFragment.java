@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,11 +25,15 @@ import android.widget.Toast;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PermissionUtils;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -68,6 +73,7 @@ public class MapFragment extends Fragment implements
     private OnFragmentInteractionListener mListener;
     private SpotViewModel mSpotViewModel; // The ViewModel (the app's data)
     private GoogleMap mMap;
+    private List<Spot> mSpotList;
 
     public MapFragment() {
         // Required empty public constructor
@@ -141,14 +147,28 @@ public class MapFragment extends Fragment implements
 //                                .title(spot.getName())
 //                                .snippet(spot.getDescription()));
                         if (spot != null) {
-                            Toast.makeText(getContext(), spot.getName() + " found!", Toast.LENGTH_LONG).show();
-                            // Set camera position to Marker TODO: Animate this transition smoothly
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(spot.getLatLng()));
-                        }
-                        else {
-                            Toast.makeText(getContext(), "Spot not found!", Toast.LENGTH_LONG).show();
-                        }
+//                            mMap.clear();
+//                            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
 
+                            Circle circle = mMap.addCircle(new CircleOptions()
+                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                                    .radius(5)
+                                    .strokeColor(Color.RED)
+                                    .fillColor(Color.blue(10))); // Todo: Make this transparent blue?
+
+                            // To change the position of the camera, you must specify where you want
+                            // to move the camera, using a CameraUpdate. The Maps API allows you to
+                            // create many different types of CameraUpdate using CameraUpdateFactory.
+                            // Animate the move of the camera position to spot's coordinates and zoom in
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
+                                    2000, null);
+                        } else {
+                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
 
@@ -234,6 +254,16 @@ public class MapFragment extends Fragment implements
         // Sets the map type to be "hybrid"
 //        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
+        // If you have added a MapFragment (or MapView) programmatically, then you can configure its
+        // initial state by passing in a GoogleMapOptions object with your options specified.
+        // The options available to you are exactly the same as those available via XML.
+        // To apply these options when you are creating a map, do one of the following:
+        //
+        //If you are using a MapFragment, use the MapFragment.newInstance(GoogleMapOptions options)
+        // static factory method to construct the fragment and pass in your custom configured options.
+        //If you are using a MapView, use the MapView(Context, GoogleMapOptions) constructor and pass
+        // in your custom configured options.
+        // Todo: Should the GoogleMapOptions object be passed to the MapView constructor?
         GoogleMapOptions options = new GoogleMapOptions();
         options.ambientEnabled(true);
 
@@ -360,13 +390,14 @@ public class MapFragment extends Fragment implements
         // When the activity is destroyed, for example through a configuration change,
         // the ViewModel persists. When the activity is re-created,
         // the ViewModelProviders return the existing ViewModel.
-        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
-        // An observer for the LiveData returned by getAllWords().
+        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
-            public void onChanged(@Nullable final List<Spot> spots) {
+            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
+                mSpotList = spots;
                 // Update the cached copy of the words in the adapter.
 //                adapter.setWords(words);
                 // Set markers:
@@ -380,7 +411,6 @@ public class MapFragment extends Fragment implements
                 }
             }
         });
-
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
     }
 
