@@ -107,12 +107,19 @@ public class MapFragment extends Fragment implements
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         // 10.3.2018: Had to make view final in order to use it in the below OnClickListener
+
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
-        // Here, we use a MapView object.
+        // Here, we use a MapView object. MapView, a subclass of the Android View class, allows you
+        // to place a map in an Android View. A View represents a rectangular region of the screen,
+        // and is a fundamental building block for Android applications and widgets. Much like a
+        // MapFragment, the MapView acts as a container for the map, exposing core map functionality
+        // through the GoogleMap object.
+        // So, what is the real difference? Here, a MapView is used in a Fragment.
         MapView mapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
+
         super.onViewCreated(view, savedInstanceState);
 
         // Set OnClickListener for the search button: Get text from EditText, query the ViewModel
@@ -223,9 +230,7 @@ public class MapFragment extends Fragment implements
     @Override
 //    public void onMapReady(GoogleMap googleMap) {
     public void onMapReady(GoogleMap googleMap) { // Declared final because LiveData Observer onChanged()
-
         mMap = googleMap;
-
         // Sets the map type to be "hybrid"
 //        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
