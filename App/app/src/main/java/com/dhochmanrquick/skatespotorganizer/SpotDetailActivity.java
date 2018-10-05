@@ -3,6 +3,7 @@ package com.dhochmanrquick.skatespotorganizer;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,13 +20,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 import java.util.List;
 
 public class SpotDetailActivity extends AppCompatActivity
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener {
 
     private SpotViewModel mSpotViewModel;
 //    private LiveData<Spot> spot; // Since the Spot is only accessed and manipulated in onChanged,
@@ -72,9 +75,10 @@ public class SpotDetailActivity extends AppCompatActivity
                 ((ImageView) findViewById(R.id.spot_detail_image_iv)).setImageBitmap(bitmap);
 
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude))
-                        .title(mSpot.getName())
-                        .snippet(mSpot.getDescription()));
+                        .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
+//                        .title(mSpot.getName())
+//                        .snippet(mSpot.getDescription()));
+
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(mSpot.getLatLng()));
 
             }
@@ -95,6 +99,26 @@ public class SpotDetailActivity extends AppCompatActivity
     }
 
     /**
+     * Called when the user clicks a marker.
+     */
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        Intent spotStreetView_Intent = new Intent(this, SpotStreetViewActivity.class);
+//        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
+//        spot_Intent.setData(marker.getTag());
+
+        spotStreetView_Intent.putExtra("Spot", mSpot.getLatLng());
+
+        startActivity(spotStreetView_Intent);
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false;
+    }
+
+    /**
      * Use the onMapReady(GoogleMap) callback method to get a handle to the GoogleMap object.
      * The callback is triggered when the map is ready to be used. It provides a non-null instance
      * of GoogleMap. You can use the GoogleMap object to set the view options for the map or add a
@@ -107,6 +131,9 @@ public class SpotDetailActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
 //        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         // Triggers a null reference as is; mSpot hasn't been properly assigned yet.

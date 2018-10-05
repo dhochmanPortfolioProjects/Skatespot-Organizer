@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--tools:context=".SpotStreetViewActivity">-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
+
+<!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--tools:context=".StreetViewActivity">-->
+
+<!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:id="@+id/streetviewpanorama"--><!--android:name="com.google.android.gms.maps.SupportStreetViewPanoramaFragment"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"-->
+
+<!--tools:context=".StreetViewActivity" />-->
+
+<!--</android.support.constraint.ConstraintLayout>-->
+
+<com.google.android.gms.maps.StreetViewPanoramaView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/streetviewpanorama"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

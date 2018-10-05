@@ -40,7 +40,8 @@
                 android:resource="@xml/files" />
         </provider>
 
-        <activity android:name=".SpotDetailActivity"></activity>
+        <activity android:name=".SpotDetailActivity" />
+        <activity android:name=".SpotStreetViewActivity"></activity>
     </application>
 
 </manifest>
