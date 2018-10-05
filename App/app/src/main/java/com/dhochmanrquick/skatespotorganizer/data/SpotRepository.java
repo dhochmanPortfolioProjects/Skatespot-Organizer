@@ -28,12 +28,14 @@ public class SpotRepository {
     /**
      * Constructor that gets a handle to the database and initializes the member variables.
      *
-     * @param application
+     * @param application   The Application object passed in by the ViewModel when the SpotRepository
+     *                      is instantiated. This object is needed in SpotRoomDatabase
+     *                      (Room.databaseBuilder(context.getApplicationContext()) to create the
+     *                      database in this Application Context.
      */
     public SpotRepository(Application application) {
-        // Get singleton instance of the database
-        SpotRoomDatabase spotRoomDatabase = SpotRoomDatabase.getDatabase(application);
-        mSpotDao = spotRoomDatabase.getSpotDao(); // Get the DAO for the Spot database from the SpotRoomDatabase
+        // Get singleton instance of the database and through it get the DAO for the Spot database
+        mSpotDao = SpotRoomDatabase.getDatabase(application).getSpotDao();
         mAllSpots = mSpotDao.getAll(); // Use the DAO to query the SQLite database and return the LiveData
         // This could be called in the method getAllSpots() when the spot list is actually needed
     }

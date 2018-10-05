@@ -49,7 +49,7 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
             synchronized (SpotRoomDatabase.class) {
                 if (sSpotRoomDatabase == null) {
                     // Build database here: This code uses Room's database builder to create a
-                    // RoomDatabase object in the application context from the SpotRoomDatabase
+                    // RoomDatabase object in the Application Context from the SpotRoomDatabase
                     // class, and names it "spot_database".
                     sSpotRoomDatabase = Room.databaseBuilder(context.getApplicationContext(), // Build database
                             SpotRoomDatabase.class, "spot_database")

@@ -33,19 +33,28 @@ import java.util.List;
  */
 public class SpotViewModel extends AndroidViewModel {
 
-    private SpotRepository mRepository; // Private member variable to hold a reference to the repository
+    /**
+     * Private member variable to hold a reference to the repository
+     */
+    private SpotRepository mRepository;
 
     Application mApplication;
 
-    // Private LiveData member variable to cache the list of spots, which it gets from the SpotRepository
-    // in the constructor
+    /**
+     * Private LiveData member variable to cache the list of spots, which it gets from the SpotRepository
+     * in the constructor
+     */
     private LiveData<List<Spot>> mAllSpots;
 
-    // Constructor that gets a reference to the repository and gets the list of spots from the repository.
-    // This is called via ViewModelProviders in order to associate the ViewModel with the UI controller.
-    // When the app first starts, the ViewModelProviders will create the ViewModel. When the activity is
-    // destroyed, for example through a configuration change, the ViewModel persists. When the activity
-    // is re-created, the ViewModelProviders return the existing ViewModel.
+    /**
+     * Constructor that gets a reference to the repository and gets the list of spots from the repository.
+     * This is called via ViewModelProviders in order to associate the ViewModel with the UI controller.
+     * When the app first starts, the ViewModelProviders will create the ViewModel. When the activity is
+     * destroyed, for example through a configuration change, the ViewModel persists. When the activity
+     * is re-created, the ViewModelProviders return the existing ViewModel.
+     *
+     * @param application
+     */
     public SpotViewModel (Application application) {
         super(application);
         mApplication = application;
@@ -61,12 +70,20 @@ public class SpotViewModel extends AndroidViewModel {
         return mRepository.getSpot(name);
     }
 
-    // A "getter" method for all the spots. Indirectly, this wraps the repository's getAllSpots() method
-    // (which in turn wraps the DAO's getAll(). This completely hides the implementation from the UI.
+    /**
+     * A "getter" method for all the spots. Indirectly, this wraps the repository's getAllSpots() method
+     * (which in turn wraps the DAO's getAll(). This completely hides the implementation from the UI.
+     *
+     * @return  The List of all the Spots, wrapped in LiveData
+     */
     public LiveData<List<Spot>> getAllSpots() { return mAllSpots; }
 
-    // A wrapper insert() method that calls the Repository's insert() method (which in turn calls the
-    // DAO's insert() method). In this way, the implementation of insert() is completely hidden from the UI.
+    /**
+     * A wrapper insert() method that calls the Repository's insert() method (which in turn calls the
+     * DAO's insert() method). In this way, the implementation of insert() is completely hidden from the UI.
+     *
+     * @param spot  The Spot to be inserted into the database
+     */
     public void insert(Spot spot) { mRepository.insert(spot); }
 
 //    public File getPhotoFile(Spot spot) {
