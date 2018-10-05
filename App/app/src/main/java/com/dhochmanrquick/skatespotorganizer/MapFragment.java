@@ -154,11 +154,19 @@ public class MapFragment extends Fragment implements
 //                                    .title(spot.getName())
 //                                    .snippet(spot.getDescription()));
 
+                            // Adding the circle to the GoogleMap
                             Circle circle = mMap.addCircle(new CircleOptions()
                                     .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                                    .radius(5)
-                                    .strokeColor(Color.RED)
-                                    .fillColor(Color.blue(10))); // Todo: Make this transparent blue?
+                                    .radius(10)
+                                    .strokeColor(Color.BLACK) // Border color of the circle
+                                    // Fill color of the circle.
+                                    // 0x represents, this is an hexadecimal code
+                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
+                                    // For 0% transparency ( ie, opaque ) , specify ff
+                                    // The remaining 6 characters(00ff00) specify the fill color
+                                    .fillColor(0x8800ff00)
+                                    // Border width of the circle
+                                    .strokeWidth(2)); // Todo: Make this transparent blue?
 
                             // To change the position of the camera, you must specify where you want
                             // to move the camera, using a CameraUpdate. The Maps API allows you to
