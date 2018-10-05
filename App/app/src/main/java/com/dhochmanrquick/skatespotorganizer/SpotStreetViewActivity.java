@@ -34,7 +34,7 @@ public class SpotStreetViewActivity extends AppCompatActivity implements
 //        streetViewPanoramaView.getStreetViewPanoramaAsync(this);
 
         StreetViewPanoramaOptions options = new StreetViewPanoramaOptions();
-        options.position(mSpotLatLng, 100);
+        options.position(mSpotLatLng, 100); // int param is radius in meters
 //        options.position(new LatLng(37.707876, 126.746319));
 //        if (savedInstanceState == null) {
 //            if (Spot_id == 0) { // Bulgwang
