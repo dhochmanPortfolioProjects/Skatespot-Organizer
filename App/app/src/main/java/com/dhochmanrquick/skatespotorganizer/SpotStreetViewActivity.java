@@ -3,6 +3,7 @@ package com.dhochmanrquick.skatespotorganizer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
@@ -13,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class SpotStreetViewActivity extends AppCompatActivity implements
         OnStreetViewPanoramaReadyCallback {
 
+    private LatLng mSpotLatLng;
     private StreetViewPanoramaView mStreetViewPanoramaView;
     private static final String STREETVIEW_BUNDLE_KEY = "StreetViewBundleKey";
 
@@ -21,7 +23,7 @@ public class SpotStreetViewActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_street_view);
 
-//        int Spot_id = getIntent().getParcelableExtra("spot");
+        mSpotLatLng = getIntent().getParcelableExtra("Spot");
 
 //        StreetViewPanoramaFragment streetViewPanoramaFragment =
 //                (StreetViewPanoramaFragment) getFragmentManager()
@@ -32,7 +34,8 @@ public class SpotStreetViewActivity extends AppCompatActivity implements
 //        streetViewPanoramaView.getStreetViewPanoramaAsync(this);
 
         StreetViewPanoramaOptions options = new StreetViewPanoramaOptions();
-        options.position(new LatLng(37.707876, 126.746319));
+        options.position(mSpotLatLng, 100);
+//        options.position(new LatLng(37.707876, 126.746319));
 //        if (savedInstanceState == null) {
 //            if (Spot_id == 0) { // Bulgwang
 //                options.position(new LatLng(37.615945, 126.924795));
@@ -74,7 +77,17 @@ public class SpotStreetViewActivity extends AppCompatActivity implements
      */
     @Override
     public void onStreetViewPanoramaReady(StreetViewPanorama streetViewPanorama) {
-        streetViewPanorama.setPosition(new LatLng(-33.87365, 151.20689));
+//        streetViewPanorama.setPosition(new LatLng(-33.87365, 151.20689));
+//        streetViewPanorama.setPosition(mSpotLatLng);
+        if (streetViewPanorama != null /*&& streetViewPanorama. != null*/) {
+            // location is present
+            streetViewPanorama.setPosition(mSpotLatLng);
+
+        } else {
+            // location not available
+            Toast.makeText(this, "Street View not available for this spot", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
