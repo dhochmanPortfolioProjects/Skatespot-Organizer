@@ -7,6 +7,19 @@
     android:orientation="vertical"
     tools:context=".NewSpotActivity">
 
+    <ImageView
+        android:id="@+id/new_spot_photo_iv"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"/>
+
+    <ImageButton
+        android:id="@+id/new_spot_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_camera_alt_black_24dp" />
+
     <EditText
         android:id="@+id/new_spot_name"
         android:layout_width="match_parent"
@@ -31,16 +44,11 @@
         android:layout_height="wrap_content"
         android:hint="Description" />
 
-    <ImageButton
-        android:id="@+id/new_spot_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_camera_alt_black_24dp" />
-
     <Button
         android:id="@+id/new_spot_create_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="Create new spot" />
 
 </LinearLayout>
