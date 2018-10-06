@@ -6,8 +6,10 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,7 +60,6 @@ public class SpotDetailActivity extends AppCompatActivity
         // Retrieve intent extra
         int id = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
 
-
         // Get the ViewModel
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
         // Set Observer on the LiveData wrapping the current Spot
@@ -97,6 +98,20 @@ public class SpotDetailActivity extends AppCompatActivity
 //                .show();
 
 //        ((TextView) findViewById(R.id.spot_detail_title_tv)).setText("Spot ID number " + id);
+
+        // Setup FAB to open EditSpotActivity
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.spot_edit_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SpotDetailActivity.this, NewSpotActivity.class);
+                intent.putExtra("EDIT_SPOT", mSpot.getId());
+                startActivity(intent);
+//                mCurrentPlayer.createCryptogram(PlayableGamesActivity.this);
+//                Intent intent = new Intent(PlayableGamesActivity.this, CreateGameActivity.class);
+//                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -143,4 +158,5 @@ public class SpotDetailActivity extends AppCompatActivity
 //                .title(mSpot.getName())
 //                .snippet(mSpot.getDescription()));
     }
+
 }
