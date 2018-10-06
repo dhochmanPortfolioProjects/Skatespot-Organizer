@@ -431,18 +431,18 @@ public class MapFragment extends Fragment implements
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-                mSpotList = spots;
+                mSpotList = spots; // Locally cache the SpotList
                 // Update the cached copy of the words in the adapter.
 //                adapter.setWords(words);
-                // Set markers:
+                // Set markers on the map
                 for (Spot spot : spots) {
 //                    googleMap.addMarker(new MarkerOptions()
                     mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
                             .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                             .title(spot.getName())
-//                            .snippet(spot.getDescription()));
-                            .snippet("" + spot.getId()));
+                            .snippet(spot.getDescription()));
+//                            .snippet("" + spot.getId()));
                 }
             }
         });
@@ -451,7 +451,7 @@ public class MapFragment extends Fragment implements
 
 
     /**
-     * Called when the user clicks a marker.
+     * Called when the user clicks a marker (the default appears to be popping the info window).
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
@@ -485,9 +485,18 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-//        LatLng markerPosition = marker.getPosition();
-        int spotId = Integer.parseInt(marker.getSnippet());
-        mListener.onFragmentInteraction(spotId);
+        LatLng markerPosition = marker.getPosition();
+//        int spotId = Integer.parseInt(marker.getSnippet());
+        Spot clickedSpot;
+        // Search the local SpotList for the Spot located at the clicked marker's position
+        for (Spot spot : mSpotList) {
+            if (spot.getLatLng().equals((markerPosition))) {
+                clickedSpot = spot;
+                mListener.onFragmentInteraction(clickedSpot.getId());
+                break;
+//                Toast.makeText(getContext(), "Found spot " + spot.getName(), Toast.LENGTH_LONG).show();
+            }
+        }
 
 //        mListener.onFragmentInteraction(markerPosition);
 //        Toast.makeText(getContext(), latLng.toString(), Toast.LENGTH_LONG).show();

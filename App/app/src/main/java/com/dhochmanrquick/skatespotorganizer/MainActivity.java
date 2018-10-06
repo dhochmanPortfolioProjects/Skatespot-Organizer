@@ -117,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
 //    public void onFragmentInteraction(Uri uri) {
     public void onFragmentInteraction(int spotId) {
-        // not sure if we'll need this interface, but let's keep it for now.
         Intent intent = new Intent(getBaseContext(), SpotDetailActivity.class);
         intent.putExtra("com.dhochmanrquick.skatespotorganizer", spotId);
         startActivity(intent);
