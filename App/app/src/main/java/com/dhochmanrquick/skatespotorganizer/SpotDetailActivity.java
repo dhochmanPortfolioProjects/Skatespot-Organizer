@@ -58,6 +58,7 @@ public class SpotDetailActivity extends AppCompatActivity
         // Retrieve intent extra
         int id = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
 
+
         // Get the ViewModel
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
         // Set Observer on the LiveData wrapping the current Spot

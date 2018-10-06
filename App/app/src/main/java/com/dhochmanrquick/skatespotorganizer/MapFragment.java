@@ -41,7 +41,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -55,7 +54,7 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         /*GoogleMap.OnPoiClickListener,*/
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     /**
      * Request code for location permission request.
@@ -202,35 +201,10 @@ public class MapFragment extends Fragment implements
         });
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
+     * This interface must be implemented by activities that contain this fragment to allow an
+     * interaction in this fragment to be communicated to the activity and potentially other
+     * fragments contained in that activity.
      * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
@@ -238,8 +212,59 @@ public class MapFragment extends Fragment implements
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
 
+        /**
+         * This interface's single method. The hosting Activity must implement this interface and
+         * provide an implementation of this method so that this Fragment can communicate with the
+         * Activity.
+         *
+         * @param spotId
+         */
+//        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(int spotId);
+//        void onFragmentInteraction(LatLng spotPosition);
+
+    }
+
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+//    }
+
+    /**
+     * This method is called when a fragment is attached to an activity, whether it was retained or not.
+     * Remember, Activity is a subclass of Context, so onAttach passes a Context as a parameter,
+     * which is more flexible. Ensure that you use the onAttach(Context) signature for onAttach and
+     * not the deprecated onAttach(Activity) method, which may be removed in future versions of the API.
+     *
+     * @param context   The hosting Activity (Activity is a subclass of Context)
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // If the hosting Activity has implemented the OnFragmentInteractionListener interface, then
+        // it must provide an implementation of its single method onFragmentInteraction(), which will be
+        // called by this Fragment in order to communicate with its hosting Activity.
+        if (context instanceof OnFragmentInteractionListener) {
+            // You can access the interface methods on the class by casting it to the interface
+            mListener = (OnFragmentInteractionListener) context; // We can now call the interface method on mListener
+        } else { // The hosting Activity does not implement the interface
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    /**
+     * The waning Fragment lifecycle method which corresponds to onAttach().
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        // Set the variable to null here because afterward you cannot access the activity or count
+        // on the activity continuing existing
+        mListener = null;
     }
 
     /**
@@ -322,6 +347,7 @@ public class MapFragment extends Fragment implements
 
         // Set a listener for marker click.
         googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnInfoWindowClickListener(this);
 
         // Create dummy spots
 //        Spot bulgwangLedge_Spot = new Spot(
@@ -415,7 +441,8 @@ public class MapFragment extends Fragment implements
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
                             .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                             .title(spot.getName())
-                            .snippet(spot.getDescription()));
+//                            .snippet(spot.getDescription()));
+                            .snippet("" + spot.getId()));
                 }
             }
         });
@@ -428,6 +455,7 @@ public class MapFragment extends Fragment implements
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
+
 
 //        Intent spot_Intent = new Intent(this, NewSpotActivity.class);
 //        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
@@ -454,6 +482,18 @@ public class MapFragment extends Fragment implements
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
     }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+//        LatLng markerPosition = marker.getPosition();
+        int spotId = Integer.parseInt(marker.getSnippet());
+        mListener.onFragmentInteraction(spotId);
+
+//        mListener.onFragmentInteraction(markerPosition);
+//        Toast.makeText(getContext(), latLng.toString(), Toast.LENGTH_LONG).show();
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

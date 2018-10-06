@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -114,9 +115,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+//    public void onFragmentInteraction(Uri uri) {
+    public void onFragmentInteraction(int spotId) {
+        // not sure if we'll need this interface, but let's keep it for now.
+        Intent intent = new Intent(getBaseContext(), SpotDetailActivity.class);
+        intent.putExtra("com.dhochmanrquick.skatespotorganizer", spotId);
+        startActivity(intent);
+    }
+
+//    public void onFragmentInteraction(LatLng spotPosition) {
+//        Intent intent = new Intent(getBaseContext(), SpotDetailActivity.class);
+//        intent.putExtra("com.dhochmanrquick.skatespotorganizer", spotPosition);
+//        startActivity(intent);
+//        // not sure if we'll need this interface, but let's keep it for now.
+//    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
+//    public void onFragmentInteraction(int spotId) {
         // not sure if we'll need this interface, but let's keep it for now.
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
