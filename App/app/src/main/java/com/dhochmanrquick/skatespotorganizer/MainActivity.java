@@ -1,14 +1,11 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.app.SearchManager;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,10 +18,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
-import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
@@ -107,6 +100,24 @@ public class MainActivity extends AppCompatActivity implements
 //                adapter.setWords(words);
 //            }
 //        });
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+//            doMySearch(query);
+            Toast.makeText(this, "Querying for " + query, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+//        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+//            doMySearch(query);
+            Toast.makeText(this, "Querying for " + query, Toast.LENGTH_LONG).show();
+        }
+//        handleIntent(intent);
     }
 
     /**
@@ -155,14 +166,18 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_catalog.xml file.
         // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.overflow, menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
 
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        // Assumes current activity is the searchable activity
+        // The call to getSearchableInfo() obtains a SearchableInfo object that is created from the
+        // searchable configuration XML file. When the searchable configuration is correctly associated
+        // with your SearchView, the SearchView starts an activity with the ACTION_SEARCH intent when
+        // a user submits a query. Assumes current activity is the searchable activity.
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setSubmitButtonEnabled(true);
 
         return true;
     }
