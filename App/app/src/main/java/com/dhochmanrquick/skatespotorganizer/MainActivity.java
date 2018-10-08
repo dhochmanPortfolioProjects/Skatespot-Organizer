@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements
 //    private SpotViewModel mSpotViewModel;
 
     private FragmentManager mFragmentManager;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mActionBarDrawerToggle;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -71,6 +75,14 @@ public class MainActivity extends AppCompatActivity implements
                 .replace(R.id.fragment_container, MapFragment.newInstance())
                 .commit();
 
+        // Get DrawerLayout widget nested inside activity_main.xml
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
+        mActionBarDrawerToggle.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Display back/up button in action bar
 
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
@@ -144,8 +156,18 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
+    /**
+     * Called when any item from the action bar is clicked.
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(mActionBarDrawerToggle.onOptionsItemSelected(item))
+            return true;
+
         switch (item.getItemId()) {
             case R.id.create_new_spot_menu:
                 Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
@@ -154,4 +176,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }
