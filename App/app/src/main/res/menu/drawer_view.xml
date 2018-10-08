@@ -2,11 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:title="Settings"/>
-        <item
             android:id="@+id/nav_gallery"
-            android:title="Search" />
+            android:title="Search"
+            />
 
     </group>
 </menu>
