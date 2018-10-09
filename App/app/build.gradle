@@ -48,6 +48,7 @@ dependencies {
 
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
-    implementation 'com.android.support:design:27.1.1' // For sidebar navigation
+    implementation 'com.android.support:design:27.1.1'
+
 
 }

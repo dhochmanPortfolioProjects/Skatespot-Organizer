@@ -1,43 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapFragment">
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/partial_map_fragment" />
 
-        <RelativeLayout
+        <EditText
+            android:id="@+id/spot_search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Search by spot name or area"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/spot_search_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="80dp"
-                android:hint="Search by spot name or area"/>
-
-            <ImageButton
-                android:id="@+id/search_ic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_search_black_24dp" />
-
-        </RelativeLayout>
+        <ImageButton
+            android:id="@+id/search_ic"
+            android:layout_width="41dp"
+            android:layout_height="38dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_search_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/spot_search_bar"
+            app:layout_constraintEnd_toEndOf="@+id/spot_search_bar"
+            app:layout_constraintTop_toTopOf="@+id/spot_search_bar"
+            app:layout_constraintVertical_bias="0.0" />
 
 
         <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"-->
@@ -53,15 +51,18 @@
         <!--tools:context=".MainActivity"-->
         <!--/>-->
 
-        <com.google.android.gms.maps.MapView
-            xmlns:map="http://schemas.android.com/apk/res-auto"
+        <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.0"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/spot_search_bar"
             map:uiCompass="true"
-            map:uiZoomControls="true"
-            />
+            map:uiZoomControls="false" />
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
