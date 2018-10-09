@@ -19,9 +19,9 @@
 
         <!--<meta-data android:name="android.app.searchable"-->
             <!--android:resource="@xml/searchable"/>-->
-    <!--If you want every activity in your application to provide the search dialog, insert the above
+    <!--If you want every activity in your application to provide the handleSearchQuery dialog, insert the above
     <meta-data> element as a child of the <application> element, instead of each <activity>.
-    This way, every activity inherits the value, provides the search dialog, and delivers searches
+    This way, every activity inherits the value, provides the handleSearchQuery dialog, and delivers searches
     to the same searchable activity.-->
 
         <activity android:name=".MainActivity"
@@ -43,7 +43,7 @@
             <!-- this is the searchable activity; it performs searches -->
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
-            <!-- enable the search dialog to send searches to SearchableActivity -->
+            <!-- enable the handleSearchQuery dialog to send searches to SearchableActivity -->
             <!--<meta-data android:name="android.app.default_searchable"-->
                 <!--android:value=".SearchableActivity" />-->
         </activity>

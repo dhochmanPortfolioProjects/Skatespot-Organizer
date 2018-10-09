@@ -13,10 +13,10 @@ public class SearchableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_searchable);
 
-        // When a user executes a search from the search dialog or widget, the system starts your
-        // searchable activity and sends it a ACTION_SEARCH intent. This intent carries the search
+        // When a user executes a handleSearchQuery from the handleSearchQuery dialog or widget, the system starts your
+        // searchable activity and sends it a ACTION_SEARCH intent. This intent carries the handleSearchQuery
         // query in the QUERY string extra. You must check for this intent when the activity starts
-        // and extract the string. For example, here's how you can get the search query when your
+        // and extract the string. For example, here's how you can get the handleSearchQuery query when your
         // searchable activity starts:
 
         // Get the intent, verify the action and get the query

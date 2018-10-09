@@ -127,7 +127,7 @@ public class MapFragment extends Fragment implements
 
         super.onViewCreated(view, savedInstanceState);
 
-        // Set OnClickListener for the search button: Get text from EditText, query the ViewModel
+        // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
         // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
         ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,47 +137,47 @@ public class MapFragment extends Fragment implements
                 String searchString = searchString_EditText.getText().toString();
 //                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
 
-                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
-                    @Override
-                    public void onChanged(@Nullable Spot spot) {
-//                        mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                .title(spot.getName())
-//                                .snippet(spot.getDescription()));
-                        if (spot != null) {
-//                            mMap.clear();
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
-
-                            // Adding the circle to the GoogleMap
-                            Circle circle = mMap.addCircle(new CircleOptions()
-                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                                    .radius(10)
-                                    .strokeColor(Color.BLACK) // Border color of the circle
-                                    // Fill color of the circle.
-                                    // 0x represents, this is an hexadecimal code
-                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
-                                    // For 0% transparency ( ie, opaque ) , specify ff
-                                    // The remaining 6 characters(00ff00) specify the fill color
-                                    .fillColor(0x8800ff00)
-                                    // Border width of the circle
-                                    .strokeWidth(2)); // Todo: Make this transparent blue?
-
-                            // To change the position of the camera, you must specify where you want
-                            // to move the camera, using a CameraUpdate. The Maps API allows you to
-                            // create many different types of CameraUpdate using CameraUpdateFactory.
-                            // Animate the move of the camera position to spot's coordinates and zoom in
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
-                                    2000, null);
-                        } else {
-                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+//                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
+//                    @Override
+//                    public void onChanged(@Nullable Spot spot) {
+////                        mMap.addMarker(new MarkerOptions()
+//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+////                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+////                                .title(spot.getName())
+////                                .snippet(spot.getDescription()));
+//                        if (spot != null) {
+////                            mMap.clear();
+////                            mMap.addMarker(new MarkerOptions()
+//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+////                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+////                                    .title(spot.getName())
+////                                    .snippet(spot.getDescription()));
+//
+//                            // Adding the circle to the GoogleMap
+//                            Circle circle = mMap.addCircle(new CircleOptions()
+//                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .radius(10)
+//                                    .strokeColor(Color.BLACK) // Border color of the circle
+//                                    // Fill color of the circle.
+//                                    // 0x represents, this is an hexadecimal code
+//                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
+//                                    // For 0% transparency ( ie, opaque ) , specify ff
+//                                    // The remaining 6 characters(00ff00) specify the fill color
+//                                    .fillColor(0x8800ff00)
+//                                    // Border width of the circle
+//                                    .strokeWidth(2)); // Todo: Make this transparent blue?
+//
+//                            // To change the position of the camera, you must specify where you want
+//                            // to move the camera, using a CameraUpdate. The Maps API allows you to
+//                            // create many different types of CameraUpdate using CameraUpdateFactory.
+//                            // Animate the move of the camera position to spot's coordinates and zoom in
+//                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
+//                                    2000, null);
+//                        } else {
+//                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
 
                 // An observer for the LiveData returned by getAllWords().
                 // The onChanged() method fires when the observed data changes and the activity is in the foreground.
@@ -239,7 +239,7 @@ public class MapFragment extends Fragment implements
      * which is more flexible. Ensure that you use the onAttach(Context) signature for onAttach and
      * not the deprecated onAttach(Activity) method, which may be removed in future versions of the API.
      *
-     * @param context   The hosting Activity (Activity is a subclass of Context)
+     * @param context The hosting Activity (Activity is a subclass of Context)
      */
     @Override
     public void onAttach(Context context) {
@@ -503,7 +503,6 @@ public class MapFragment extends Fragment implements
     }
 
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -539,5 +538,57 @@ public class MapFragment extends Fragment implements
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    /**
+     * A method to respond to the action of a user submitting a search via the app bar. MainActivity
+     * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the MapFragment
+     * is the currently loaded fragment, passing in the search String that the user queried for.
+     *
+     * @param query     The search String that the user queried for
+     */
+    public void handleSearchQuery(String query) {
+//        Toast.makeText(getContext(), "Querying for " + query, Toast.LENGTH_LONG).show();
+        mSpotViewModel.getSpot(query).observe(getActivity(), new Observer<Spot>() {
+            @Override
+            public void onChanged(@Nullable Spot spot) {
+//                        mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                .title(spot.getName())
+//                                .snippet(spot.getDescription()));
+                if (spot != null) {
+//                            mMap.clear();
+//                            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
+
+                    // Adding the circle to the GoogleMap
+                    Circle circle = mMap.addCircle(new CircleOptions()
+                            .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                            .radius(10)
+                            .strokeColor(Color.BLACK) // Border color of the circle
+                            // Fill color of the circle.
+                            // 0x represents, this is an hexadecimal code
+                            // 55 represents percentage of transparency. For 100% transparency, specify 00.
+                            // For 0% transparency ( ie, opaque ) , specify ff
+                            // The remaining 6 characters(00ff00) specify the fill color
+                            .fillColor(0x8800ff00)
+                            // Border width of the circle
+                            .strokeWidth(2)); // Todo: Make this transparent blue?
+
+                    // To change the position of the camera, you must specify where you want
+                    // to move the camera, using a CameraUpdate. The Maps API allows you to
+                    // create many different types of CameraUpdate using CameraUpdateFactory.
+                    // Animate the move of the camera position to spot's coordinates and zoom in
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
+                            2000, null);
+                } else {
+                    Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }

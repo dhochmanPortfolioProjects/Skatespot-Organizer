@@ -29,27 +29,31 @@ public class MainActivity extends AppCompatActivity implements
     private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private Fragment mCurrentFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
+//            Fragment selectedFragment = null;
+            // Match and start fragment which corresponds to bottom navigation touch event
             switch (item.getItemId()) {
                 case R.id.bottom_navigation_map:
-                    selectedFragment = MapFragment.newInstance();
+                    // Todo: Is a new Fragment created every time? Are the old Fragments properly destroyed?
+                    mCurrentFragment = MapFragment.newInstance();
                     break;
                 case R.id.bottom_navigation_list:
-                    selectedFragment = SpotMasterFragment.newInstance(1);
+                    mCurrentFragment = SpotMasterFragment.newInstance(1);
                     break;
                 case R.id.navigation_notifications:
-                    selectedFragment = RatedSpotsFragment.newInstance();
+                    mCurrentFragment = RatedSpotsFragment.newInstance();
                     break;
             }
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, selectedFragment)
-                    .commit();
+            if (mCurrentFragment != null) { // Sanity check
+                mFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, mCurrentFragment)
+                        .commit();
+            }
             return true;
         }
     };
@@ -108,14 +112,45 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * If the current activity is not the searchable activity, then the normal activity lifecycle
+     * events are triggered once the user executes a handleSearchQuery (the current activity receives onPause()
+     * and so forth, as described in the Activities document). If, however, the current activity is
+     * the searchable activity, then one of two things happens:
+     *
+     * 1). By default, the searchable activity receives the ACTION_SEARCH intent with a call to
+     * onCreate() and a new instance of the activity is brought to the top of the activity stack.
+     * There are now two instances of your searchable activity in the activity stack (so pressing
+     * the Back button goes back to the previous instance of the searchable activity, rather than
+     * exiting the searchable activity).
+     *
+     * 2). If you set android:launchMode to "singleTop", then the searchable activity receives the
+     * ACTION_SEARCH intent with a call to onNewIntent(Intent), passing the new ACTION_SEARCH intent here.
+     *
+     * Case 2 applies to our app; this activity is declared as the Searchable Activity and set to
+     * launch in singleTop mode.
+     *
+     * @param intent    The Intent that triggered this activity to be relaunched in singleTop mode.
+     *                  Generally, this should be the ACTION_SEARCH Intent.
+     */
     @Override
     protected void onNewIntent(Intent intent) {
-
-//        Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
+
+//            switch (mCurrentFragment instanceof ) {
+//                case
+//            }
+//            if (mFragmentManager.findFragmentById(R.id.fragment_container) == mCurrentFragment) {
+//
+//            }
 //            doMySearch(query);
-            Toast.makeText(this, "Querying for " + query, Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "Querying for " + query, Toast.LENGTH_LONG).show();
+            if (mCurrentFragment instanceof MapFragment) {
+                ((MapFragment) mCurrentFragment).handleSearchQuery(query);
+            } else if (mCurrentFragment instanceof SpotMasterFragment) {
+                Toast.makeText(this, "Displaying query results for " + query, Toast.LENGTH_LONG).show();
+            }
         }
 //        handleIntent(intent);
     }
