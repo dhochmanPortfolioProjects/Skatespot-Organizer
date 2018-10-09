@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragment = RatedSpotsFragment.newInstance();
                     break;
             }
-            if (mCurrentFragment != null) { // Sanity check
+            // Sanity check; this should never be null because there should always be a fragment loaded
+            if (mCurrentFragment != null) {
                 mFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, mCurrentFragment)
                         .commit();

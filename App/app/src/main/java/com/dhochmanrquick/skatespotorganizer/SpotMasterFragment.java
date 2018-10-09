@@ -136,4 +136,15 @@ public class SpotMasterFragment extends Fragment {
         // TODO: Update argument type and name
         void onListFragmentInteraction(Spot item);
     }
+
+    /**
+     * A method to respond to the action of a user submitting a search via the app bar. MainActivity
+     * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the SpotMasterFragment
+     * is the currently loaded fragment, passing in the search String that the user queried for.
+     *
+     * @param query     The search String that the user queried for
+     */
+    public void handleSearchQuery(String query) {
+
+    }
 }

@@ -11,33 +11,33 @@
         android:orientation="vertical">
 
         <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/partial_map_fragment" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/partial_map_fragment" />-->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp">-->
 
-            <EditText
-                android:id="@+id/spot_search_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="80dp"
-                android:hint="Search by spot name or area"/>
+            <!--<EditText-->
+                <!--android:id="@+id/spot_search_bar"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginRight="80dp"-->
+                <!--android:hint="Search by spot name or area"/>-->
 
-            <ImageButton
-                android:id="@+id/search_ic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_search_black_24dp" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/search_ic"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:src="@drawable/ic_search_black_24dp" />-->
 
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
 
 
         <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"-->

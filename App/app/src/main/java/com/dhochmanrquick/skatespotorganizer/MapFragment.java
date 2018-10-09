@@ -129,12 +129,12 @@ public class MapFragment extends Fragment implements
 
         // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
         // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
-        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
-                String searchString = searchString_EditText.getText().toString();
+//        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
+//                String searchString = searchString_EditText.getText().toString();
 //                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
 
 //                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
@@ -197,8 +197,8 @@ public class MapFragment extends Fragment implements
 //                        }
 //                    }
 //                });
-            }
-        });
+//            }
+//        });
     }
 
     /**
