@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -92,6 +93,8 @@ public class MapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -447,6 +450,15 @@ public class MapFragment extends Fragment implements
             }
         });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
+        Location locationCt;
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        locationCt = locationManager
+                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        LatLng latLng = new LatLng(locationCt.getLatitude(),
+                locationCt.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
 
