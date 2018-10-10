@@ -202,6 +202,8 @@ public class MapFragment extends Fragment implements
 //                });
             }
         });
+
+
     }
 
     /**
@@ -323,10 +325,23 @@ public class MapFragment extends Fragment implements
                 // Access to the location has been granted to the app.
                 mMap.setMyLocationEnabled(true);
                 Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
+
             } else {
                 // Permission was denied. Display an error message.
                 Toast.makeText(getContext(), "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
             }
+        }
+
+        if (mMap.isMyLocationEnabled()) {
+            Location locationCt;
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            locationCt = locationManager
+                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            LatLng latLng = new LatLng(locationCt.getLatitude(),
+                    locationCt.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
 
         mMap.setOnMyLocationButtonClickListener(this);
@@ -450,15 +465,9 @@ public class MapFragment extends Fragment implements
             }
         });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
-        Location locationCt;
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        locationCt = locationManager
-                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        LatLng latLng = new LatLng(locationCt.getLatitude(),
-                locationCt.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
     }
 
 

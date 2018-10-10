@@ -41,12 +41,25 @@
         android:layout_height="match_parent">
 
     <!-- Layout to contain contents of main body of screen (drawer will slide over this) -->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_spot_fab"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:elevation="6dp"
+            app:layout_constraintBottom_toTopOf="@+id/navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/add_plus_button_24" />
+
         <android.support.design.widget.CoordinatorLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/navigation"
-            app:layout_constraintTop_toTopOf="parent"></android.support.design.widget.CoordinatorLayout>
+            app:layout_constraintTop_toTopOf="parent">
+
+        </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
