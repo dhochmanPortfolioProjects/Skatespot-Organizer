@@ -33,7 +33,7 @@
             map:layout_constraintHorizontal_bias="0.0"
             map:layout_constraintStart_toStartOf="parent"
             map:uiCompass="true"
-            map:uiZoomControls="false" />
+            map:uiZoomControls="true" />
 
     </android.support.constraint.ConstraintLayout>
 

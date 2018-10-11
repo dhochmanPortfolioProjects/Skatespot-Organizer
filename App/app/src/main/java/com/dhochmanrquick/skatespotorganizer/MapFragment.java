@@ -55,7 +55,6 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
-        /*GoogleMap.OnPoiClickListener,*/
         GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     /**
@@ -80,7 +79,23 @@ public class MapFragment extends Fragment implements
     private List<Spot> mSpotList;
     private Context mContext;
     private Activity mActivity;
+    private CameraPosition mCameraPosition;
+    private boolean mLoadFromCurrentLocation = true;
+    private boolean mIsFirstInstantiation = true;
 
+    /**
+     * Default constructor. Every fragment must have an empty constructor, so it can be instantiated
+     * when restoring its activity's state. It is strongly recommended that subclasses do not have
+     * other constructors with parameters, since these constructors will not be called when the fragment
+     * is re-instantiated; instead, arguments can be supplied by the caller with setArguments(Bundle)
+     * and later retrieved by the Fragment with getArguments().
+     * <p>
+     * Applications should generally not implement a constructor. Prefer onAttach(Context) instead.
+     * It is the first place application code can run where the fragment is ready to be used - the
+     * point where the fragment is actually associated with its context. Some applications may also
+     * want to implement onInflate(Activity, AttributeSet, Bundle) to retrieve attributes from a
+     * layout resource, although note this happens when the fragment is attached.
+     */
     public MapFragment() {
         // Required empty public constructor
     }
@@ -98,6 +113,10 @@ public class MapFragment extends Fragment implements
 
     public static MapFragment newInstance(List<Spot> spotList) {
 //        mSpotList = spotList;
+        return new MapFragment();
+    }
+
+    public static MapFragment newInstance(CameraPosition cameraPosition) {
         return new MapFragment();
     }
 
@@ -119,7 +138,6 @@ public class MapFragment extends Fragment implements
         // the ViewModelProviders return the existing ViewModel.
 //        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
         mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
-
         // In the section Share data between fragments of the ViewModel documentation, 2 co-hosted
         // fragments get a shared ViewModel (in onCreate()) and send it getActivity() instead of "this":
         // Notice that both fragments use getActivity() when getting the ViewModelProvider.
@@ -384,131 +402,37 @@ public class MapFragment extends Fragment implements
 //                    Manifest.permission.ACCESS_FINE_LOCATION, true);
             PermissionUtils.requestPermission((MainActivity) mActivity, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
-
-//            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-//                    == PackageManager.PERMISSION_GRANTED) {
-//                // Access to the location has been granted to the app.
-//                mMap.setMyLocationEnabled(true);
-//                Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
-//
-//            } else {
-//                // Permission was denied. Display an error message.
-//                Toast.makeText(getContext(), "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
-//            }
         }
 
-        if (mMap.isMyLocationEnabled()) {
-            Location locationCt;
+        if (mIsFirstInstantiation) {
+            // Update Google Maps to display current location when first loaded
+            if (mMap.isMyLocationEnabled()) {
+//                mLoadFromCurrentLocation = false;
+                mIsFirstInstantiation = false;
+                Location locationCt;
 //            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
-            locationCt = locationManager
-                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+                locationCt = locationManager
+                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-            LatLng latLng = new LatLng(locationCt.getLatitude(),
-                    locationCt.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                LatLng latLng = new LatLng(locationCt.getLatitude(),
+                        locationCt.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            }
+        } else {
+            // Restore CameraPosition from how it was before
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
         }
-
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-
-//        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            // Permission to access the location is missing.
-//            PermissionUtils.requestPermission(getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
-//                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-//        } else if (mMap != null) {
-//            // Access to the location has been granted to the app.
-//            mMap.setMyLocationEnabled(true);
-//        }
 
         // public final void setPadding (int left, int top, int right, int bottom)
         googleMap.setPadding(0, 50, 0, 50);
 
-        // Respond to a user tapping on a POI
-//        mMap.setOnPoiClickListener(this);
-
         // Set a listener for marker click.
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnInfoWindowClickListener(this);
-
-        // Create dummy spots
-//        Spot bulgwangLedge_Spot = new Spot(
-//                "Bulgwang Downledge Spot",
-////                new LatLng(37.61595, 126.92478),
-//                37.61595,
-//                126.92478,
-////                Spot.Type.LEDGE,
-//                "Small marble downledge.");
-//
-//        Spot pajuLedge_Spot = new Spot(
-//                "Paju Ledge Spot",
-////                new LatLng(37.707672, 126.747231),
-//                126.747231,
-//                37.707672,
-////                Spot.Type.LEDGE,
-//                "3 perfect marble ledges in a row. Nice flat ground.");
-
-        // Save spots to the database
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference();
-//
-//        DatabaseReference messagesRef = myRef.child("spots").child("" + bulgwangLedge_Spot.getId());
-//        messagesRef.setValue(bulgwangLedge_Spot);
-
-//        messagesRef = myRef.child("spots").child("" + pajuLedge_Spot.getId());
-//        messagesRef.setValue(pajuLedge_Spot);
-
-        // Read from the database
-//        messagesRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Log.d(/*TAG,*/"", "Value is: " + value);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                Log.w(/*TAG,*/ "", "Failed to read value.", error.toException());
-//            }
-//        });
-
-//        DummyContent dummyContent = DummyContent.get(getActivity());
-//        List<Spot> spots = dummyContent.getSpots();
-//        Spot spot1 = spots.get(0);
-//        Spot spot2 = spots.get(1);
-
-        // Add a marker in Sydney and move the camera
-//        Marker marker1 = googleMap.addMarker(new MarkerOptions()
-//                .position(bulgwangLedge_Spot.getLatLng())
-//                .title(bulgwangLedge_Spot.getName())
-//                .snippet(bulgwangLedge_Spot.getDescription()));
-//        marker1.setTag(0);
-//
-//        Marker marker2 = googleMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(pajuLedge_Spot.getLatitude(), pajuLedge_Spot.getLongitude()))
-//                .title(pajuLedge_Spot.getName())
-//                .snippet(pajuLedge_Spot.getDescription()));
-//        marker2.setTag(1);
-//
-//        Marker marker3 = googleMap.addMarker(new MarkerOptions()
-//                .position(spot1.getLatLng())
-//                .title(spot1.getName())
-//                .snippet(spot1.getDescription()));
-
-//        marker1.showInfoWindow();
-//        marker2.showInfoWindow();
-
-        // Use ViewModelProviders to associate your ViewModel with your UI controller.
-        // When the app first starts, the ViewModelProviders will create the ViewModel.
-        // When the activity is destroyed, for example through a configuration change,
-        // the ViewModel persists. When the activity is re-created,
-        // the ViewModelProviders return the existing ViewModel.
-//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
         // An observer for the LiveData<List<Spot>> returned by getAllSpots().
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
@@ -542,28 +466,6 @@ public class MapFragment extends Fragment implements
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
-
-
-//        Intent spot_Intent = new Intent(this, NewSpotActivity.class);
-//        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
-
-//        spot_Intent.setData(marker.getTag());
-//        spot_Intent.putExtra("Spot", (Integer) (marker.getTag()));
-//        startActivity(spot_Intent);
-
-        // Retrieve the data from the marker.
-//        Integer clickCount = (Integer) marker.getTag();
-
-        // Check if a click count was set, then display the click count.
-//        if (clickCount != null) {
-//            clickCount = clickCount + 1;
-//            marker.setTag(clickCount);
-//            Toast.makeText(getContext(),
-//                    marker.getTitle() +
-//                            " has been clicked " + clickCount + " times.",
-//                    Toast.LENGTH_SHORT).show();
-//        }
-
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
@@ -589,7 +491,6 @@ public class MapFragment extends Fragment implements
 //        mListener.onFragmentInteraction(markerPosition);
 //        Toast.makeText(getContext(), latLng.toString(), Toast.LENGTH_LONG).show();
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -678,6 +579,16 @@ public class MapFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    public CameraPosition getCameraPosition() {
+        return mMap.getCameraPosition();
+    }
+
+    public void setCameraPosition(CameraPosition cameraPosition) {
+        mCameraPosition = cameraPosition;
+//        mLoadFromCurrentLocation = false;
+        mIsFirstInstantiation = false;
     }
 
 //    public void updateUI(List<Spot> spots) {

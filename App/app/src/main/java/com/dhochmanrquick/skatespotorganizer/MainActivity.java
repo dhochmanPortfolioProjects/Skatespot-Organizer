@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.google.android.gms.maps.model.CameraPosition;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int CURRENT_FRAGMENT_LIST = 2;
     private static final int CURRENT_FRAGMENT_RATED = 3;
     private static final String PREVIOUS_FRAGMENT = "PREVIOUS_FRAGMENT";
+    private static final String PREVIOUS_CAMERA_POSITION = "PREVIOUS_CAMERA_POSITION";
 
     private SpotViewModel mSpotViewModel;
     private FragmentManager mFragmentManager;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private FloatingActionButton mFloatingActionButton;
     private Fragment mCurrentFragment;
+    private MapFragment mMapFragment;
     private int mCurrentFragmentType;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -55,7 +58,9 @@ public class MainActivity extends AppCompatActivity implements
             switch (item.getItemId()) {
                 case R.id.bottom_navigation_map:
                     // Todo: Is a new Fragment created every time? Are the old Fragments properly destroyed?
-                    mCurrentFragment = MapFragment.newInstance();
+//                    mCurrentFragment = MapFragment.newInstance();
+                    mCurrentFragment = mMapFragment;
+                    mMapFragment.setCameraPosition(mMapFragment.getCameraPosition());
                     mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
                     break;
                 case R.id.bottom_navigation_list:
@@ -121,15 +126,19 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragment = RatedSpotsFragment.newInstance();
                     mCurrentFragmentType = CURRENT_FRAGMENT_RATED;
                     break;
-                default:
+                default: // case CURRENT_FRAGMENT_MAP
                     mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
-                    mCurrentFragment = MapFragment.newInstance();
+                    mMapFragment = MapFragment.newInstance();
+                    mCurrentFragment = mMapFragment;
+//                    mCurrentFragment.setArguments(PREVIOUS_CAMERA_POSITION, savedInstanceState);
+                    ((MapFragment) mCurrentFragment).setCameraPosition((CameraPosition) savedInstanceState.getParcelable(PREVIOUS_CAMERA_POSITION));
                     break;
             }
-        } else {
+        } else { // Activity is being launched for first time
             // Load MapFragment as starting fragment
             mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
-            mCurrentFragment = MapFragment.newInstance();
+            mMapFragment = MapFragment.newInstance();
+            mCurrentFragment = mMapFragment;
         }
 //        mCurrentFragment = MapFragment.newInstance();
         mFragmentManager = getSupportFragmentManager();
@@ -229,7 +238,17 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current state
-        savedInstanceState.putInt(PREVIOUS_FRAGMENT, mCurrentFragmentType); // Save which fragment type was loaded
+        if (mCurrentFragment instanceof MapFragment) {
+            // Your activity can call methods in the fragment by acquiring a reference to the
+            // Fragment from FragmentManager, using findFragmentById() or findFragmentByTag().
+            savedInstanceState.putInt(PREVIOUS_FRAGMENT, mCurrentFragmentType); // Save which fragment type was loaded
+            // Get and save the MapFragment's current CameraPosition (this is necessary to restore its state)
+            savedInstanceState.putParcelable(PREVIOUS_CAMERA_POSITION, ((MapFragment) mCurrentFragment).getCameraPosition());
+        } else if (mCurrentFragment instanceof SpotMasterFragment) {
+
+        }
+
+
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
