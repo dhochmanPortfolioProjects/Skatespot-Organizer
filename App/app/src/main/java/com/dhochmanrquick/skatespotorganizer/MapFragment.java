@@ -1,6 +1,7 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -69,10 +70,14 @@ public class MapFragment extends Fragment implements
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
     private boolean mPermissionDenied = false;
+    // Will hold a reference to activity's implementation of OnFragmentInteractionListener, so that
+    // this fragment can share events with the activity by calling methods defined by the
+    // OnFragmentInteractionListener interface.
     private OnFragmentInteractionListener mListener;
     private SpotViewModel mSpotViewModel; // The ViewModel (the app's data)
     private GoogleMap mMap;
     private List<Spot> mSpotList;
+    private Context mContext;
 
     public MapFragment() {
         // Required empty public constructor
@@ -89,21 +94,51 @@ public class MapFragment extends Fragment implements
         return new MapFragment();
     }
 
+    public static MapFragment newInstance(List<Spot> spotList) {
+//        mSpotList = spotList;
+        return new MapFragment();
+    }
+
+    /**
+     * The system calls this when creating the fragment. Within your implementation, you should
+     * initialize essential components of the fragment that you want to retain when the fragment
+     * is paused or stopped, then resumed.
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
         // When the activity is destroyed, for example through a configuration change,
         // the ViewModel persists. When the activity is re-created,
         // the ViewModelProviders return the existing ViewModel.
-        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+        mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
+        // In the section Share data between fragments of the ViewModel documentation, 2 co-hosted
+        // fragments get a shared ViewModel (in onCreate()) and send it getActivity() instead of "this":
+        // Notice that both fragments use getActivity() when getting the ViewModelProvider.
+        // As a result, both fragments receive the same SharedViewModel instance, which is scoped to
+        // the activity.
+    }
+
+    /**
+     * The system calls this when it's time for the fragment to draw its user interface for the first
+     * time. To draw a UI for your fragment, you must return a View from this method that is the root
+     * of your fragment's layout. You can return null if the fragment does not provide a UI.
+     *
+     * @param inflater           To return a layout from onCreateView(), you can inflate it from a layout
+     *                           resource defined in XML. To help you do so, onCreateView() provides a
+     *                           LayoutInflater object.
+     * @param container          The parent ViewGroup (from the activity's layout) in which your fragment layout is inserted
+     * @param savedInstanceState A Bundle that provides data about the previous instance of the
+     *                           fragment, if the fragment is being resumed
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         // Retrieve and inflate the content view that renders the map for this fragment
         return inflater.inflate(R.layout.fragment_partial_map, container, false);
@@ -179,8 +214,8 @@ public class MapFragment extends Fragment implements
 //                    }
 //                });
 
-                // An observer for the LiveData returned by getAllWords().
-                // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        // An observer for the LiveData returned by getAllWords().
+        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
 //                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
 //                    @Override
 //                    public void onChanged(@Nullable final List<Spot> spots) {
@@ -199,6 +234,17 @@ public class MapFragment extends Fragment implements
 //                });
 //            }
 //        });
+    }
+
+    /**
+     * The system calls this method as the first indication that the user is leaving the fragment
+     * though it doesn't always mean the fragment is being destroyed). This is usually where you
+     * should commit any changes that should be persisted beyond the current user session (because
+     * the user might not come back).
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     /**
@@ -244,12 +290,22 @@ public class MapFragment extends Fragment implements
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        mContext = context;
         // If the hosting Activity has implemented the OnFragmentInteractionListener interface, then
         // it must provide an implementation of its single method onFragmentInteraction(), which will be
         // called by this Fragment in order to communicate with its hosting Activity.
+        //
+        // To ensure that the host activity implements the OnFragmentInteractionListener interface,
+        // this fragments's onAttach() callback method (which the system calls when adding the fragment
+        // to the activity) instantiates an instance of OnFragmentInteractionListener by casting the
+        // Activity that is passed into onAttach()
         if (context instanceof OnFragmentInteractionListener) {
-            // You can access the interface methods on the class by casting it to the interface
-            mListener = (OnFragmentInteractionListener) context; // We can now call the interface method on mListener
+            // You can access the interface methods on the class by casting it to the interface.
+            // On success, the mListener member holds a reference to activity's implementation of
+            // OnFragmentInteractionListener, so that this fragment can share events with the activity
+            // by calling methods defined by the OnFragmentInteractionListener interface.
+            mListener = (OnFragmentInteractionListener) context; // We can now call the interface method on mListener and do so in onInfoWindowClick()
         } else { // The hosting Activity does not implement the interface
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -303,8 +359,14 @@ public class MapFragment extends Fragment implements
         // Enable the My Location layer on the map
         //mMap.setMyLocationEnabled(true); // Works with pre-API 23 permissions model
 
+        // From Fragment Documentation:
+        // Caution: If you need a Context object within your Fragment, you can call getContext().
+        // However, be careful to call getContext() only when the fragment is attached to an activity.
+        // When the fragment is not yet attached, or was detached during the end of its lifecycle,
+        // getContext() will return null.
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) // Triggers null pointer when fragment is recreated
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
@@ -428,25 +490,28 @@ public class MapFragment extends Fragment implements
 
         // An observer for the LiveData<List<Spot>> returned by getAllSpots().
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-            @Override
-            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-                mSpotList = spots; // Locally cache the SpotList
-                // Update the cached copy of the words in the adapter.
-//                adapter.setWords(words);
-                // Set markers on the map
-                for (Spot spot : spots) {
-//                    googleMap.addMarker(new MarkerOptions()
-                    mMap.addMarker(new MarkerOptions()
-//                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                            .title(spot.getName())
-                            .snippet(spot.getDescription()));
-//                            .snippet("" + spot.getId()));
-                }
-            }
-        });
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
+//                mSpotList = spots; // Locally cache the SpotList
+//                // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//                // Set markers on the map
+//                for (Spot spot : spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//                    mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                            .title(spot.getName())
+//                            .snippet(spot.getDescription()));
+////                            .snippet("" + spot.getId()));
+//                }
+//            }
+//        });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
+//        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
+//        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
+//        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
     }
 
 
@@ -492,6 +557,7 @@ public class MapFragment extends Fragment implements
         for (Spot spot : mSpotList) {
             if (spot.getLatLng().equals((markerPosition))) {
                 clickedSpot = spot;
+                // Send the event and spot ID to the host activity
                 mListener.onFragmentInteraction(clickedSpot.getId());
                 break;
 //                Toast.makeText(getContext(), "Found spot " + spot.getName(), Toast.LENGTH_LONG).show();
@@ -545,7 +611,7 @@ public class MapFragment extends Fragment implements
      * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the MapFragment
      * is the currently loaded fragment, passing in the search String that the user queried for.
      *
-     * @param query     The search String that the user queried for
+     * @param query The search String that the user queried for
      */
     public void handleSearchQuery(String query) {
 //        Toast.makeText(getContext(), "Querying for " + query, Toast.LENGTH_LONG).show();
@@ -591,4 +657,20 @@ public class MapFragment extends Fragment implements
             }
         });
     }
+
+//    public void updateUI(List<Spot> spots) {
+//        mSpotList = spots; // Locally cache the SpotList
+//        // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//        // Set markers on the map
+//        for (Spot spot : spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                    .title(spot.getName())
+//                    .snippet(spot.getDescription()));
+////                            .snippet("" + spot.getId()));
+//        }
+//    }
 }
