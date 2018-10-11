@@ -31,8 +31,7 @@ public class SpotMasterFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-
-    private SpotViewModel mSpotViewModel;
+//    private SpotViewModel mSpotViewModel;
     private SpotMasterRecyclerViewAdapter adapter;
 
     /**
@@ -88,19 +87,19 @@ public class SpotMasterFragment extends Fragment {
         // the ViewModelProviders return the existing ViewModel.
         //
         // This creates the ViewModel and stores it in the local variable mSpotViewModel.
-        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
-
-        // An observer for the LiveData returned by getAllWords().
-        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-        // Whenever the data changes, the onChanged() callback is invoked, which calls the adapter's setWord()
-        // method to update the adapter's cached data and refresh the displayed list.
-        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-            @Override
-            public void onChanged(@Nullable final List<Spot> words) {
-                // Update the cached copy of the words in the adapter.
-                adapter.setWords(words);
-            }
-        });
+//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+//
+//        // An observer for the LiveData returned by getAllWords().
+//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//        // Whenever the data changes, the onChanged() callback is invoked, which calls the adapter's setWord()
+//        // method to update the adapter's cached data and refresh the displayed list.
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable final List<Spot> words) {
+//                // Update the cached copy of the words in the adapter.
+//                adapter.setWords(words);
+//            }
+//        });
 
         return view;
     }
@@ -135,5 +134,21 @@ public class SpotMasterFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(Spot item);
+    }
+
+    /**
+     * A method to respond to the action of a user submitting a search via the app bar. MainActivity
+     * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the SpotMasterFragment
+     * is the currently loaded fragment, passing in the search String that the user queried for.
+     *
+     * @param query     The search String that the user queried for
+     */
+    public void handleSearchQuery(String query) {
+
+    }
+
+    public void updateUI(List<Spot> spots) {
+        // Update the cached copy of the words in the adapter.
+        adapter.setWords(spots);
     }
 }

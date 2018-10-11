@@ -28,11 +28,23 @@ import java.util.List;
  * LiveData automatically manages all of this since it's aware of the relevant lifecycle status
  * changes while observing.
  *
+ * If the ViewModel needs the Application context, for example to find a system service, it can
+ * extend the AndroidViewModel class and have a constructor that receives the Application in the
+ * constructor, since Application class extends Context.
+ *
+ * Caution: A ViewModel must never reference a view, Lifecycle, or any class that may a reference to
+ * the activity context
+ *
+ * A ViewModel is associated with an activity (or some other lifecycle owner) - it stays in memory
+ * during a configuration change and the system automatically associates the ViewModel with the new
+ * activity instance that results from the configuration change. ViewModels are automatically
+ * destroyed by the system when your user backs out of your activity or fragment or if you call
+ * finish(), which means the state will be cleared as the user expects in these scenarios.
+ *
  * @author Daniel Hochman
  * @author Rob Quick
  */
 public class SpotViewModel extends AndroidViewModel {
-
     /**
      * Private member variable to hold a reference to the repository
      */
