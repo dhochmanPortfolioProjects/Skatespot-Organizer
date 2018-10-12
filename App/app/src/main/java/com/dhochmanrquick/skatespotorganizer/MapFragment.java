@@ -396,12 +396,19 @@ public class MapFragment extends Fragment implements
             mMap.setMyLocationEnabled(true);
         } else {
             // Show rationale and request permission.
-            Toast.makeText(mContext, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
+//            Toast.makeText(mContext, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
             // Permission to access the location is missing.
 //            PermissionUtils.requestPermission(((MainActivity) getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
 //                    Manifest.permission.ACCESS_FINE_LOCATION, true);
             PermissionUtils.requestPermission((MainActivity) mActivity, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
+
+            // Todo: I thought a check after requestPermission would be necessary to make changes take effect immediately, but we need to find another solution
+            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                // Access to the location has been granted to the app.
+                mMap.setMyLocationEnabled(true);
+            }
         }
 
         if (mIsFirstInstantiation) {
@@ -428,7 +435,7 @@ public class MapFragment extends Fragment implements
         mMap.setOnMyLocationClickListener(this);
 
         // public final void setPadding (int left, int top, int right, int bottom)
-        googleMap.setPadding(0, 50, 0, 50);
+        googleMap.setPadding(0, 50, 0, 130);
 
         // Set a listener for marker click.
         googleMap.setOnMarkerClickListener(this);
