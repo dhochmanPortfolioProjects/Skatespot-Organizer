@@ -12,3 +12,22 @@ The motivation behind making this app comes from the observation that there is a
 3). Too general: General-purpose apps such as Google Maps aren't tailored (or configurable) enough to skateboarding's unique and specific requirements when it comes to cataloguing spots. While it is possible to place and save makers and information on a via these general-purpose map apps, it is often difficult create collections of spots in a uniform way that would allow a skater to quickly access their saved spots and have the all the spot info they want in a just a click or two. As for other special-purpose spot apps, many of these encompass multiple extreme spots and force these (often quite disparate) communities of users to share the same platform. This is nice if you are indeed a jack of all extreme sports, however, from our personal experience, we've seen that many users are really only interested in one sport, and would at least like to have the option of limiting the app to their sport of interest.
 
 4). Sloppiness: The user experience offered by most of the apps we've seen so far is degraded in part by simple spelling mistakes, awkward user controls, etc. While we understand that it would be impossible to completely satisfy all users in their user experience, we'd like our app to have a clean user interface and be both easy and intuitive to use.
+
+## Enter the Skatespot Organizer app...
+
+The first version of our app will provide four main pieces of functionality:
+
+1). Spot storage: First and foremost, the user must be able to store spots in the app. A spot will consist of a spot name, geographical coordinates, a brief description, and a small number of photos.
+
+2). Spot editing: Likewise, the user will also want to be able to edit (i.e., change name, description, photo, etc.) and delete existing spots.
+
+3). Spot search/retrieval: There will be two channels for a user to search for and retrieve saved spots:
+
+  * Quick search: The search bar at the top of the app allows the user to perform a search based on either spot name or location name (i.e., "Brooklyn Banks", "New York City", "Spain").
+  * Advanced search: Via the sidebar navigation drawer, the user will be able to select Advanced Search to order to further refine the search parameters to consider spot type, radius from a given location, bust factor, and more.
+  
+4). Spot viewing: There are three viewing modes:
+
+  * Map view: When in this viewing mode, the user will see a map displaying either all of their saved spots or the results of their search as highlighted map markers. The map also provides control buttons which allow the user to zoom in/out, zoom into their current location, and open the spot's location in Google Maps (in order to receive directions). Clicking on a marker pops an info window displaying more info about the spot (name, description), and clicking the info window brings the user to the spot's detail view.
+  * List view: This viewing mode allows the user to view either all of their saved spots or the results of their search in scrollable list format. Here, the user can quickly see the name, main photo, and description of the spots. There will also be options to sort the list by various factors such as rating, name, distance, etc. Clicking on a spot list item takes the user to the spot's detail view.
+  * Detail view: When in this viewing mode, the user will be able to see all of the spot's details in unabbreviated form. This will include a gallery of photos, video clips, a description, rating, bust factor, and more.
