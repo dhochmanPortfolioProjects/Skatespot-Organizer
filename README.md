@@ -24,15 +24,19 @@ The first version of our app will provide four main pieces of functionality:
 3). Spot search/retrieval: There will be two channels for a user to search for and retrieve saved spots:
 
   * Quick search: The search bar at the top of the app allows the user to perform a search based on either spot name or location name (i.e., "Brooklyn Banks", "New York City", "Spain").
+  
+  ![MapViewZoomedOut](Documentation/Images/MapViewSearchBar_Screenshot.jpg)
+
   * Advanced search: Via the sidebar navigation drawer, the user will be able to select Advanced Search to order to further refine the search parameters to consider spot type, radius from a given location, bust factor, and more.
   
 4). Spot viewing: There are three viewing modes:
 
-  * Map view:
+  * Map view: When in this viewing mode, the user will see a map displaying either all of their saved spots or the results of their search as highlighted map markers. The map also provides control buttons which allow the user to zoom in/out, zoom into their current location, and open the spot's location in Google Maps (in order to receive directions). Clicking on a marker pops an info window displaying more info about the spot (name, description), and clicking the info window brings the user to the spot's detail view.
   
 ![MapViewZoomedOut](Documentation/Images/MapViewZoomedOut_Screenshot.jpg)
+![MapViewZoomedOut](Documentation/Images/MapViewZoomedIn_Screenshot.jpg)
+![MapViewZoomedOut](Documentation/Images/MapViewInfoWindow_Screenshot.jpg)
+![MapViewZoomedOut](Documentation/Images/MapViewSearchResult_Screenshot.jpg)
 
-When in this viewing mode, the user will see a map displaying either all of their saved spots or the results of their search as highlighted map markers. The map also provides control buttons which allow the user to zoom in/out, zoom into their current location, and open the spot's location in Google Maps (in order to receive directions). Clicking on a marker pops an info window displaying more info about the spot (name, description), and clicking the info window brings the user to the spot's detail view.
-  
   * List view: This viewing mode allows the user to view either all of their saved spots or the results of their search in scrollable list format. Here, the user can quickly see the name, main photo, and description of the spots. There will also be options to sort the list by various factors such as rating, name, distance, etc. Clicking on a spot list item takes the user to the spot's detail view.
   * Detail view: When in this viewing mode, the user will be able to see all of the spot's details in unabbreviated form. This will include a gallery of photos, video clips, a description, rating, bust factor, and more.
