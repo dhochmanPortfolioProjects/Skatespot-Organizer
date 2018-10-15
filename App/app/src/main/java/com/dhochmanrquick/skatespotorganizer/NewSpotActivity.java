@@ -1,18 +1,23 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,6 +30,7 @@ import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Observer;
 
@@ -32,10 +38,15 @@ public class NewSpotActivity extends AppCompatActivity {
 
     private Spot mNewSpot;
     private SpotViewModel mSpotViewModel;
-    private static final int REQUEST_PHOTO = 2;
+//    private static final int REQUEST_PHOTO = 2;
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
     private boolean inEditMode = false;
     private boolean inCurrentLocationMode = false;
+
+    private Uri mImageCaptureUri;
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +172,6 @@ public class NewSpotActivity extends AppCompatActivity {
 //                }
 //
 //                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
-//
                     mSpotViewModel.insert(mNewSpot);
                     finish();
                 }
@@ -173,39 +183,89 @@ public class NewSpotActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Create camera/image capture implicit intent
-                final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                // Determine whether there is a camera app available
-                boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
-                // Create new Spot and populate its fields with text from the EditTexts
-                // Todo: Add data validation
-                mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
-                        new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
-                                Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
-                        ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
-                        /*R.drawable.dangsan_spot_landscape*/ 0);
 
-                File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
 
-                // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
-                Uri uri = FileProvider.getUriForFile(getApplicationContext(),
-                        "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+//                final String [] items			= new String [] {"Take from camera", "Select from gallery"};
+//                ArrayAdapter<String> adapter	= new ArrayAdapter<String> (getBaseContext()/*this*/, android.R.layout.select_dialog_item, items);
+//                AlertDialog.Builder builder		= new AlertDialog.Builder(getBaseContext()/*this*/);
 
-                // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
-                // then camera activity will write the captured image to that path and it will not
-                // return the bitmap in the onActivityResult method.
-                captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+//                builder.setTitle("Select Image").setMessage("Select image from:").setPositiveButton("Camera")
+//                builder.setMessage();
 
-                // Query Package Manager for every activity cameraImage_Intent can resolve to
-                List<ResolveInfo> cameraActivity =
-                        getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
+//                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int item) { //pick from camera
+//                        if (item == 0) {
+//                            Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                            mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+//                                    "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+//
+//                            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+//
+//                            try {
+//                                intent.putExtra("return-data", true);
+//
+//                                startActivityForResult(intent, PICK_FROM_CAMERA);
+//                            } catch (ActivityNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
+//                        } else { //pick from file
+//                            Intent intent = new Intent();
+//
+//                            intent.setType("image/*");
+//                            intent.setAction(Intent.ACTION_GET_CONTENT);
+//
+//                            startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
+//                        }
+//                    }
+//                } );
 
-                // Grant write permission for this Uri to each activity
-                for (ResolveInfo activity : cameraActivity) {
-                    grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
 
-                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
+
+
+//
+//                // Determine whether there is a camera app available
+//                boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
+//                // Create new Spot and populate its fields with text from the EditTexts
+//                // Todo: Add data validation
+//                mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
+//                        new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+//                                Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
+//                        ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
+//                        /*R.drawable.dangsan_spot_landscape*/ 0);
+//
+//                File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
+//
+//                // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
+//                Uri uri = FileProvider.getUriForFile(getApplicationContext(),
+//                        "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+//
+//                // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
+//                // then camera activity will write the captured image to that path and it will not
+//                // return the bitmap in the onActivityResult method.
+//                captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+//
+//                // Query Package Manager for every activity cameraImage_Intent can resolve to
+//                List<ResolveInfo> cameraActivity =
+//                        getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
+//
+//                // Grant write permission for this Uri to each activity
+//                for (ResolveInfo activity : cameraActivity) {
+//                    grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                }
+//
+//                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
+
+
+
 
 //                mSpotViewModel.insert(mNewSpot);
 
@@ -225,6 +285,61 @@ public class NewSpotActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 //        super.onActivityResult(requestCode, resultCode, intent);
+        // if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
+        if (resultCode != RESULT_OK) return;
+        File filesDir = getFilesDir(); // Get handle to directory for private application files
+        File photoFile;
+        Bitmap bitmap;
+
+        switch (requestCode) {
+//            case REQUEST_PHOTO:
+            case PICK_FROM_CAMERA:
+//                doCrop();
+                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
+                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                break;
+            case PICK_FROM_FILE:
+                mImageCaptureUri = intent.getData();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                    // Log.d(TAG, String.valueOf(bitmap));
+
+                    ImageView imageView = (ImageView) findViewById(R.id.new_spot_photo_iv);
+                    imageView.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+//                filesDir = getFilesDir(); // Get handle to directory for private application files
+//                photoFile = new File(filesDir, mImageCaptureUri.getPath()); // Create new File in the directory
+//                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+//                doCrop();
+                break;
+
+            case CROP_FROM_CAMERA:
+                Bundle extras = intent.getExtras();
+
+                if (extras != null) {
+                    Bitmap photo = extras.getParcelable("data");
+
+//                    mImageView.setImageBitmap(photo);
+                }
+
+                File f = new File(mImageCaptureUri.getPath());
+
+                if (f.exists()) f.delete();
+
+                break;
+
+        }
+
+
+
+
 
 //        switch (requestCode) {
 //            case REQUEST_PHOTO:
@@ -243,11 +358,7 @@ public class NewSpotActivity extends AppCompatActivity {
 ////                    mImageView.setImageBitmap(imageBitmap);
 ////                break;
 //        }
-        File filesDir = getFilesDir(); // Get handle to directory for private application files
-        File photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
-        Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
-//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+
 
 
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
