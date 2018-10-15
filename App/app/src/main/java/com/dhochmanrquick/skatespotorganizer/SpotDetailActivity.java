@@ -71,8 +71,8 @@ public class SpotDetailActivity extends AppCompatActivity
                 ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
                 ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
                 File filesDir = getFilesDir(); // Get handle to directory for private application files
-                File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
-                Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
+                Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
                 ((ImageView) findViewById(R.id.spot_detail_image_iv)).setImageBitmap(bitmap);
 

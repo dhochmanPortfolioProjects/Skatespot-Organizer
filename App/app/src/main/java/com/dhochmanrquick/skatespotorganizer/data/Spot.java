@@ -415,8 +415,8 @@ public class Spot {
      *
      * @return  The filename of the photo of this Spot
      */
-    public String getPhotoFilename() {
-        return "IMG_" + getName() + ".jpg";
+    public String generateNextPhotoFileSuffix() {
+        return "IMG_" + getName() + ++mPhotoCount + ".jpg";
     }
 
     public void incrementPhotoCount(){

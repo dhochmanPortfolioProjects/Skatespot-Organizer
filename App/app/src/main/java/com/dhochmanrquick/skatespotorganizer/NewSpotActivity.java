@@ -30,7 +30,12 @@ import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Observer;
@@ -140,7 +145,8 @@ public class NewSpotActivity extends AppCompatActivity {
                     ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + spot.getLongitude());
                     ((EditText) findViewById(R.id.new_spot_description)).setText(spot.getDescription());
                     File filesDir = getFilesDir(); // Get handle to directory for private application files
-                    File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
+//                    File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
+                    File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
                     Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
                     ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
@@ -249,8 +255,34 @@ public class NewSpotActivity extends AppCompatActivity {
                                     Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
                             ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
                             /*R.drawable.dangsan_spot_landscape*/ 0);
+                    File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
+                    // Copy mTempFile to spotPhotoFile
+//                    Files.copy(mTempFile.toPath(), spotPhotoFile.toPath());
+                    InputStream is = null;
+                    OutputStream os = null;
+                    try {
+                        is = new FileInputStream(mTempFile);
+                        os = new FileOutputStream(spotPhotoFile);
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = is.read(buffer)) > 0) {
+                            os.write(buffer, 0, length);
+                        }
+                        is.close();
+                        os.close();
+                    }
+                        catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                        finally {
+//                        is.close();
+//                        os.close();
+                    }
+                    mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
 
-                    mNewSpot.setPhotoFilepath1(mTempFile.getPath());
 
                     mSpotViewModel.insert(mNewSpot);
                     finish();
