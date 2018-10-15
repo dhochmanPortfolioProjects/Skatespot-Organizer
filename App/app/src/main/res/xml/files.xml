@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <files-path name="spot_photos" path="." />
+    <cache-path
+        name="spot_cache_photos"
+        path="."/>
 
 </paths>

@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Observer;
 
@@ -42,6 +43,7 @@ public class NewSpotActivity extends AppCompatActivity {
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
     private boolean inEditMode = false;
     private boolean inCurrentLocationMode = false;
+    private File mTempFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
 
     private Uri mImageCaptureUri;
     private static final int PICK_FROM_CAMERA = 1;
@@ -52,6 +54,13 @@ public class NewSpotActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_spot);
+
+        try {
+            mTempFile = mTempFile.createTempFile("temp", "file");
+            mTempFile.deleteOnExit();
+        } catch (IOException e) {
+            Toast.makeText(this, "Error creating temp file.", Toast.LENGTH_LONG).show();
+        }
 
         // Configure image source selection AlertDialog
         final String[] items = new String[]{"Take from camera", "Select from gallery"};
@@ -65,16 +74,9 @@ public class NewSpotActivity extends AppCompatActivity {
                     final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     // Determine whether there is a camera app available
                     boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
-                    // Create new Spot and populate its fields with text from the EditTexts
-                    // Todo: Add data validation
-                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
-                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
-                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
-                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
-                            /*R.drawable.dangsan_spot_landscape*/ 0);
 
-                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
-
+//                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
+                    File mPhotoFile = mTempFile;
                     // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(),
                             "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
@@ -240,6 +242,16 @@ public class NewSpotActivity extends AppCompatActivity {
 //                }
 //
 //                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
+                    // Create new Spot and populate its fields with text from the EditTexts
+                    // Todo: Add data validation
+                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
+                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
+                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
+                            /*R.drawable.dangsan_spot_landscape*/ 0);
+
+                    mNewSpot.setPhotoFilepath1(mTempFile.getPath());
+
                     mSpotViewModel.insert(mNewSpot);
                     finish();
                 }
@@ -359,8 +371,9 @@ public class NewSpotActivity extends AppCompatActivity {
 //            case REQUEST_PHOTO:
             case PICK_FROM_CAMERA:
 //                doCrop();
-                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
-                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
+//                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+                bitmap = PictureUtils.getScaledBitmap(mTempFile.getPath(), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
                 ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
                 break;
