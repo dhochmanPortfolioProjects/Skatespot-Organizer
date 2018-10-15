@@ -98,6 +98,26 @@ public class Spot {
 
 //    private ImageView mPhotoView;
 
+    // Member variables for a Spot's photo files
+    @ColumnInfo(name = "photo_count")
+    private int mPhotoCount = 0;
+
+    @ColumnInfo(name = "photo_filepath_1")
+    private String mPhotoFilepath1;
+
+    @ColumnInfo(name = "photo_filepath_2")
+    private String mPhotoFilepath2;
+
+    @ColumnInfo(name = "photo_filepath_3")
+    private String mPhotoFilepath3;
+
+    @ColumnInfo(name = "photo_filepath_4")
+    private String mPhotoFilepath4;
+
+    @ColumnInfo(name = "photo_filepath_5")
+    private String mPhotoFilepath5;
+
+
     /* END Fields *********************************************************************************/
 
 
@@ -237,6 +257,41 @@ public class Spot {
         return mImageID;
     }
 
+    public int getPhotoCount() {
+        return mPhotoCount;
+    }
+
+    public String getPhotoFilepath1() {
+        return mPhotoFilepath1;
+    }
+
+    public String getPhotoFilepath2() {
+        return mPhotoFilepath2;
+    }
+
+    public String getPhotoFilepath3() {
+        return mPhotoFilepath3;
+    }
+
+    public String getPhotoFilepath4() {
+        return mPhotoFilepath4;
+    }
+
+    public String getPhotoFilepath5() {
+        return mPhotoFilepath5;
+    }
+
+    public String getPhotoFilepath(int photoNumber) {
+        switch (photoNumber) {
+            case 1: return mPhotoFilepath1;
+            case 2: return mPhotoFilepath2;
+            case 3: return mPhotoFilepath3;
+            case 4: return mPhotoFilepath4;
+            case 5: return mPhotoFilepath5;
+        }
+        return null;
+    }
+
     /* END Getter methods *************************************************************************/
 
 
@@ -314,6 +369,44 @@ public class Spot {
         mImageID = imageID;
     }
 
+    public void setPhotoCount(int photoCount) {
+        mPhotoCount = photoCount;
+    }
+
+    public void setPhotoFilepath1(String photoFilepath1) {
+        mPhotoFilepath1 = photoFilepath1;
+    }
+
+    public void setPhotoFilepath2(String photoFilepath2) {
+        mPhotoFilepath2 = photoFilepath2;
+    }
+
+    public void setPhotoFilepath3(String photoFilepath3) {
+        mPhotoFilepath3 = photoFilepath3;
+    }
+
+    public void setPhotoFilepath4(String photoFilepath4) {
+        mPhotoFilepath4 = photoFilepath4;
+    }
+
+    public void setPhotoFilepath5(String photoFilepath5) {
+        mPhotoFilepath5 = photoFilepath5;
+    }
+
+    public void setPhotoFilepath(String photoFilepath, int photoNumber) {
+        switch (photoNumber) {
+            case 1: mPhotoFilepath1 = photoFilepath;
+            break;
+            case 2: mPhotoFilepath2 = photoFilepath;
+                break;
+            case 3: mPhotoFilepath3 = photoFilepath;
+                break;
+            case 4: mPhotoFilepath4 = photoFilepath;
+                break;
+            case 5: mPhotoFilepath5 = photoFilepath;
+                break;
+        }
+    }
     /* END Setter methods *************************************************************************/
 
     /**
@@ -324,5 +417,13 @@ public class Spot {
      */
     public String getPhotoFilename() {
         return "IMG_" + getName() + ".jpg";
+    }
+
+    public void incrementPhotoCount(){
+        mPhotoCount++;
+    }
+
+    public void decrementPhotoCount(){
+        mPhotoCount--;
     }
 }
