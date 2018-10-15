@@ -2,6 +2,7 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -255,37 +257,78 @@ public class NewSpotActivity extends AppCompatActivity {
                                     Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
                             ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
                             /*R.drawable.dangsan_spot_landscape*/ 0);
-                    File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
-                    // Copy mTempFile to spotPhotoFile
+
+                    if (mImageCaptureUri != null) {
+                        InputStream inputStream = null;
+                        OutputStream outputStream = null;
+                        File spotPhotoFile;
+                        try {
+                            ContentResolver content = getContentResolver();
+                            inputStream = content.openInputStream(mImageCaptureUri);
+
+                            File root = Environment.getExternalStorageDirectory();
+                            if (root == null) {
+//                                Log.d(TAG, "Failed to get root");
+                            }
+
+                            // create a directory
+//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+                            // create direcotory if it doesn't exists
+                            spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
+//                            saveDirectory.mkdirs();
+
+                            outputStream = new FileOutputStream(spotPhotoFile);
+//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+                            if (outputStream != null) {
+//                                Log.e( TAG, "Output Stream Opened successfully");
+                            }
+
+                            byte[] buffer = new byte[1000];
+                            int bytesRead = 0;
+                            while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+                                outputStream.write(buffer, 0, buffer.length);
+                            }
+                            mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
+                        } catch (Exception e) {
+//                            Log.e( TAG, "Exception occurred " + e.getMessage());
+                        } finally {
+                        }
+
+                        mSpotViewModel.insert(mNewSpot);
+                        finish();
+//
+//                        File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
+//                        File imageSelected = new File(mImageCaptureUri);
+                    } else {
+                        File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
+                        // Copy mTempFile to spotPhotoFile
 //                    Files.copy(mTempFile.toPath(), spotPhotoFile.toPath());
-                    InputStream is = null;
-                    OutputStream os = null;
-                    try {
-                        is = new FileInputStream(mTempFile);
-                        os = new FileOutputStream(spotPhotoFile);
-                        byte[] buffer = new byte[1024];
-                        int length;
-                        while ((length = is.read(buffer)) > 0) {
-                            os.write(buffer, 0, length);
-                        }
-                        is.close();
-                        os.close();
-                    }
-                        catch (FileNotFoundException e) {
+                        InputStream is = null;
+                        OutputStream os = null;
+                        try {
+                            is = new FileInputStream(mTempFile);
+                            os = new FileOutputStream(spotPhotoFile);
+                            byte[] buffer = new byte[1024];
+                            int length;
+                            while ((length = is.read(buffer)) > 0) {
+                                os.write(buffer, 0, length);
+                            }
+                            is.close();
+                            os.close();
+                        } catch (FileNotFoundException e) {
                             e.printStackTrace();
-                        }
-                        catch (IOException ioException) {
+                        } catch (IOException ioException) {
                             ioException.printStackTrace();
-                        }
-                        finally {
+                        } finally {
 //                        is.close();
 //                        os.close();
+                        }
+                        mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
+
+
+                        mSpotViewModel.insert(mNewSpot);
+                        finish();
                     }
-                    mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
-
-
-                    mSpotViewModel.insert(mNewSpot);
-                    finish();
                 }
             });
         }
