@@ -101,7 +101,6 @@ public class NewSpotActivity extends AppCompatActivity {
                     for (ResolveInfo activity : cameraActivity) {
                         grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     }
-
                     startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
 //                    Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //
@@ -118,12 +117,18 @@ public class NewSpotActivity extends AppCompatActivity {
 //                        e.printStackTrace();
 //                    }
                 } else { // Pick from file
-                    Intent intent = new Intent();
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//                    Intent intent = new Intent();
+//                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*"); // Set the primary MIME type
+                    //intent.addCategory(Intent.CATEGORY_OPENABLE); // May want to add this
 
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
+                    // Method signature: static Intent	createChooser(Intent target, CharSequence title, IntentSender sender)
+                    // Convenience function for creating a ACTION_CHOOSER Intent.
+                    // CharSequence title: You can specify the title that will appear in the activity chooser.
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
+                    }
                 }
             }
         });
@@ -133,8 +138,9 @@ public class NewSpotActivity extends AppCompatActivity {
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
-        // This Activity should have 3 modes: New and Edit
-        // Edit mode
+        // This Activity should have 2 modes: Create and Edit. The path the user takes to open
+        // this Activity will determine the mode it launches in.
+        // Edit mode:
         if (getIntent().hasExtra("EDIT_SPOT")) {
             inEditMode = true;
             int spotID = getIntent().getIntExtra("EDIT_SPOT", 0);
@@ -146,15 +152,20 @@ public class NewSpotActivity extends AppCompatActivity {
                     ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + spot.getLatitude());
                     ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + spot.getLongitude());
                     ((EditText) findViewById(R.id.new_spot_description)).setText(spot.getDescription());
-                    File filesDir = getFilesDir(); // Get handle to directory for private application files
-//                    File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
-                    File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
-                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
-//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+
+                    // Now, instead of having to open a File based on the short pathname (generated
+                    // dynamically by each Spot) just to call getPath() on it so that
+                    // PictureUtils.getScaledBitmap() can open it and convert it to a Bitmap, since
+                    // each Spot now holds the full path for each of its photos, so we can use that
+                    // directly when we call PictureUtils.getScaledBitmap().
+
+//                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+                    Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
                     ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
                 }
             });
-
             Button saveChanges_Button = ((Button) findViewById(R.id.new_spot_create_btn));
             saveChanges_Button.setText("Save changes");
             saveChanges_Button.setOnClickListener(new View.OnClickListener() {
@@ -200,8 +211,9 @@ public class NewSpotActivity extends AppCompatActivity {
                     finish();
                 }
             });
+        } // END Edit Mode
 
-        }
+        // Create Mode:
         // Current Location Mode
 //        else if (getIntent().hasExtra("EXTRA_CURRENT_LOCATION")) { For some reason, this returns null even if there is an extra
         else {
@@ -282,7 +294,6 @@ public class NewSpotActivity extends AppCompatActivity {
                             if (outputStream != null) {
 //                                Log.e( TAG, "Output Stream Opened successfully");
                             }
-
                             byte[] buffer = new byte[1000];
                             int bytesRead = 0;
                             while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
@@ -459,33 +470,25 @@ public class NewSpotActivity extends AppCompatActivity {
                 try {
                     // Create Bitmap from the return contentURI
                     bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
-
                     ImageView imageView = findViewById(R.id.new_spot_photo_iv);
                     imageView.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
 //                filesDir = getFilesDir(); // Get handle to directory for private application files
 //                photoFile = new File(filesDir, mImageCaptureUri.getPath()); // Create new File in the directory
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
 //                doCrop();
                 break;
-
             case CROP_FROM_CAMERA:
                 Bundle extras = intent.getExtras();
-
                 if (extras != null) {
                     Bitmap photo = extras.getParcelable("data");
-
 //                    mImageView.setImageBitmap(photo);
                 }
-
                 File f = new File(mImageCaptureUri.getPath());
-
                 if (f.exists()) f.delete();
-
                 break;
 
         }
