@@ -39,4 +39,5 @@ The first version of our app will provide four main pieces of functionality:
   * List view: This viewing mode allows the user to view either all of their saved spots or the results of their search in scrollable list format. Here, the user can quickly see the name, main photo, and description of the spots. There will also be options to sort the list by various factors such as rating, name, distance, etc. Clicking on a spot list item takes the user to the spot's detail view.
   * Detail view: When in this viewing mode, the user will be able to see all of the spot's details in unabbreviated form. This will include a gallery of photos, video clips, a description, rating, and more.
   
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
+Click the link below to see a brief demo of the app as of October 2018:  
+[![Skatespot-Organizer Demo1](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
