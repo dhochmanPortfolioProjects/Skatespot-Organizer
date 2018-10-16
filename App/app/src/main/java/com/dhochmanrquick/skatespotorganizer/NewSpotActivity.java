@@ -214,7 +214,24 @@ public class NewSpotActivity extends AppCompatActivity {
 //
 //                    mSpotViewModel.insert(mNewSpot);
                     // Todo: Implement the update to database
-                    Toast.makeText(getBaseContext(), "Implement database update...", Toast.LENGTH_SHORT).show();
+                    // Populate all the views in the layout
+                    mEditSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
+                    mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()));
+                    mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString()));
+                    mEditSpot.setName(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
+                    // Now, instead of having to open a File based on the short pathname (generated
+                    // dynamically by each Spot) just to call getPath() on it so that
+                    // PictureUtils.getScaledBitmap() can open it and convert it to a Bitmap, since
+                    // each Spot now holds the full path for each of its photos, so we can use that
+                    // directly when we call PictureUtils.getScaledBitmap().
+
+//                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+//                    Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+//                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                    mSpotViewModel.updateSpots(mEditSpot);
+                    Toast.makeText(getBaseContext(), "Updating Spot information...", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             });
@@ -249,8 +266,8 @@ public class NewSpotActivity extends AppCompatActivity {
 //                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
 //                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
                         if (fileToDelete.delete()) {
-                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
-
+//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(NewSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
                         }

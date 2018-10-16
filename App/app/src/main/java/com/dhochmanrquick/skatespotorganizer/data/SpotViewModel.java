@@ -104,10 +104,18 @@ public class SpotViewModel extends AndroidViewModel {
 //    }
 
     /**
-     * A wrapper deleteSpot() method that calls the Repository's deleteSpot() method (which in turn calls the
-     * DAO's deleteSpot() method). In this way, the implementation of deleteSpot() is completely hidden from the UI.
+     * A wrapper deleteSpots() method that calls the Repository's deleteSpots() method (which in turn calls the
+     * DAO's deleteSpots() method). In this way, the implementation of deleteSpots() is completely hidden from the UI.
      *
      * @param spots The Spot(s) to be deleted from the database
      */
     public void deleteSpots(Spot... spots) { mRepository.deleteSpots(spots); }
+
+    /**
+     * A wrapper updateSpots() method that calls the Repository's updateSpots() method (which in turn calls the
+     * DAO's updateSpots() method). In this way, the implementation of updateSpots() is completely hidden from the UI.
+     *
+     * @param spots The Spot(s) to be updated in the database
+     */
+    public void updateSpots(Spot... spots) { mRepository.updateSpots(spots); }
 }
