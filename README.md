@@ -40,4 +40,4 @@ The first version of our app will provide four main pieces of functionality:
   * Detail view: When in this viewing mode, the user will be able to see all of the spot's details in unabbreviated form. This will include a gallery of photos, video clips, a description, rating, and more.
   
 Click the link below to see a brief demo of the app as of October 2018:  
-[![Skatespot-Organizer Demo1](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
+[![Skatespot-Organizer Demo1](https://img.youtube.com/vi/GevTqf5RW1I/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
