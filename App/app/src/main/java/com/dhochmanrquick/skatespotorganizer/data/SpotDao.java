@@ -2,6 +2,7 @@ package com.dhochmanrquick.skatespotorganizer.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Room;
@@ -46,6 +47,9 @@ public interface SpotDao {
     // result columns can be mapped into the returned object.
     @Query("SELECT * FROM spot_table WHERE id = :id")
     LiveData<Spot> getSpot(int id);
+
+    @Delete
+    public void deleteSpots(Spot... spots);
 
     /**
      * Overloaded method to get spot by name.

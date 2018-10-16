@@ -49,6 +49,7 @@ import java.util.Observer;
 public class NewSpotActivity extends AppCompatActivity {
 
     private Spot mNewSpot;
+    private Spot mEditSpot;
     private SpotViewModel mSpotViewModel;
     //    private static final int REQUEST_PHOTO = 2;
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
@@ -150,23 +151,25 @@ public class NewSpotActivity extends AppCompatActivity {
             mSpotViewModel.getSpot(spotID).observe(this, new android.arch.lifecycle.Observer<Spot>() {
                 @Override
                 public void onChanged(@Nullable Spot spot) {
-                    // Populate all the views in the layout
-                    ((EditText) findViewById(R.id.new_spot_name)).setText(spot.getName());
-                    ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + spot.getLatitude());
-                    ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + spot.getLongitude());
-                    ((EditText) findViewById(R.id.new_spot_description)).setText(spot.getDescription());
-
-                    // Now, instead of having to open a File based on the short pathname (generated
-                    // dynamically by each Spot) just to call getPath() on it so that
-                    // PictureUtils.getScaledBitmap() can open it and convert it to a Bitmap, since
-                    // each Spot now holds the full path for each of its photos, so we can use that
-                    // directly when we call PictureUtils.getScaledBitmap().
+                    if(spot != null) {
+                        mEditSpot = spot;
+                        // Populate all the views in the layout
+                        ((EditText) findViewById(R.id.new_spot_name)).setText(spot.getName());
+                        ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + spot.getLatitude());
+                        ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + spot.getLongitude());
+                        ((EditText) findViewById(R.id.new_spot_description)).setText(spot.getDescription());
+                        // Now, instead of having to open a File based on the short pathname (generated
+                        // dynamically by each Spot) just to call getPath() on it so that
+                        // PictureUtils.getScaledBitmap() can open it and convert it to a Bitmap, since
+                        // each Spot now holds the full path for each of its photos, so we can use that
+                        // directly when we call PictureUtils.getScaledBitmap().
 
 //                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                    Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
-                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                        Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                    }
                 }
             });
             Button saveChanges_Button = ((Button) findViewById(R.id.new_spot_create_btn));
@@ -221,12 +224,41 @@ public class NewSpotActivity extends AppCompatActivity {
             deleteSpot_Button.setText("Delete spot"/*R.string.show_text*/);
             deleteSpot_Button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 //            deleteSpot_Button.setGravity(Gravity.CENTER); This didn't work
-            deleteSpot_Button.setPadding(0, 20, 0, 0);
+//            deleteSpot_Button.layout_mar(0, 20, 0, 0);
             deleteSpot_Button.setBackgroundColor(Color.RED);
             deleteSpot_Button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // User has chosen to delete this Spot
+                    // First, need to delete the photo files
+                    while (mEditSpot.getPhotoCount() > 0) {
+                        // Open the file
 
+                        // Create a path where we will place our picture in the user's
+                        // public download directory and delete the file.  If external
+                        // storage is not currently mounted this will fail.
+//                        File path = Environment.getExternalStoragePublicDirectory(
+//                                Environment.DIRECTORY_DOWNLOADS);
+//                        File file = new File(path, "DemoPicture.jpg");
+//                        file.delete();
+//                        File filesDir = getFilesDir();
+//                        filesDir.
+//                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                        File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
+//                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+                        if (fileToDelete.delete()) {
+                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+
+                        } else {
+                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+                        }
+//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                        mEditSpot.decrementPhotoCount();
+                    }
+                    mSpotViewModel.deleteSpots(mEditSpot);
+                    finish();
                 }
             });
 
@@ -235,7 +267,6 @@ public class NewSpotActivity extends AppCompatActivity {
             if (root_container != null) {
                 root_container.addView(deleteSpot_Button);
             }
-
 
 
         } // END Edit Mode

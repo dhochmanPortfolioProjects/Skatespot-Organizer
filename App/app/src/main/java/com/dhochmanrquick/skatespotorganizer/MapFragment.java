@@ -446,19 +446,28 @@ public class MapFragment extends Fragment implements
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-                mSpotList = spots; // Locally cache the SpotList
-                // Update the cached copy of the words in the adapter.
+                if (spots != null) {
+                    if (spots.size() > 0) {
+                        mSpotList = spots; // Locally cache the SpotList
+                        // Update the cached copy of the words in the adapter.
 //                adapter.setWords(words);
-                // Set markers on the map
-                for (Spot spot : spots) {
+                        // Set markers on the map
+                        for (Spot spot : spots) {
 //                    googleMap.addMarker(new MarkerOptions()
-                    mMap.addMarker(new MarkerOptions()
+                            mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                            .title(spot.getName())
-                            .snippet(spot.getDescription()));
+                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                                    .title(spot.getName())
+                                    .snippet(spot.getDescription()));
 //                            .snippet("" + spot.getId()));
-                }
+                        }
+                    } else {
+                            mMap.clear();
+                        }
+                    }
+//                } else {
+//                    mMap.clear();
+//                }
             }
         });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker

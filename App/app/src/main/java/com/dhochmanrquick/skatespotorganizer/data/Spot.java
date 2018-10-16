@@ -292,6 +292,11 @@ public class Spot {
         return null;
     }
 
+    public String getAbbreviatedPhotoFilepath(int photoNumber) {
+        return "IMG_" + getName() + photoNumber + ".jpg";
+
+    }
+
     /* END Getter methods *************************************************************************/
 
 

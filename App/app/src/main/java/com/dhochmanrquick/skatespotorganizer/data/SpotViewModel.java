@@ -102,4 +102,12 @@ public class SpotViewModel extends AndroidViewModel {
 //        File filesDir = mApplication.getFilesDir();
 //        return new File(filesDir, spot.getPhotoFilename());
 //    }
+
+    /**
+     * A wrapper deleteSpot() method that calls the Repository's deleteSpot() method (which in turn calls the
+     * DAO's deleteSpot() method). In this way, the implementation of deleteSpot() is completely hidden from the UI.
+     *
+     * @param spots The Spot(s) to be deleted from the database
+     */
+    public void deleteSpots(Spot... spots) { mRepository.deleteSpots(spots); }
 }
