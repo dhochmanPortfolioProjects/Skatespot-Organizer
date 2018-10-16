@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Environment;
@@ -18,12 +19,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
@@ -134,7 +138,6 @@ public class NewSpotActivity extends AppCompatActivity {
         });
         final AlertDialog dialog = builder.create();
 
-
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
@@ -207,10 +210,34 @@ public class NewSpotActivity extends AppCompatActivity {
 //                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
 //
 //                    mSpotViewModel.insert(mNewSpot);
+                    // Todo: Implement the update to database
                     Toast.makeText(getBaseContext(), "Implement database update...", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             });
+
+            // Create Button Dynamically
+            Button deleteSpot_Button = new Button(this);
+            deleteSpot_Button.setText("Delete spot"/*R.string.show_text*/);
+            deleteSpot_Button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            deleteSpot_Button.setGravity(Gravity.CENTER); This didn't work
+            deleteSpot_Button.setPadding(0, 20, 0, 0);
+            deleteSpot_Button.setBackgroundColor(Color.RED);
+            deleteSpot_Button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+
+            LinearLayout root_container = findViewById(R.id.new_spot_root_container);
+            // Add Button to LinearLayout
+            if (root_container != null) {
+                root_container.addView(deleteSpot_Button);
+            }
+
+
+
         } // END Edit Mode
 
         // Create Mode:
