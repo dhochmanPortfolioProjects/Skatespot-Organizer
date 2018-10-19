@@ -141,7 +141,6 @@ public class NewSpotActivity extends AppCompatActivity {
 
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
-
         // This Activity should have 2 modes: Create and Edit. The path the user takes to open
         // this Activity will determine the mode it launches in.
         // Edit mode:

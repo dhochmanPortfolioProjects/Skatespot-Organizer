@@ -1,9 +1,11 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -129,6 +131,54 @@ public class EditSpotActivity extends AppCompatActivity {
             }
         });
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Spot")
+                .setMessage("Are you sure you want to permanently delete this spot?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User has chosen to delete this Spot
+                        // First, need to delete the photo files
+                        while (mEditSpot.getPhotoCount() > 0) {
+                            // Open the file
+
+                            // Create a path where we will place our picture in the user's
+                            // public download directory and delete the file.  If external
+                            // storage is not currently mounted this will fail.
+//                        File path = Environment.getExternalStoragePublicDirectory(
+//                                Environment.DIRECTORY_DOWNLOADS);
+//                        File file = new File(path, "DemoPicture.jpg");
+//                        file.delete();
+//                        File filesDir = getFilesDir();
+//                        filesDir.
+//                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
+//                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+                            if (fileToDelete.delete()) {
+//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(EditSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+                            }
+//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                            mEditSpot.decrementPhotoCount();
+                        }
+                        mSpotViewModel.deleteSpots(mEditSpot);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        final AlertDialog dialog = builder.create();
+
         // Create Button Dynamically
         Button deleteSpot_Button = new Button(this);
         deleteSpot_Button.setText("Delete spot"/*R.string.show_text*/);
@@ -139,41 +189,12 @@ public class EditSpotActivity extends AppCompatActivity {
         deleteSpot_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // User has chosen to delete this Spot
-                // First, need to delete the photo files
-                while (mEditSpot.getPhotoCount() > 0) {
-                    // Open the file
-
-                    // Create a path where we will place our picture in the user's
-                    // public download directory and delete the file.  If external
-                    // storage is not currently mounted this will fail.
-//                        File path = Environment.getExternalStoragePublicDirectory(
-//                                Environment.DIRECTORY_DOWNLOADS);
-//                        File file = new File(path, "DemoPicture.jpg");
-//                        file.delete();
-//                        File filesDir = getFilesDir();
-//                        filesDir.
-//                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
-                    File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
-//                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
-//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
-//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
-                    if (fileToDelete.delete()) {
-//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
-                        Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(EditSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
-                    }
-//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
-                    mEditSpot.decrementPhotoCount();
-                }
-                mSpotViewModel.deleteSpots(mEditSpot);
-                finish();
+                dialog.show();
             }
         });
 
         LinearLayout root_container = findViewById(R.id.new_spot_root_container);
-        // Add Button to LinearLayout
+        // Add delete Button to LinearLayout
         if (root_container != null) {
             root_container.addView(deleteSpot_Button);
         }
