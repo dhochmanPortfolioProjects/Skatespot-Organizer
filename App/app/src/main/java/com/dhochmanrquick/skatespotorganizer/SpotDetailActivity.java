@@ -107,7 +107,7 @@ public class SpotDetailActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SpotDetailActivity.this, NewSpotActivity.class);
+                Intent intent = new Intent(SpotDetailActivity.this, EditSpotActivity.class);
                 intent.putExtra("EDIT_SPOT", mSpot.getId());
                 startActivity(intent);
 //                mCurrentPlayer.createCryptogram(PlayableGamesActivity.this);
