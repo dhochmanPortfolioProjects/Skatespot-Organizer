@@ -2,9 +2,15 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,12 +27,18 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class EditSpotActivity extends AppCompatActivity {
 
     private SpotViewModel mSpotViewModel;
     private Spot mEditSpot;
+    File mPhotoFile;
 
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,5 +210,114 @@ public class EditSpotActivity extends AppCompatActivity {
         if (root_container != null) {
             root_container.addView(deleteSpot_Button);
         }
+
+        findViewById(R.id.new_spot_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+// Create camera/image capture implicit intent
+                final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // Determine whether there is a camera app available
+                boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
+
+                mPhotoFile = new File(getFilesDir(), mEditSpot.generateNextPhotoFileSuffix());
+
+//                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
+//                File mPhotoFile = mTempFile;
+                // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
+                Uri uri = FileProvider.getUriForFile(getApplicationContext(),
+                        "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+
+                // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
+                // then camera activity will write the captured image to that path and it will not
+                // return the bitmap in the onActivityResult method.
+                captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+                // Query Package Manager for every activity cameraImage_Intent can resolve to
+                List<ResolveInfo> cameraActivity =
+                        getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+                // Grant write permission for this Uri to each activity
+                for (ResolveInfo activity : cameraActivity) {
+                    grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+//        super.onActivityResult(requestCode, resultCode, intent);
+        // if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
+        if (resultCode != RESULT_OK) return;
+        File filesDir = getFilesDir(); // Get handle to directory for private application files
+        File photoFile;
+        Bitmap bitmap;
+
+        switch (requestCode) {
+//            case REQUEST_PHOTO:
+            case PICK_FROM_CAMERA:
+                mEditSpot.setPhotoFilepath2(mPhotoFile.getPath());
+
+//                doCrop();
+//                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
+//                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+//                bitmap = PictureUtils.getScaledBitmap(mTempFile.getPath(), 1000, 1000);
+//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+//                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                break;
+            case PICK_FROM_FILE:
+//                mImageCaptureUri = intent.getData();
+////                mImageCaptureUri.get
+////                MediaStore.Images.Media.
+//                try {
+//                    // Create Bitmap from the return contentURI
+//                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+//                    ImageView imageView = findViewById(R.id.new_spot_photo_iv);
+//                    imageView.setImageBitmap(bitmap);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+////                filesDir = getFilesDir(); // Get handle to directory for private application files
+////                photoFile = new File(filesDir, mImageCaptureUri.getPath()); // Create new File in the directory
+////                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
+////                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+////                doCrop();
+                break;
+            case CROP_FROM_CAMERA:
+//                Bundle extras = intent.getExtras();
+//                if (extras != null) {
+//                    Bitmap photo = extras.getParcelable("data");
+////                    mImageView.setImageBitmap(photo);
+//                }
+//                File f = new File(mImageCaptureUri.getPath());
+//                if (f.exists()) f.delete();
+                break;
+
+        }
+
+
+//        switch (requestCode) {
+//            case REQUEST_PHOTO:
+//                if (resultCode == RESULT_OK && intent.hasExtra("data")) {
+//                    Bitmap bitmap = (Bitmap) intent.getExtras().get("data");
+//                    if (bitmap != null) {
+//                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+////                        ivThumbnailPhoto.setImageBitmap(bitmap);
+//                    }
+//                }
+//        if (requestCode == REQUEST_PHOTO && resultCode == RESULT_OK && intent.hasExtra("data")) {
+////            Bundle extras = intent.getExtras();
+//            Bitmap imageBitmap = (Bitmap) intent.getExtras().get("data");
+//            ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
+////                        ivThumbnailPhoto.setImageBitmap(bitmap);
+////                    mImageView.setImageBitmap(imageBitmap);
+////                break;
+//        }
+
+
+//                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
+
     }
 }
+

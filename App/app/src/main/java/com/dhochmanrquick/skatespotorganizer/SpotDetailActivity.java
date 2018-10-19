@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,6 +47,9 @@ public class SpotDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_detail);
 
+//        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
+//        ViewPagerAdapter adapter = new ViewPagerAdapter(this, )
+
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
         // When using the API in fully interactive mode, users of the MapView class must forward the
@@ -73,30 +77,46 @@ public class SpotDetailActivity extends AppCompatActivity
                     // pulled from the database.
                     mSpot = spot;
 
+                    ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
+                    String[] spot_images = new String[5];
+                    int photoCount = spot.getPhotoCount();
+                    for (int i = 0; i < photoCount; i++) {
+                        spot_images[i] = spot.getPhotoFilepath(i+1);
+                    }
+//                    String[] spot_images = new String[] {spot.getPhotoFilepath(1)};
+//                    spot_images[1] = spot.getPhotoFilepath(1);
+//                    spot_images[1] = "Hello";
+                    ViewPagerAdapter adapter = new ViewPagerAdapter(SpotDetailActivity.this, spot_images);
+                    viewPager.setAdapter(adapter);
+
                     // Populate UI Views with this Spot's information
                     ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
                     ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
 //                File filesDir = getFilesDir(); // Get handle to directory for private application files
 //                File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
-                    final Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
-//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                    final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
-                    spot_ImageView.setImageBitmap(bitmap);
-                    spot_ImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Dialog spotImage_Dialog = new Dialog(SpotDetailActivity.this);
-//                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                            ImageView imageView = new ImageView(SpotDetailActivity.this);
-                            imageView.setImageBitmap(bitmap);
-                            spotImage_Dialog.getWindow().setContentView(imageView);
-//                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
-//                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
-//                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));
-                            spotImage_Dialog.setCancelable(true);
-                            spotImage_Dialog.show();
-                        }
-                    });
+
+
+//                    final Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+////            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+//                    final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
+//                    spot_ImageView.setImageBitmap(bitmap);
+//
+//
+//                    spot_ImageView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            Dialog spotImage_Dialog = new Dialog(SpotDetailActivity.this);
+////                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//                            ImageView imageView = new ImageView(SpotDetailActivity.this);
+//                            imageView.setImageBitmap(bitmap);
+//                            spotImage_Dialog.getWindow().setContentView(imageView);
+////                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+////                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
+////                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));
+//                            spotImage_Dialog.setCancelable(true);
+//                            spotImage_Dialog.show();
+//                        }
+//                    });
 
 
                     mMap.addMarker(new MarkerOptions()
