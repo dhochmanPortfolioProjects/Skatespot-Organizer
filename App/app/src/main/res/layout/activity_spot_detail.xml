@@ -6,18 +6,41 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/spot_detail_image_iv"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"
-        app:layout_constraintDimensionRatio="H,16:9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+    android:id="@+id/spot_detail_image_iv"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:scaleType="centerCrop"
+    android:layout_marginTop="10dp"
+    app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"
+    app:layout_constraintDimensionRatio="H,16:9"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_chainStyle="packed" />
+
+    <!--<HorizontalScrollView-->
+        <!--android:id="@+id/spot_detail_image_iv"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"-->
+        <!--app:layout_constraintDimensionRatio="H,16:9"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.0"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:layout_constraintVertical_chainStyle="packed">-->
+        <!---->
+        <!--<LinearLayout-->
+            <!--android:id="@+id/gallery"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:orientation="vertical">-->
+        <!--</LinearLayout>-->
+
+    <!--</HorizontalScrollView>-->
 
     <TextView
         android:id="@+id/spot_detail_title_tv"
@@ -89,10 +112,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
-        map:uiCompass="true"
-        map:uiZoomControls="true"
         map:cameraZoom="15"
-        />
+        map:uiCompass="true"
+        map:uiZoomControls="true" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/spot_edit_fab"

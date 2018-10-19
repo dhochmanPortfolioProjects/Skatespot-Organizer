@@ -1,15 +1,18 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.app.Dialog;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,13 +72,32 @@ public class SpotDetailActivity extends AppCompatActivity
                 if (spot != null) {
                     // pulled from the database.
                     mSpot = spot;
+
+                    // Populate UI Views with this Spot's information
                     ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
                     ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
 //                File filesDir = getFilesDir(); // Get handle to directory for private application files
 //                File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
-                    Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+                    final Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                    ((ImageView) findViewById(R.id.spot_detail_image_iv)).setImageBitmap(bitmap);
+                    final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
+                    spot_ImageView.setImageBitmap(bitmap);
+                    spot_ImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Dialog spotImage_Dialog = new Dialog(SpotDetailActivity.this);
+//                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            ImageView imageView = new ImageView(SpotDetailActivity.this);
+                            imageView.setImageBitmap(bitmap);
+                            spotImage_Dialog.getWindow().setContentView(imageView);
+//                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+//                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
+//                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));
+                            spotImage_Dialog.setCancelable(true);
+                            spotImage_Dialog.show();
+                        }
+                    });
+
 
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
