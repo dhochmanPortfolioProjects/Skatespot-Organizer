@@ -1,6 +1,7 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -15,11 +16,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -37,6 +40,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -182,6 +186,8 @@ public class MapFragment extends Fragment implements
         mapView.onResume();
         mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
 
+        FloatingActionButton map_style_fab = view.findViewById(R.id.map_style_button);
+
         super.onViewCreated(view, savedInstanceState);
 
         // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
@@ -256,6 +262,13 @@ public class MapFragment extends Fragment implements
 //                });
 //            }
 //        });
+
+        map_style_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "need to figure out how to get a dialog to open", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -417,7 +430,6 @@ public class MapFragment extends Fragment implements
 //                mLoadFromCurrentLocation = false;
                 mIsFirstInstantiation = false;
                 Location locationCt;
-//            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
                 locationCt = locationManager
                         .getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -433,6 +445,7 @@ public class MapFragment extends Fragment implements
         }
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
 
         // public final void setPadding (int left, int top, int right, int bottom)
         googleMap.setPadding(0, 50, 0, 130);
@@ -465,6 +478,9 @@ public class MapFragment extends Fragment implements
 //        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
+
+        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
+        mMap.setMapStyle(style);
     }
 
 
