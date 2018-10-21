@@ -2,13 +2,19 @@ package com.dhochmanrquick.skatespotorganizer.utils;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.Uri;
+import android.os.Environment;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class PictureUtils {
     /**
@@ -60,5 +66,43 @@ public class PictureUtils {
     public static File getPhotoFile(Application application,  Spot spot) {
         File filesDir = application.getFilesDir();
         return new File(filesDir, spot.generateNextPhotoFilename());
+    }
+
+    public static boolean copyUriContentToFile(Application application, Uri srcURI, File destFile) {
+//        if (mImageCaptureUri != null) {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+//            File spotPhotoFile;
+        try {
+            ContentResolver content = application.getContentResolver();
+            inputStream = content.openInputStream(srcURI);
+
+            File root = Environment.getExternalStorageDirectory();
+            if (root == null) {
+//                                Log.d(TAG, "Failed to get root");
+            }
+            // create a directory
+//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+            // create direcotory if it doesn't exists
+//                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+//                            saveDirectory.mkdirs();
+            outputStream = new FileOutputStream(destFile);
+//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+            if (outputStream != null) {
+//                                Log.e( TAG, "Output Stream Opened successfully");
+            }
+            byte[] buffer = new byte[1000];
+            int bytesRead = 0;
+            while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+                outputStream.write(buffer, 0, buffer.length);
+            }
+//                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
+//                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
+        } catch (Exception e) {
+            return false;
+//                            Log.e( TAG, "Exception occurred " + e.getMessage());
+        } finally {
+        }
+        return true; // Success
     }
 }

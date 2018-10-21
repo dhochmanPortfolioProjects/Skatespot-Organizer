@@ -73,7 +73,7 @@ public class NewSpotActivity extends AppCompatActivity {
 //            Toast.makeText(this, "Error creating temp file.", Toast.LENGTH_LONG).show();
 //        }
         // Configure image source selection AlertDialog
-        final String[] items = new String[]{"Take from camera", "Select from gallery"};
+        final String[] items = new String[]{"From camera", "From gallery"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, items);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Image");
@@ -572,7 +572,7 @@ public class NewSpotActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 //                File selectedPhoto_File = new File(getFilesDir(), mImageCaptureUri.getPath()); // Create new File in the directory
-                if (copyUriContentToFile(selectedImage_Uri, mPhotoFile)) {
+                if (PictureUtils.copyUriContentToFile(getApplication(), selectedImage_Uri, mPhotoFile)) {
                     mNewSpot.incrementPhotoCount();
                 } else {
                     Toast.makeText(NewSpotActivity.this,
@@ -615,41 +615,41 @@ public class NewSpotActivity extends AppCompatActivity {
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
     }
 
-    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
-//        if (mImageCaptureUri != null) {
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-//            File spotPhotoFile;
-            try {
-                ContentResolver content = getContentResolver();
-                inputStream = content.openInputStream(srcURI);
-
-                File root = Environment.getExternalStorageDirectory();
-                if (root == null) {
-//                                Log.d(TAG, "Failed to get root");
-                }
-                // create a directory
-//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
-                // create direcotory if it doesn't exists
-//                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
-//                            saveDirectory.mkdirs();
-                outputStream = new FileOutputStream(destFile);
-//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
-                if (outputStream != null) {
-//                                Log.e( TAG, "Output Stream Opened successfully");
-                }
-                byte[] buffer = new byte[1000];
-                int bytesRead = 0;
-                while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
-                    outputStream.write(buffer, 0, buffer.length);
-                }
-//                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
-//                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
-            } catch (Exception e) {
-                return false;
-//                            Log.e( TAG, "Exception occurred " + e.getMessage());
-            } finally {
-            }
-            return true; // Success
-        }
+//    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
+////        if (mImageCaptureUri != null) {
+//            InputStream inputStream = null;
+//            OutputStream outputStream = null;
+////            File spotPhotoFile;
+//            try {
+//                ContentResolver content = getContentResolver();
+//                inputStream = content.openInputStream(srcURI);
+//
+//                File root = Environment.getExternalStorageDirectory();
+//                if (root == null) {
+////                                Log.d(TAG, "Failed to get root");
+//                }
+//                // create a directory
+////                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+//                // create direcotory if it doesn't exists
+////                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+////                            saveDirectory.mkdirs();
+//                outputStream = new FileOutputStream(destFile);
+////                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+//                if (outputStream != null) {
+////                                Log.e( TAG, "Output Stream Opened successfully");
+//                }
+//                byte[] buffer = new byte[1000];
+//                int bytesRead = 0;
+//                while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+//                    outputStream.write(buffer, 0, buffer.length);
+//                }
+////                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
+////                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
+//            } catch (Exception e) {
+//                return false;
+////                            Log.e( TAG, "Exception occurred " + e.getMessage());
+//            } finally {
+//            }
+//            return true; // Success
+//        }
     }
