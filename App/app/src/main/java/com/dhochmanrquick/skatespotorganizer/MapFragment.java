@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -188,6 +189,7 @@ public class MapFragment extends Fragment implements
         mMapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
 
         FloatingActionButton map_style_fab = view.findViewById(R.id.map_style_button);
+        FloatingActionButton gps_locater_fab = view.findViewById(R.id.current_location_button);
 
         super.onViewCreated(view, savedInstanceState);
 
@@ -268,6 +270,27 @@ public class MapFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, "need to figure out how to get a dialog to open", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        gps_locater_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Location locationCt;
+                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: I put this in as a quick and dirty check
+                    return;
+                }
+                locationCt = locationManager
+                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                LatLng latLng = new LatLng(locationCt.getLatitude(),
+                        locationCt.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
             }
         });
     }

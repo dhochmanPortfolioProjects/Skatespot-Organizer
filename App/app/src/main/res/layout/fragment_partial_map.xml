@@ -32,18 +32,41 @@
             map:layout_constraintEnd_toEndOf="parent"
             map:layout_constraintHorizontal_bias="0.0"
             map:layout_constraintStart_toStartOf="parent"
-            map:uiCompass="true"
-            map:uiZoomControls="true" />
+            map:uiCompass="false"
+            map:uiZoomControls="false" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/map_style_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/layer"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/layer_64_white"
+            android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:fabSize="mini"
+            app:rippleColor="#FFFF00"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/current_location_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/gps_fixed_locater_64"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/map_style_button"
+            app:fabSize="mini"
+            app:rippleColor="#FFFF00"/>
+
+
+
+
+
     </android.support.constraint.ConstraintLayout>
+
+
 
 </android.support.design.widget.CoordinatorLayout>
