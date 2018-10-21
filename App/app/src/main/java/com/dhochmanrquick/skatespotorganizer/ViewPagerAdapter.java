@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, final int position) { // Have to make final so we can see it inside of onClick()
 
         final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpotImages_List.get(position), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
@@ -70,6 +71,13 @@ public class ViewPagerAdapter extends PagerAdapter {
 ////                .placeholder()
 //                .into(imageView);
 ////        ImageView imageView = new ImageView(mContext);
+
+        imageView.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                //this will log the page number that was click
+                Log.i("TAG", "This page was clicked: " + position);
+            }
+        });
         container.addView(imageView);
 
         return imageView;
@@ -80,4 +88,6 @@ public class ViewPagerAdapter extends PagerAdapter {
 //        super.destroyItem(container, position, object);
         container.removeView((View) object);
     }
+
+
 }

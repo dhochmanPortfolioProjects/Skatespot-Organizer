@@ -124,6 +124,7 @@ public class SpotDetailActivity extends AppCompatActivity
                     };
                     viewPager.addOnPageChangeListener(mOnPageChangeListener);
 
+
                     // Populate UI Views with this Spot's information
                     ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
                     ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
