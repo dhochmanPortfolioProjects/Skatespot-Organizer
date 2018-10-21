@@ -517,10 +517,9 @@ public class MapFragment extends Fragment implements
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
 
-        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
-        mMap.setMapStyle(style);
+//        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
+//        mMap.setMapStyle(style);
     }
-
 
     /**
      * Called when the user clicks a marker (the default appears to be popping the info window).
