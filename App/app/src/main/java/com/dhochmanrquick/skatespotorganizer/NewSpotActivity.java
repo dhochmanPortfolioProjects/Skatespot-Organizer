@@ -1,14 +1,12 @@
 package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Environment;
@@ -18,16 +16,11 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
@@ -36,44 +29,49 @@ import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Observer;
 
 public class NewSpotActivity extends AppCompatActivity {
 
     private Spot mNewSpot;
-//    private Spot mEditSpot;
+    //    private Spot mEditSpot;
     private SpotViewModel mSpotViewModel;
     //    private static final int REQUEST_PHOTO = 2;
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
     private boolean inEditMode = false;
     private boolean inCurrentLocationMode = false;
     private File mTempFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
+    private File mPhotoFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
 
-    private Uri mImageCaptureUri;
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
     private static final int PICK_FROM_FILE = 3;
+    private static final String TEMP_SPOT_NAME = "Temp_Spot";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_spot);
 
-        try {
-            mTempFile = mTempFile.createTempFile("temp", "file");
-            mTempFile.deleteOnExit();
-        } catch (IOException e) {
-            Toast.makeText(this, "Error creating temp file.", Toast.LENGTH_LONG).show();
-        }
-
+        // Get the ViewModel to access the underlying database
+        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+        mSpotViewModel.insert(new Spot(TEMP_SPOT_NAME)); // Create blank Spot and insert it in db
+        mSpotViewModel.getSpot(TEMP_SPOT_NAME).observe(this, new android.arch.lifecycle.Observer<Spot>() {
+            @Override
+            public void onChanged(@Nullable Spot spot) {
+                mNewSpot = spot;
+            }
+        });
+//        try {
+//            mTempFile = mTempFile.createTempFile("temp", "file");
+//            mTempFile.deleteOnExit();
+//        } catch (IOException e) {
+//            Toast.makeText(this, "Error creating temp file.", Toast.LENGTH_LONG).show();
+//        }
         // Configure image source selection AlertDialog
         final String[] items = new String[]{"Take from camera", "Select from gallery"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, items);
@@ -81,14 +79,15 @@ public class NewSpotActivity extends AppCompatActivity {
         builder.setTitle("Select Image");
         builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) { // Pick from camera
+                mPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
                 if (item == 0) {
                     // Create camera/image capture implicit intent
                     final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     // Determine whether there is a camera app available
                     boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
-
 //                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
-                    File mPhotoFile = mTempFile;
+//                    File mPhotoFile = mTempFile;
+//                    mPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
                     // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(),
                             "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
@@ -139,8 +138,6 @@ public class NewSpotActivity extends AppCompatActivity {
         });
         final AlertDialog dialog = builder.create();
 
-        // Get the ViewModel to access the underlying database
-        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
         // This Activity should have 2 modes: Create and Edit. The path the user takes to open
         // this Activity will determine the mode it launches in.
         // Edit mode:
@@ -291,17 +288,17 @@ public class NewSpotActivity extends AppCompatActivity {
         // Current Location Mode
 //        else if (getIntent().hasExtra("EXTRA_CURRENT_LOCATION")) { For some reason, this returns null even if there is an extra
 //        else {
-            inCurrentLocationMode = true;
-            Location location = getIntent().getParcelableExtra(EXTRA_CURRENT_LOCATION);
-            if (location != null) {
-                ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + location.getLatitude());
-                ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + location.getLongitude());
-            }
-            Button saveChanges_Button = findViewById(R.id.new_spot_create_btn);
-            saveChanges_Button.setText("Create new spot");
-            saveChanges_Button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        inCurrentLocationMode = true;
+        Location location = getIntent().getParcelableExtra(EXTRA_CURRENT_LOCATION);
+        if (location != null) {
+            ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + location.getLatitude());
+            ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + location.getLongitude());
+        }
+        Button saveChanges_Button = findViewById(R.id.new_spot_create_btn);
+        saveChanges_Button.setText("Create new spot");
+        saveChanges_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                spotName = ((EditText) findViewById(R.id.new_spot_name)).getText().toString();
 //                latitude = Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString());
 //                longitude = Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString());
@@ -336,88 +333,110 @@ public class NewSpotActivity extends AppCompatActivity {
 //                }
 //
 //                startActivityForResult(captureImage_Intent, REQUEST_PHOTO);
-                    // Create new Spot and populate its fields with text from the EditTexts
-                    // Todo: Add data validation
-                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
-                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
-                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
-                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
-                            /*R.drawable.dangsan_spot_landscape*/ 0);
+                // Create new Spot and populate its fields with text from the EditTexts
+                // Todo: Add data validation
+//                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
+//                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+//                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
+//                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
+//                            /*R.drawable.dangsan_spot_landscape*/ 0);
 
-                    if (mImageCaptureUri != null) {
-                        InputStream inputStream = null;
-                        OutputStream outputStream = null;
-                        File spotPhotoFile;
-                        try {
-                            ContentResolver content = getContentResolver();
-                            inputStream = content.openInputStream(mImageCaptureUri);
+                // Extract user input from the UI Views, locally update the Spot accordingly, and
+                // then update in the db
+                mNewSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
+                mNewSpot.setLatLng(new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+                        Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())));
+                mNewSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
+                mNewSpot.setPhotoFilepath(mPhotoFile.getPath(), mNewSpot.getPhotoCount());
+//                    mSpotViewModel.getSpot(mNewSpot.getId())
+//                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
+//                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+//                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
+//                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
 
-                            File root = Environment.getExternalStorageDirectory();
-                            if (root == null) {
-//                                Log.d(TAG, "Failed to get root");
-                            }
-
-                            // create a directory
-//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
-                            // create direcotory if it doesn't exists
-                            spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
-//                            saveDirectory.mkdirs();
-
-                            outputStream = new FileOutputStream(spotPhotoFile);
-//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
-                            if (outputStream != null) {
-//                                Log.e( TAG, "Output Stream Opened successfully");
-                            }
-                            byte[] buffer = new byte[1000];
-                            int bytesRead = 0;
-                            while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
-                                outputStream.write(buffer, 0, buffer.length);
-                            }
-                            mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
-                        } catch (Exception e) {
-//                            Log.e( TAG, "Exception occurred " + e.getMessage());
-                        } finally {
-                        }
-
-                        mSpotViewModel.insert(mNewSpot);
-                        finish();
+                // A Spot is not assigned a unique ID until it is inserted into the database
+                // for the first time. The photo filenames depend on the SpotID, so we need
+                // to insert the Spot here so that it has an ID when its photos are assigned to
+                // it below.
+//                    mSpotViewModel.insert(mNewSpot);
+//                if (mImageCaptureUri != null) {
+//                    InputStream inputStream = null;
+//                    OutputStream outputStream = null;
+//                    File spotPhotoFile;
+//                    try {
+//                        ContentResolver content = getContentResolver();
+//                        inputStream = content.openInputStream(mImageCaptureUri);
 //
-//                        File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
+//                        File root = Environment.getExternalStorageDirectory();
+//                        if (root == null) {
+////                                Log.d(TAG, "Failed to get root");
+//                        }
+//
+//                        // create a directory
+////                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+//                        // create direcotory if it doesn't exists
+//                        spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+////                            saveDirectory.mkdirs();
+//
+//                        outputStream = new FileOutputStream(spotPhotoFile);
+////                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+//                        if (outputStream != null) {
+////                                Log.e( TAG, "Output Stream Opened successfully");
+//                        }
+//                        byte[] buffer = new byte[1000];
+//                        int bytesRead = 0;
+//                        while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+//                            outputStream.write(buffer, 0, buffer.length);
+//                        }
+//                        mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
+//                        mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
+//                    } catch (Exception e) {
+////                            Log.e( TAG, "Exception occurred " + e.getMessage());
+//                    } finally {
+//                    }
+                mSpotViewModel.updateSpots(mNewSpot);
+                Toast.makeText(NewSpotActivity.this,
+                        "Spot " + mNewSpot.getName() + " has been created.", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+        });
+//
+//                        File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
 //                        File imageSelected = new File(mImageCaptureUri);
-                    } else {
-                        File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFileSuffix());
-                        // Copy mTempFile to spotPhotoFile
-//                    Files.copy(mTempFile.toPath(), spotPhotoFile.toPath());
-                        InputStream is = null;
-                        OutputStream os = null;
-                        try {
-                            is = new FileInputStream(mTempFile);
-                            os = new FileOutputStream(spotPhotoFile);
-                            byte[] buffer = new byte[1024];
-                            int length;
-                            while ((length = is.read(buffer)) > 0) {
-                                os.write(buffer, 0, length);
-                            }
-                            is.close();
-                            os.close();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException ioException) {
-                            ioException.printStackTrace();
-                        } finally {
+//                } else {
+//                    File spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+//                    // Copy mTempFile to spotPhotoFile
+////                    Files.copy(mTempFile.toPath(), spotPhotoFile.toPath());
+//                    InputStream is = null;
+//                    OutputStream os = null;
+//                    try {
+//                        is = new FileInputStream(mTempFile);
+//                        os = new FileOutputStream(spotPhotoFile);
+//                        byte[] buffer = new byte[1024];
+//                        int length;
+//                        while ((length = is.read(buffer)) > 0) {
+//                            os.write(buffer, 0, length);
+//                        }
 //                        is.close();
 //                        os.close();
-                        }
-                        mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
-
-
-                        mSpotViewModel.insert(mNewSpot);
-                        finish();
-                    }
-                }
-            });
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException ioException) {
+//                        ioException.printStackTrace();
+//                    } finally {
+////                        is.close();
+////                        os.close();
+//                    }
+//                    mNewSpot.setPhotoFilepath1(spotPhotoFile.getPath());
+//
+//
+//                    mSpotViewModel.insert(mNewSpot);
+//                    finish();
+//                }
+//            }
+//        });
 //        }
-
         findViewById(R.id.new_spot_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -526,48 +545,54 @@ public class NewSpotActivity extends AppCompatActivity {
         File filesDir = getFilesDir(); // Get handle to directory for private application files
         File photoFile;
         Bitmap bitmap;
+//        mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
 
         switch (requestCode) {
 //            case REQUEST_PHOTO:
             case PICK_FROM_CAMERA:
+                // Image capture Intent was successful; the photo taken by the user has
+                // been stored in the file created earlier
+                mNewSpot.incrementPhotoCount();
 //                doCrop();
 //                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
-                bitmap = PictureUtils.getScaledBitmap(mTempFile.getPath(), 1000, 1000);
+                // Convert the photo into a bitmap and set the View
+                bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), 1000, 1000);
+//                        bitmap = PictureUtils.getScaledBitmap(mTempFile.getPath(), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
                 ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
                 break;
             case PICK_FROM_FILE:
-                mImageCaptureUri = intent.getData();
-//                mImageCaptureUri.get
-//                MediaStore.Images.Media.
+                Uri selectedImage_Uri = intent.getData(); // Get return contentURI
                 try {
                     // Create Bitmap from the return contentURI
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
-                    ImageView imageView = findViewById(R.id.new_spot_photo_iv);
-                    imageView.setImageBitmap(bitmap);
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage_Uri);
+                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//                filesDir = getFilesDir(); // Get handle to directory for private application files
-//                photoFile = new File(filesDir, mImageCaptureUri.getPath()); // Create new File in the directory
+//                File selectedPhoto_File = new File(getFilesDir(), mImageCaptureUri.getPath()); // Create new File in the directory
+                if (copyUriContentToFile(selectedImage_Uri, mPhotoFile)) {
+                    mNewSpot.incrementPhotoCount();
+                } else {
+                    Toast.makeText(NewSpotActivity.this,
+                            "An error has occurred while saving the selected photo.",
+                            Toast.LENGTH_LONG).show();
+                }
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
 //                doCrop();
                 break;
             case CROP_FROM_CAMERA:
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    Bitmap photo = extras.getParcelable("data");
-//                    mImageView.setImageBitmap(photo);
-                }
-                File f = new File(mImageCaptureUri.getPath());
-                if (f.exists()) f.delete();
+//                Bundle extras = intent.getExtras();
+//                if (extras != null) {
+//                    Bitmap photo = extras.getParcelable("data");
+////                    mImageView.setImageBitmap(photo);
+//                }
+//                File f = new File(selectedImage_Uri.getPath());
+//                if (f.exists()) f.delete();
                 break;
-
         }
-
-
 //        switch (requestCode) {
 //            case REQUEST_PHOTO:
 //                if (resultCode == RESULT_OK && intent.hasExtra("data")) {
@@ -588,6 +613,43 @@ public class NewSpotActivity extends AppCompatActivity {
 
 
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
-
     }
-}
+
+    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
+//        if (mImageCaptureUri != null) {
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+//            File spotPhotoFile;
+            try {
+                ContentResolver content = getContentResolver();
+                inputStream = content.openInputStream(srcURI);
+
+                File root = Environment.getExternalStorageDirectory();
+                if (root == null) {
+//                                Log.d(TAG, "Failed to get root");
+                }
+                // create a directory
+//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+                // create direcotory if it doesn't exists
+//                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+//                            saveDirectory.mkdirs();
+                outputStream = new FileOutputStream(destFile);
+//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+                if (outputStream != null) {
+//                                Log.e( TAG, "Output Stream Opened successfully");
+                }
+                byte[] buffer = new byte[1000];
+                int bytesRead = 0;
+                while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+                    outputStream.write(buffer, 0, buffer.length);
+                }
+//                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
+//                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
+            } catch (Exception e) {
+                return false;
+//                            Log.e( TAG, "Exception occurred " + e.getMessage());
+            } finally {
+            }
+            return true; // Success
+        }
+    }

@@ -27,7 +27,6 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class EditSpotActivity extends AppCompatActivity {
@@ -165,20 +164,33 @@ public class EditSpotActivity extends AppCompatActivity {
 //                        File filesDir = getFilesDir();
 //                        filesDir.
 //                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
-                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
+                            File fileToDelete = new File(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+//                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
 //                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
 //                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
 //                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
                             if (fileToDelete.delete()) {
 //                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
-                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(EditSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
                             }
 //                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
                             mEditSpot.decrementPhotoCount();
                         }
-                        mSpotViewModel.deleteSpots(mEditSpot);
+                        if (mEditSpot.getPhotoCount() == 0) {
+                            mSpotViewModel.deleteSpots(mEditSpot);
+                            Toast.makeText(EditSpotActivity.this,
+                                    mEditSpot.getName() + " has been deleted.",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+
+                        } else {
+                            Toast.makeText(EditSpotActivity.this,
+                                    "An error has occurred while trying to delete Spot " + mEditSpot.getName() + ".",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
                         finish();
                     }
                 })
@@ -214,33 +226,41 @@ public class EditSpotActivity extends AppCompatActivity {
         findViewById(R.id.new_spot_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-// Create camera/image capture implicit intent
-                final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // Determine whether there is a camera app available
-                boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
 
-                mPhotoFile = new File(getFilesDir(), mEditSpot.generateNextPhotoFileSuffix());
+                if (mEditSpot.getPhotoCount() >= 5) {
+                    Toast.makeText(EditSpotActivity.this,
+                            "You may only save 5 photos for this spot",
+                            Toast.LENGTH_LONG)
+                            .show();
+                } else {
+                    // Create camera/image capture implicit intent
+                    final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    // Determine whether there is a camera app available
+                    boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
+
+                    mPhotoFile = new File(getFilesDir(), mEditSpot.generateNextPhotoFilename());
 
 //                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
 //                File mPhotoFile = mTempFile;
-                // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
-                Uri uri = FileProvider.getUriForFile(getApplicationContext(),
-                        "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+                    // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
+                    Uri uri = FileProvider.getUriForFile(getApplicationContext(),
+                            "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
 
-                // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
-                // then camera activity will write the captured image to that path and it will not
-                // return the bitmap in the onActivityResult method.
-                captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
+                    // then camera activity will write the captured image to that path and it will not
+                    // return the bitmap in the onActivityResult method.
+                    captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
-                // Query Package Manager for every activity cameraImage_Intent can resolve to
-                List<ResolveInfo> cameraActivity =
-                        getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
+                    // Query Package Manager for every activity cameraImage_Intent can resolve to
+                    List<ResolveInfo> cameraActivity =
+                            getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-                // Grant write permission for this Uri to each activity
-                for (ResolveInfo activity : cameraActivity) {
-                    grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    // Grant write permission for this Uri to each activity
+                    for (ResolveInfo activity : cameraActivity) {
+                        grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+                    startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
                 }
-                startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
             }
         });
     }
@@ -257,7 +277,8 @@ public class EditSpotActivity extends AppCompatActivity {
         switch (requestCode) {
 //            case REQUEST_PHOTO:
             case PICK_FROM_CAMERA:
-                mEditSpot.setPhotoFilepath2(mPhotoFile.getPath());
+                mEditSpot.incrementPhotoCount();
+                mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
 
 //                doCrop();
 //                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
@@ -295,8 +316,6 @@ public class EditSpotActivity extends AppCompatActivity {
                 break;
 
         }
-
-
 //        switch (requestCode) {
 //            case REQUEST_PHOTO:
 //                if (resultCode == RESULT_OK && intent.hasExtra("data")) {
@@ -317,7 +336,6 @@ public class EditSpotActivity extends AppCompatActivity {
 
 
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
-
     }
 }
 

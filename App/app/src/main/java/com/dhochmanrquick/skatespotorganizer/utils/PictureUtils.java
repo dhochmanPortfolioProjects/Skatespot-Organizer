@@ -59,6 +59,6 @@ public class PictureUtils {
 
     public static File getPhotoFile(Application application,  Spot spot) {
         File filesDir = application.getFilesDir();
-        return new File(filesDir, spot.generateNextPhotoFileSuffix());
+        return new File(filesDir, spot.generateNextPhotoFilename());
     }
 }

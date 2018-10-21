@@ -27,7 +27,7 @@ import java.util.Random;
  * @author Daniel Hochman
  * @author Rob Quick
  */
-@Database(entities = {Spot.class}, version = 2) // Annotate the class to be a Room database,
+@Database(entities = {Spot.class}, version = 3) // Annotate the class to be a Room database,
 // declare the entities that belong in the database and set the version number. Listing the entities
 // will create tables in the database.
 public abstract class SpotRoomDatabase extends RoomDatabase {

@@ -58,7 +58,7 @@ public class Spot {
      * <li>Brooklyn Banks (a name consisting of the location and main obstacle)
      * </ul></p>
      */
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "name")
     private String mName;
 
@@ -67,11 +67,11 @@ public class Spot {
 //    @Embedded
 //    private LatLng mLatLng;
 
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "longitude")
     private double mLongitude;
 
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "latitude")
     private double mLatitude;
 
@@ -85,10 +85,9 @@ public class Spot {
      * One is a waist-tall ledge.
      * </p>
      */
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "description")
     private String mDescription;
-
 
     // Todo: Integrate these fields into Room and the rest of the app
     //    private Type mType;
@@ -117,7 +116,6 @@ public class Spot {
     @ColumnInfo(name = "photo_filepath_5")
     private String mPhotoFilepath5;
 
-
     /* END Fields *********************************************************************************/
 
 
@@ -129,6 +127,10 @@ public class Spot {
      */
     public Spot() {
         // Todo: See if there's a way to prevent external access to this constructor
+    }
+
+    public Spot(String name) {
+        mName = name;
     }
 
     /**
@@ -195,7 +197,7 @@ public class Spot {
     /* END Constructors ***************************************************************************/
 
 
-    /* Getter methods *****************************************************************************/
+    /* Member variable getter methods *****************************************************************************/
 
     /**
      * @return the unique spot ID
@@ -292,15 +294,10 @@ public class Spot {
         return null;
     }
 
-    public String getAbbreviatedPhotoFilepath(int photoNumber) {
-        return "IMG_" + getName() + photoNumber + ".jpg";
-
-    }
-
-    /* END Getter methods *************************************************************************/
+    /* END Member variable getter methods *************************************************************************/
 
 
-    /* Setter methods *****************************************************************************/
+    /* Member variable setter methods *****************************************************************************/
 
     /**
      * This method should only be used by Room; an ID, once auto-generated and assigned to a
@@ -412,16 +409,28 @@ public class Spot {
                 break;
         }
     }
-    /* END Setter methods *************************************************************************/
+    /* END Member variable setter methods *************************************************************************/
+
+    /* Misc. methods ******************************************************************************/
+
+    public String getAbbreviatedPhotoFilepath(int photoNumber) {
+        return "IMG_" + getId() + photoNumber + ".jpg";
+
+    }
 
     /**
-     * A method to create and return a file path which can be converted into a URI and exported to
-     * other apps (namely, camera apps) so that they can store image files to this file.
+     * A method to generate (and return) a filename which can be appended to a directory path,
+     * converted into a URI, and exported to other apps (namely, camera apps) so that they can
+     * write data (i.e., image data) to the file at this location.
      *
-     * @return  The filename of the photo of this Spot
+     * @return  A filename representing the target location of a file to be created and then written
+     *          to by an external app. The filename format is: "IMG_SPOT<spotID>_<photo number>.jpg"
      */
-    public String generateNextPhotoFileSuffix() {
-        return "IMG_" + getName() + ++mPhotoCount + ".jpg";
+    public String generateNextPhotoFilename() {
+        if (mPhotoCount >= 5) { // Reached max photo limit
+            return null;
+        }
+        return "IMG_Spot" + getId() + "_" + (mPhotoCount + 1) + ".jpg";
     }
 
     public void incrementPhotoCount(){

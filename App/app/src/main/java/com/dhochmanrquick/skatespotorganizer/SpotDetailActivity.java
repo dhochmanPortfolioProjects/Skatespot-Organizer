@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SpotDetailActivity extends AppCompatActivity
@@ -78,14 +79,17 @@ public class SpotDetailActivity extends AppCompatActivity
                     mSpot = spot;
 
                     ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
-                    String[] spot_images = new String[5];
+
+//                    String[] spot_images;
+                    ArrayList<String> spot_images = new ArrayList<String>();
+
+                    // Load spot_images ArrayList with Spot's photo file paths
                     int photoCount = spot.getPhotoCount();
-                    for (int i = 0; i < photoCount; i++) {
-                        spot_images[i] = spot.getPhotoFilepath(i+1);
+                    for (int i = 1; i <= photoCount; i++) {
+                        spot_images.add(spot.getPhotoFilepath(i));
+//                        spot_images[i] = spot.getPhotoFilepath(i+1);
                     }
-//                    String[] spot_images = new String[] {spot.getPhotoFilepath(1)};
-//                    spot_images[1] = spot.getPhotoFilepath(1);
-//                    spot_images[1] = "Hello";
+
                     ViewPagerAdapter adapter = new ViewPagerAdapter(SpotDetailActivity.this, spot_images);
                     viewPager.setAdapter(adapter);
 

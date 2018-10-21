@@ -12,21 +12,30 @@ import android.widget.ImageView;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 public class ViewPagerAdapter extends PagerAdapter {
 
     private Context mContext;
-    private String[] mSpotImages;
+    private String[] mSpotImages_Array;
+    private List<String> mSpotImages_List;
     private LayoutInflater mLayoutInflater;
 
     public ViewPagerAdapter(Context context, String[] spotImages) {
 //        super();
         mContext = context;
-        mSpotImages = spotImages;
+        mSpotImages_Array = spotImages;
+    }
+
+    public ViewPagerAdapter(Context context, List<String> spotImages) {
+//        super();
+        mContext = context;
+        mSpotImages_List = spotImages;
     }
 
     @Override
     public int getCount() {
-        return mSpotImages.length;
+        return mSpotImages_List.size();
     }
 
     @Override
@@ -39,7 +48,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
 
-        final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpotImages[position], 1000, 1000);
+        final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpotImages_List.get(position), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
 //        final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
         ImageView imageView = new ImageView(mContext);
