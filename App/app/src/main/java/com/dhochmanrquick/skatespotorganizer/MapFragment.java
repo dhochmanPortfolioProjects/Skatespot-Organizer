@@ -80,6 +80,7 @@ public class MapFragment extends Fragment implements
     private OnFragmentInteractionListener mListener;
     private SpotViewModel mSpotViewModel; // The ViewModel (the app's data)
     private GoogleMap mMap;
+    private MapView mMapView;
     private List<Spot> mSpotList;
     private Context mContext;
     private Activity mActivity;
@@ -181,10 +182,10 @@ public class MapFragment extends Fragment implements
         // MapFragment, the MapView acts as a container for the map, exposing core map functionality
         // through the GoogleMap object.
         // So, what is the real difference? Here, a MapView is used in a Fragment.
-        MapView mapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
-        mapView.onCreate(savedInstanceState);
-        mapView.onResume();
-        mapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
+        mMapView = view.findViewById(R.id.map); // Get Map View from the inflated content view
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
+        mMapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
 
         FloatingActionButton map_style_fab = view.findViewById(R.id.map_style_button);
 
@@ -459,19 +460,33 @@ public class MapFragment extends Fragment implements
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-                mSpotList = spots; // Locally cache the SpotList
-                // Update the cached copy of the words in the adapter.
+                if (spots != null) {
+                    if (spots.size() > 0) {
+
+//                        mMapView.onCreate(savedInstanceState);
+//                        mMapView.onResume();
+//                        mMapView.getMapAsync(MapFragment.this);
+
+                        mSpotList = spots; // Locally cache the SpotList
+                        // Update the cached copy of the words in the adapter.
 //                adapter.setWords(words);
-                // Set markers on the map
-                for (Spot spot : spots) {
+                        // Set markers on the map
+                        for (Spot spot : spots) {
 //                    googleMap.addMarker(new MarkerOptions()
-                    mMap.addMarker(new MarkerOptions()
+                            mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                            .title(spot.getName())
-                            .snippet(spot.getDescription()));
+                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                                    .title(spot.getName())
+                                    .snippet(spot.getDescription()));
 //                            .snippet("" + spot.getId()));
-                }
+                        }
+                    } else {
+                            mMap.clear();
+                        }
+                    }
+//                } else {
+//                    mMap.clear();
+//                }
             }
         });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker

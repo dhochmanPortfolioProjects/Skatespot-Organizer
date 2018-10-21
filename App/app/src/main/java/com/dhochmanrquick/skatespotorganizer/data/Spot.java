@@ -58,7 +58,7 @@ public class Spot {
      * <li>Brooklyn Banks (a name consisting of the location and main obstacle)
      * </ul></p>
      */
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "name")
     private String mName;
 
@@ -67,11 +67,11 @@ public class Spot {
 //    @Embedded
 //    private LatLng mLatLng;
 
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "longitude")
     private double mLongitude;
 
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "latitude")
     private double mLatitude;
 
@@ -85,10 +85,9 @@ public class Spot {
      * One is a waist-tall ledge.
      * </p>
      */
-    @NonNull
+    // @NonNull
     @ColumnInfo(name = "description")
     private String mDescription;
-
 
     // Todo: Integrate these fields into Room and the rest of the app
     //    private Type mType;
@@ -97,6 +96,25 @@ public class Spot {
     private int mImageID = 0; // What is this?
 
 //    private ImageView mPhotoView;
+
+    // Member variables for a Spot's photo files
+    @ColumnInfo(name = "photo_count")
+    private int mPhotoCount = 0;
+
+    @ColumnInfo(name = "photo_filepath_1")
+    private String mPhotoFilepath1;
+
+    @ColumnInfo(name = "photo_filepath_2")
+    private String mPhotoFilepath2;
+
+    @ColumnInfo(name = "photo_filepath_3")
+    private String mPhotoFilepath3;
+
+    @ColumnInfo(name = "photo_filepath_4")
+    private String mPhotoFilepath4;
+
+    @ColumnInfo(name = "photo_filepath_5")
+    private String mPhotoFilepath5;
 
     /* END Fields *********************************************************************************/
 
@@ -109,6 +127,10 @@ public class Spot {
      */
     public Spot() {
         // Todo: See if there's a way to prevent external access to this constructor
+    }
+
+    public Spot(String name) {
+        mName = name;
     }
 
     /**
@@ -175,7 +197,7 @@ public class Spot {
     /* END Constructors ***************************************************************************/
 
 
-    /* Getter methods *****************************************************************************/
+    /* Member variable getter methods *****************************************************************************/
 
     /**
      * @return the unique spot ID
@@ -237,10 +259,45 @@ public class Spot {
         return mImageID;
     }
 
-    /* END Getter methods *************************************************************************/
+    public int getPhotoCount() {
+        return mPhotoCount;
+    }
+
+    public String getPhotoFilepath1() {
+        return mPhotoFilepath1;
+    }
+
+    public String getPhotoFilepath2() {
+        return mPhotoFilepath2;
+    }
+
+    public String getPhotoFilepath3() {
+        return mPhotoFilepath3;
+    }
+
+    public String getPhotoFilepath4() {
+        return mPhotoFilepath4;
+    }
+
+    public String getPhotoFilepath5() {
+        return mPhotoFilepath5;
+    }
+
+    public String getPhotoFilepath(int photoNumber) {
+        switch (photoNumber) {
+            case 1: return mPhotoFilepath1;
+            case 2: return mPhotoFilepath2;
+            case 3: return mPhotoFilepath3;
+            case 4: return mPhotoFilepath4;
+            case 5: return mPhotoFilepath5;
+        }
+        return null;
+    }
+
+    /* END Member variable getter methods *************************************************************************/
 
 
-    /* Setter methods *****************************************************************************/
+    /* Member variable setter methods *****************************************************************************/
 
     /**
      * This method should only be used by Room; an ID, once auto-generated and assigned to a
@@ -314,15 +371,73 @@ public class Spot {
         mImageID = imageID;
     }
 
-    /* END Setter methods *************************************************************************/
+    public void setPhotoCount(int photoCount) {
+        mPhotoCount = photoCount;
+    }
+
+    public void setPhotoFilepath1(String photoFilepath1) {
+        mPhotoFilepath1 = photoFilepath1;
+    }
+
+    public void setPhotoFilepath2(String photoFilepath2) {
+        mPhotoFilepath2 = photoFilepath2;
+    }
+
+    public void setPhotoFilepath3(String photoFilepath3) {
+        mPhotoFilepath3 = photoFilepath3;
+    }
+
+    public void setPhotoFilepath4(String photoFilepath4) {
+        mPhotoFilepath4 = photoFilepath4;
+    }
+
+    public void setPhotoFilepath5(String photoFilepath5) {
+        mPhotoFilepath5 = photoFilepath5;
+    }
+
+    public void setPhotoFilepath(String photoFilepath, int photoNumber) {
+        switch (photoNumber) {
+            case 1: mPhotoFilepath1 = photoFilepath;
+            break;
+            case 2: mPhotoFilepath2 = photoFilepath;
+                break;
+            case 3: mPhotoFilepath3 = photoFilepath;
+                break;
+            case 4: mPhotoFilepath4 = photoFilepath;
+                break;
+            case 5: mPhotoFilepath5 = photoFilepath;
+                break;
+        }
+    }
+    /* END Member variable setter methods *************************************************************************/
+
+    /* Misc. methods ******************************************************************************/
+
+    public String getAbbreviatedPhotoFilepath(int photoNumber) {
+        return "IMG_" + getId() + photoNumber + ".jpg";
+
+    }
 
     /**
-     * A method to create and return a file path which can be converted into a URI and exported to
-     * other apps (namely, camera apps) so that they can store image files to this file.
+     * A method to generate (and return) a filename which can be appended to a directory path,
+     * converted into a URI, and exported to other apps (namely, camera apps) so that they can
+     * write data (i.e., image data) to the file at this location.
      *
-     * @return  The filename of the photo of this Spot
+     * @return  A filename representing the target location of a file to be created and then written
+     *          to by an external app. The filename format is: "IMG_SPOT<spotID>_<photo number>.jpg"
      */
-    public String getPhotoFilename() {
-        return "IMG_" + getName() + ".jpg";
+    public String generateNextPhotoFilename() {
+        if (mPhotoCount >= 5) { // Reached max photo limit
+            return null;
+        }
+        return "IMG_Spot" + getId() + "_" + (mPhotoCount + 1) + ".jpg";
+    }
+
+    public void incrementPhotoCount(){
+        mPhotoCount++;
+    }
+
+    public void decrementPhotoCount(){
+        mPhotoCount--;
     }
 }

@@ -2,9 +2,11 @@ package com.dhochmanrquick.skatespotorganizer.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Room;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -40,6 +42,15 @@ public interface SpotDao {
     @Insert
     void insert(Spot spot);
 
+    @Delete
+    public void deleteSpots(Spot... spots);
+
+    @Query("DELETE FROM spot_table")
+    void deleteAll();
+
+    @Update
+    public void updateSpots(Spot... spots);
+
     // When this query is processed at compile time, Room matches the :id bind parameter with the
     // id method parameter.
     // Room allows you to return any Java-based object (POJO) from your queries as long as the set of
@@ -55,9 +66,6 @@ public interface SpotDao {
      */
     @Query("SELECT * FROM spot_table WHERE name = :name")
     LiveData<Spot> getSpot(String name);
-
-    @Query("DELETE FROM spot_table")
-    void deleteAll();
 
     // Use a return value of type LiveData in your method description, and Room generates all
     // necessary code to update the LiveData when the database is updated.

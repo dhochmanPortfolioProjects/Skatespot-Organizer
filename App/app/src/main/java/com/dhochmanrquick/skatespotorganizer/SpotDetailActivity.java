@@ -1,22 +1,21 @@
 package com.dhochmanrquick.skatespotorganizer;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
-import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,23 +24,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 public class SpotDetailActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
 
     private SpotViewModel mSpotViewModel;
-//    private LiveData<Spot> spot; // Since the Spot is only accessed and manipulated in onChanged,
+    //    private LiveData<Spot> spot; // Since the Spot is only accessed and manipulated in onChanged,
     // do we need this member variable?
     private Spot mSpot;
     private GoogleMap mMap;
+    private ViewPager.OnPageChangeListener mOnPageChangeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_detail);
+
+//        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
+//        ViewPagerAdapter adapter = new ViewPagerAdapter(this, )
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
@@ -66,23 +68,101 @@ public class SpotDetailActivity extends AppCompatActivity
         mSpotViewModel.getSpot(id).observe(this, new Observer<Spot>() {
             @Override
             public void onChanged(@Nullable Spot spot) { // Should this be final? This is the Spot
-                // pulled from the database.
-                mSpot = spot;
-                ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
-                ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
-                File filesDir = getFilesDir(); // Get handle to directory for private application files
-                File photoFile = new File(filesDir, spot.getPhotoFilename()); // Create new File in the directory
-                Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
-//            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                ((ImageView) findViewById(R.id.spot_detail_image_iv)).setImageBitmap(bitmap);
+                if (spot != null) {
+                    mSpot = spot;
 
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
+                    ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
+
+                    // Load spot_images ArrayList with Spot's photo file paths
+                    ArrayList<String> spotImages_List = new ArrayList<>();
+                    int photoCount = spot.getPhotoCount();
+                    for (int i = 1; i <= photoCount; i++) {
+                        spotImages_List.add(spot.getPhotoFilepath(i));
+                    }
+
+                    // Instantiate new ViewPagerAdapter (which knows how to build the View for each
+                    // photo associated with this Spot) with spotImages_List.
+                    ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+
+                    LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
+                    final int dotsCount = viewPagerAdapter.getCount();
+                    final ImageView[] dotImages_Array = new ImageView[dotsCount];
+
+                    viewPager.setAdapter(viewPagerAdapter);
+
+                    // Create dot ImageViews and add to SliderDotsPanel View
+                    sliderDotsPanel.removeAllViews();
+                    for (int i = 0; i < dotsCount; i++) {
+                        dotImages_Array[i] = new ImageView(SpotDetailActivity.this);
+                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(8, 0, 8, 0);
+                        sliderDotsPanel.addView(dotImages_Array[i], params);
+                    }
+
+                    dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+                    viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+                    mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+                        @Override
+                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        }
+
+                        @Override
+                        public void onPageSelected(int position) {
+//                            int dotsCount_local = dotsCount;
+//                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
+                            for (int i = 0; i < dotsCount; i++) {
+                                dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                            }
+                            dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                        }
+
+                        @Override
+                        public void onPageScrollStateChanged(int state) {
+                        }
+                    };
+                    viewPager.addOnPageChangeListener(mOnPageChangeListener);
+
+                    // Populate UI Views with this Spot's information
+                    ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
+                    ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
+//                File filesDir = getFilesDir(); // Get handle to directory for private application files
+//                File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
+
+
+//                    final Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+////            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+//                    final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
+//                    spot_ImageView.setImageBitmap(bitmap);
+//
+//
+//                    spot_ImageView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            Dialog spotImage_Dialog = new Dialog(SpotDetailActivity.this);
+////                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//                            ImageView imageView = new ImageView(SpotDetailActivity.this);
+//                            imageView.setImageBitmap(bitmap);
+//                            spotImage_Dialog.getWindow().setContentView(imageView);
+////                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+////                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
+////                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));
+//                            spotImage_Dialog.setCancelable(true);
+//                            spotImage_Dialog.show();
+//                        }
+//                    });
+
+
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
 //                        .title(mSpot.getName())
 //                        .snippet(mSpot.getDescription()));
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(mSpot.getLatLng()));
-
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(mSpot.getLatLng()));
+                } else {
+                    finish();
+                }
             }
         });
 
@@ -104,7 +184,7 @@ public class SpotDetailActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SpotDetailActivity.this, NewSpotActivity.class);
+                Intent intent = new Intent(SpotDetailActivity.this, EditSpotActivity.class);
                 intent.putExtra("EDIT_SPOT", mSpot.getId());
                 startActivity(intent);
 //                mCurrentPlayer.createCryptogram(PlayableGamesActivity.this);
@@ -158,5 +238,4 @@ public class SpotDetailActivity extends AppCompatActivity
 //                .title(mSpot.getName())
 //                .snippet(mSpot.getDescription()));
     }
-
 }

@@ -102,4 +102,51 @@ public class SpotRepository {
             return null;
         }
     }
+
+    public void deleteSpots(Spot... spots) { new deleteSpotsAsyncTask(mSpotDao).execute(spots); }
+
+    /**
+     * Private inner AsyncTask class to insert a Spot into the database, which must be done on a
+     * non-UI thread or your app will crash; Room ensures that you don't do any long-running
+     * operations on the main thread, blocking the UI.
+     */
+    private static class deleteSpotsAsyncTask extends AsyncTask<Spot, Void, Void> {
+
+        private SpotDao mAsyncTaskDao; // Member variable to hold the DAO (passed into the constructor)
+
+        // Constructor: Stores the DAO passed in into the local variable mAsyncTaskDao
+        deleteSpotsAsyncTask(SpotDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Spot... params) {
+            mAsyncTaskDao.deleteSpots(params[0]);
+            return null;
+        }
+    }
+
+    public void updateSpots(Spot... spots) { new updateSpotsAsyncTask(mSpotDao).execute(spots); }
+
+    /**
+     * Private inner AsyncTask class to insert a Spot into the database, which must be done on a
+     * non-UI thread or your app will crash; Room ensures that you don't do any long-running
+     * operations on the main thread, blocking the UI.
+     */
+    private static class updateSpotsAsyncTask extends AsyncTask<Spot, Void, Void> {
+
+        private SpotDao mAsyncTaskDao; // Member variable to hold the DAO (passed into the constructor)
+
+        // Constructor: Stores the DAO passed in into the local variable mAsyncTaskDao
+        updateSpotsAsyncTask(SpotDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Spot... params) {
+            mAsyncTaskDao.updateSpots(params[0]);
+            return null;
+        }
+    }
+
 }

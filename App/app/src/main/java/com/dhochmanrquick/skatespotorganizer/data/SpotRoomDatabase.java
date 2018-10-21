@@ -27,7 +27,7 @@ import java.util.Random;
  * @author Daniel Hochman
  * @author Rob Quick
  */
-@Database(entities = {Spot.class}, version = 1) // Annotate the class to be a Room database,
+@Database(entities = {Spot.class}, version = 3) // Annotate the class to be a Room database,
 // declare the entities that belong in the database and set the version number. Listing the entities
 // will create tables in the database.
 public abstract class SpotRoomDatabase extends RoomDatabase {
@@ -55,6 +55,7 @@ public abstract class SpotRoomDatabase extends RoomDatabase {
                             SpotRoomDatabase.class, "spot_database")
                             // add the callback to the database build sequence right before calling .build().
 //                            .addCallback(sRoomDatabaseCallback)
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
