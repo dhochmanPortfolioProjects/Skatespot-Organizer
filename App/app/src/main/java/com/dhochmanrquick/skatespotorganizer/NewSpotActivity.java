@@ -1,5 +1,6 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.animation.Animator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -17,6 +18,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,6 +59,36 @@ public class NewSpotActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_spot);
+
+        final View rootView = findViewById(R.id.new_spot_root_container);
+
+        rootView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+                rootView.removeOnLayoutChangeListener(this);
+
+                rootView.post(new Runnable() {
+                    @Override
+                    public void run(){
+                        // get the center for the clipping circle
+                        int cx = (rootView.getLeft() + rootView.getRight()) / 2;
+                        int cy = (rootView.getTop() + rootView.getBottom()) / 2;
+
+                        // get the final radius for the clipping circle
+                        int dx = Math.max(cx, rootView.getWidth() - cx);
+                        int dy = Math.max(cy, rootView.getHeight() - cy);
+                        float finalRadius = (float) Math.hypot(dx, dy);
+
+                        // Android native animator
+                        Animator animator =
+                                ViewAnimationUtils.createCircularReveal(rootView, cx, cy, 0, finalRadius);
+                        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                        animator.setDuration(500);
+                        animator.start();
+                    }
+                });
+            }
+        });
 
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
