@@ -49,6 +49,7 @@ public class NewSpotActivity extends AppCompatActivity {
     private boolean inCurrentLocationMode = false;
     private File mTempFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
     private File mPhotoFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
+    private AlertDialog upButton_dialog = null;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
@@ -69,7 +70,7 @@ public class NewSpotActivity extends AppCompatActivity {
 
                 rootView.post(new Runnable() {
                     @Override
-                    public void run(){
+                    public void run() {
                         // get the center for the clipping circle
                         int cx = (rootView.getLeft() + rootView.getRight()) / 2;
                         int cy = (rootView.getTop() + rootView.getBottom()) / 2;
@@ -560,6 +561,26 @@ public class NewSpotActivity extends AppCompatActivity {
 //                finish(); //
             }
         });
+
+        // Build an alert dialog for when the user presses the up button before saving the Spot
+        AlertDialog.Builder upButton_builder = new AlertDialog.Builder(this);
+        upButton_builder.setTitle("Abort Spot")
+                .setMessage("You have not saved your spot. Leave anyways?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSpotViewModel.deleteSpots(mNewSpot);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        upButton_dialog = upButton_builder.create();
     }
 
     /**
@@ -648,7 +669,13 @@ public class NewSpotActivity extends AppCompatActivity {
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
     }
 
-//    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        upButton_dialog.show();
+    }
+
+    //    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
 ////        if (mImageCaptureUri != null) {
 //            InputStream inputStream = null;
 //            OutputStream outputStream = null;
@@ -685,4 +712,4 @@ public class NewSpotActivity extends AppCompatActivity {
 //            }
 //            return true; // Success
 //        }
-    }
+}
