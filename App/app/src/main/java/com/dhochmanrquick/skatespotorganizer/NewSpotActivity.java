@@ -377,21 +377,38 @@ public class NewSpotActivity extends AppCompatActivity {
 
                 // Extract user input from the UI Views, locally update the Spot accordingly, and
                 // then update in the db
-                mNewSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
-                mNewSpot.setLatLng(new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
-                        Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())));
-                mNewSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
-                mNewSpot.setPhotoFilepath(mPhotoFile.getPath(), mNewSpot.getPhotoCount());
+                if (((EditText) findViewById(R.id.new_spot_latitude)).getText().toString().trim().isEmpty()) {
+                    ((EditText) findViewById(R.id.new_spot_latitude)).setError("You must include latitude to create a new spot");
+                } else if (((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString().trim().isEmpty()) {
+                    ((EditText) findViewById(R.id.new_spot_longtitude)).setError("You must include longitude to create a new spot");
+                } else {
+                    mNewSpot.setLatLng(new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+                            Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())));
+
+                    if (!((EditText) findViewById(R.id.new_spot_name)).getText().toString().trim().isEmpty()) {
+                        mNewSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
+                    } else {
+                        mNewSpot.setName("No name");
+                    }
+
+                    if (!((EditText) findViewById(R.id.new_spot_description)).getText().toString().trim().isEmpty()) {
+                        mNewSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
+                    } else {
+                        mNewSpot.setDescription("No description.");
+                    }
+                    if (mPhotoFile != null) {
+                        mNewSpot.setPhotoFilepath(mPhotoFile.getPath(), mNewSpot.getPhotoCount());
+                    }
 //                    mSpotViewModel.getSpot(mNewSpot.getId())
 //                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
 //                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
 //                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
 //                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
 
-                // A Spot is not assigned a unique ID until it is inserted into the database
-                // for the first time. The photo filenames depend on the SpotID, so we need
-                // to insert the Spot here so that it has an ID when its photos are assigned to
-                // it below.
+                    // A Spot is not assigned a unique ID until it is inserted into the database
+                    // for the first time. The photo filenames depend on the SpotID, so we need
+                    // to insert the Spot here so that it has an ID when its photos are assigned to
+                    // it below.
 //                    mSpotViewModel.insert(mNewSpot);
 //                if (mImageCaptureUri != null) {
 //                    InputStream inputStream = null;
@@ -428,11 +445,12 @@ public class NewSpotActivity extends AppCompatActivity {
 ////                            Log.e( TAG, "Exception occurred " + e.getMessage());
 //                    } finally {
 //                    }
-                mSpotViewModel.updateSpots(mNewSpot);
-                Toast.makeText(NewSpotActivity.this,
-                        "Spot " + mNewSpot.getName() + " has been created.", Toast.LENGTH_LONG)
-                        .show();
-                finish();
+                    mSpotViewModel.updateSpots(mNewSpot);
+                    Toast.makeText(NewSpotActivity.this,
+                            "Spot " + mNewSpot.getName() + " has been created.", Toast.LENGTH_LONG)
+                            .show();
+                    finish();
+                }
             }
         });
 //
