@@ -74,6 +74,7 @@ public class SpotDetailActivity extends AppCompatActivity
 
                     if (mSpot.getPhotoCount() > 0) {
 
+                        viewPager.setBackgroundResource(0);
                         // Load spot_images ArrayList with Spot's photo file paths
                         ArrayList<String> spotImages_List = new ArrayList<>();
                         int photoCount = spot.getPhotoCount();

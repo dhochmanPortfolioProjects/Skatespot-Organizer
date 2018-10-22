@@ -75,8 +75,12 @@ public class EditSpotActivity extends AppCompatActivity {
 //                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                    Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
-                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                    if (spot.getPhotoCount() > 0) {
+                        Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
+                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                    } else {
+                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageResource(R.drawable.ic_no_image);
+                    }
                 }
             }
         });
