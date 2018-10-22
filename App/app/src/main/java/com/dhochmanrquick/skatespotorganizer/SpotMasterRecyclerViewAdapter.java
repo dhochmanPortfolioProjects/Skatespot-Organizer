@@ -2,6 +2,8 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +98,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
 //        holder.mSpotImage_ImageView.setImageBitmap(bitmap);
 
         // Set Spot's ImageView as a Bitmap
-        if (spot.getImageID() == 0) { // What is this?
+        if (spot.getPhotoCount() > 0) {
             File filesDir = mContext.getFilesDir(); // Get handle to directory for private application files
 //            File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
 //            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
@@ -104,7 +106,15 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
             holder.mSpotImage_ImageView.setImageBitmap(bitmap);
         } else {
-            holder.mSpotImage_ImageView.setImageResource(spot.getImageID());
+            // Read your drawable from somewhere
+            Drawable dr = mContext.getResources().getDrawable(R.drawable.ic_no_image);
+//            dr.setBounds(5, 5, 5, 5);
+//            Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
+//            // Scale it to 50 x 50
+//            Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, 50, 50, true));
+            // Set your new, scaled drawable "d"
+//            holder.mSpotImage_ImageView.setImageResource(R.drawable.ic_no_image);
+            holder.mSpotImage_ImageView.setImageDrawable(dr);
         }
 
 //        spot.getImageID() == 0 ? holder.mSpotImage_ImageView.setImageBitmap(bitmap) : holder == null;

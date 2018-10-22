@@ -70,9 +70,9 @@ public class SpotDetailActivity extends AppCompatActivity
             public void onChanged(@Nullable Spot spot) { // Should this be final? This is the Spot
                 if (spot != null) {
                     mSpot = spot;
+                    ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
 
                     if (mSpot.getPhotoCount() > 0) {
-                        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
 
                         // Load spot_images ArrayList with Spot's photo file paths
                         ArrayList<String> spotImages_List = new ArrayList<>();
@@ -124,6 +124,18 @@ public class SpotDetailActivity extends AppCompatActivity
                             }
                         };
                         viewPager.addOnPageChangeListener(mOnPageChangeListener);
+                    } else { // Spot has no photos
+                        viewPager.setBackgroundResource(R.drawable.ic_no_image);
+
+//                        // Load spot_images ArrayList with Spot's photo file paths
+//                        ArrayList<String> spotImages_List = new ArrayList<>();
+//                        spotImages_List.add(spot.getPhotoFilepath(i));
+//
+//
+//                        // Instantiate new ViewPagerAdapter (which knows how to build the View for each
+//                        // photo associated with this Spot) with spotImages_List.
+//                        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+
                     }
 
                     // Populate UI Views with this Spot's information
