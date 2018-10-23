@@ -28,7 +28,6 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +37,7 @@ public class EditSpotActivity extends AppCompatActivity {
     private Spot mEditSpot;
     private File mPhotoFile;
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
+    private int mPhotoIndexToDisplay = -1;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
@@ -95,8 +95,6 @@ public class EditSpotActivity extends AppCompatActivity {
                         final int dotsCount = viewPagerAdapter.getCount();
                         final ImageView[] dotImages_Array = new ImageView[dotsCount];
 
-                        viewPager.setAdapter(viewPagerAdapter);
-
                         // Create dot ImageViews and add to SliderDotsPanel View
                         sliderDotsPanel.removeAllViews();
                         for (int i = 0; i < dotsCount; i++) {
@@ -107,7 +105,11 @@ public class EditSpotActivity extends AppCompatActivity {
                             sliderDotsPanel.addView(dotImages_Array[i], params);
                         }
 
-                        dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                        if (mPhotoIndexToDisplay == -1) {
+                            dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                        } else {
+                            dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                        }
 
                         viewPager.removeOnPageChangeListener(mOnPageChangeListener);
                         mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -129,6 +131,11 @@ public class EditSpotActivity extends AppCompatActivity {
                             public void onPageScrollStateChanged(int state) {
                             }
                         };
+                        viewPager.setAdapter(viewPagerAdapter);
+                        if (mPhotoIndexToDisplay != -1) {
+                            viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
+                            mPhotoIndexToDisplay = -1;
+                        }
                         viewPager.addOnPageChangeListener(mOnPageChangeListener);
                     } else {
 //                        ((ImageView) findViewById(R.id.edit_spot_photo_iv)).setImageResource(R.drawable.ic_no_image);
@@ -400,6 +407,7 @@ public class EditSpotActivity extends AppCompatActivity {
         switch (requestCode) {
 //            case REQUEST_PHOTO:
             case PICK_FROM_CAMERA:
+                mPhotoIndexToDisplay = mEditSpot.getPhotoCount();
                 mEditSpot.incrementPhotoCount();
                 mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
                 mSpotViewModel.updateSpots(mEditSpot);
@@ -421,7 +429,11 @@ public class EditSpotActivity extends AppCompatActivity {
 //                }
 //                File selectedPhoto_File = new File(getFilesDir(), mImageCaptureUri.getPath()); // Create new File in the directory
                 if (PictureUtils.copyUriContentToFile(getApplication(), selectedImage_Uri, mPhotoFile)) {
+                    mPhotoIndexToDisplay = mEditSpot.getPhotoCount();
                     mEditSpot.incrementPhotoCount();
+                    mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
+                    mSpotViewModel.updateSpots(mEditSpot);
+                    Toast.makeText(EditSpotActivity.this, "The selected photo has been added to the spot.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(EditSpotActivity.this,
                             "An error has occurred while saving the selected photo.",

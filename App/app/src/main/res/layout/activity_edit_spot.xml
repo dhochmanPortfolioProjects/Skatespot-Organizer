@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/spot_image_viewpager"/>
+        android:layout_alignBottom="@+id/edit_spot_image_viewpager"/>
 
         <Button
             android:id="@+id/edit_spot_camera"
