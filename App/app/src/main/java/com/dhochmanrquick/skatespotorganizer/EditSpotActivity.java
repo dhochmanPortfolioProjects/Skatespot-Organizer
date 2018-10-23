@@ -6,16 +6,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +29,7 @@ import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EditSpotActivity extends AppCompatActivity {
@@ -36,6 +37,7 @@ public class EditSpotActivity extends AppCompatActivity {
     private SpotViewModel mSpotViewModel;
     private Spot mEditSpot;
     private File mPhotoFile;
+    private ViewPager.OnPageChangeListener mOnPageChangeListener;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
@@ -43,7 +45,7 @@ public class EditSpotActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_spot); // For now, use same layout as NewSpot
+        setContentView(R.layout.activity_edit_spot); // For now, use same layout as NewSpot
 
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
@@ -62,10 +64,10 @@ public class EditSpotActivity extends AppCompatActivity {
                 if (spot != null) {
                     mEditSpot = spot; // Cache spot locally
                     // Populate all the views in the layout
-                    ((EditText) findViewById(R.id.new_spot_name)).setText(spot.getName());
-                    ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + spot.getLatitude());
-                    ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + spot.getLongitude());
-                    ((EditText) findViewById(R.id.new_spot_description)).setText(spot.getDescription());
+                    ((EditText) findViewById(R.id.edit_spot_name)).setText(spot.getName());
+                    ((EditText) findViewById(R.id.edit_spot_latitude)).setText("" + spot.getLatitude());
+                    ((EditText) findViewById(R.id.edit_spot_longtitude)).setText("" + spot.getLongitude());
+                    ((EditText) findViewById(R.id.edit_spot_description)).setText(spot.getDescription());
                     // Now, instead of having to open a File based on the short pathname (generated
                     // dynamically by each Spot) just to call getPath() on it so that
                     // PictureUtils.getScaledBitmap() can open it and convert it to a Bitmap, since
@@ -75,17 +77,67 @@ public class EditSpotActivity extends AppCompatActivity {
 //                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+                    ViewPager viewPager = findViewById(R.id.edit_spot_image_viewpager);
                     if (spot.getPhotoCount() > 0) {
-                        Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
-                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+                        viewPager.setBackgroundResource(0); // Clear any previously set background resource
+                        // Load spot_images ArrayList with Spot's photo file paths
+                        ArrayList<String> spotImages_List = new ArrayList<>();
+                        int photoCount = spot.getPhotoCount();
+                        for (int i = 1; i <= photoCount; i++) {
+                            spotImages_List.add(spot.getPhotoFilepath(i));
+                        }
+
+                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
+                        // photo associated with this Spot) with spotImages_List.
+                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
+
+                        LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
+                        final int dotsCount = viewPagerAdapter.getCount();
+                        final ImageView[] dotImages_Array = new ImageView[dotsCount];
+
+                        viewPager.setAdapter(viewPagerAdapter);
+
+                        // Create dot ImageViews and add to SliderDotsPanel View
+                        sliderDotsPanel.removeAllViews();
+                        for (int i = 0; i < dotsCount; i++) {
+                            dotImages_Array[i] = new ImageView(EditSpotActivity.this);
+                            dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            params.setMargins(8, 0, 8, 0);
+                            sliderDotsPanel.addView(dotImages_Array[i], params);
+                        }
+
+                        dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+                        viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+                        mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
+//                            int dotsCount_local = dotsCount;
+//                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
+                                for (int i = 0; i < dotsCount; i++) {
+                                    dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                }
+                                dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+                            }
+                        };
+                        viewPager.addOnPageChangeListener(mOnPageChangeListener);
                     } else {
-                        ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageResource(R.drawable.ic_no_image);
+//                        ((ImageView) findViewById(R.id.edit_spot_photo_iv)).setImageResource(R.drawable.ic_no_image);
                     }
                 }
             }
         });
 
-        Button saveChanges_Button = findViewById(R.id.new_spot_create_btn);
+        Button saveChanges_Button = findViewById(R.id.edit_spot_create_btn);
         saveChanges_Button.setText("Save changes");
         saveChanges_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,10 +180,10 @@ public class EditSpotActivity extends AppCompatActivity {
 //                    mSpotViewModel.insert(mNewSpot);
                 // Todo: Implement the update to database
                 // Populate all the views in the layout
-                mEditSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
-                mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()));
-                mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString()));
-                mEditSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
+                mEditSpot.setName(((EditText) findViewById(R.id.edit_spot_name)).getText().toString());
+                mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.edit_spot_latitude)).getText().toString()));
+                mEditSpot.setLongitude(Float.parseFloat(((EditText) findViewById(R.id.edit_spot_longtitude)).getText().toString()));
+                mEditSpot.setDescription(((EditText) findViewById(R.id.edit_spot_description)).getText().toString());
 
                 if (mPhotoFile != null) {
                     mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
@@ -214,25 +266,24 @@ public class EditSpotActivity extends AppCompatActivity {
 
         final AlertDialog dialog = builder.create();
 
-        // Create Button Dynamically
-        Button deleteSpot_Button = new Button(this);
-        deleteSpot_Button.setText("Delete spot"/*R.string.show_text*/);
-        deleteSpot_Button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//            deleteSpot_Button.setGravity(Gravity.CENTER); This didn't work
-//            deleteSpot_Button.layout_mar(0, 20, 0, 0);
-        deleteSpot_Button.setBackgroundColor(Color.RED);
-        deleteSpot_Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
-
-        LinearLayout root_container = findViewById(R.id.new_spot_root_container);
-        // Add delete Button to LinearLayout
-        if (root_container != null) {
-            root_container.addView(deleteSpot_Button);
-        }
+//        // Create Button Dynamically
+//        Button deleteSpot_Button = new Button(this);
+//        deleteSpot_Button.setText("Delete spot"/*R.string.show_text*/);
+//        deleteSpot_Button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+////            deleteSpot_Button.setGravity(Gravity.CENTER); This didn't work
+////            deleteSpot_Button.layout_mar(0, 20, 0, 0);
+//        deleteSpot_Button.setBackgroundColor(Color.RED);
+//        deleteSpot_Button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.show();
+//            }
+//        });
+//        LinearLayout root_container = findViewById(R.id.edit_spot_root_container);
+//        // Add delete Button to LinearLayout
+//        if (root_container != null) {
+//            root_container.addView(deleteSpot_Button);
+//        }
 
         final String[] items = new String[]{"From camera", "From gallery"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, items);
@@ -288,7 +339,7 @@ public class EditSpotActivity extends AppCompatActivity {
         });
         final AlertDialog imageSelection_dialog = imageSelection_builder.create();
 
-        findViewById(R.id.new_spot_camera).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.edit_spot_add_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mEditSpot.getPhotoCount() >= 5) {
@@ -351,6 +402,7 @@ public class EditSpotActivity extends AppCompatActivity {
             case PICK_FROM_CAMERA:
                 mEditSpot.incrementPhotoCount();
                 mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
+                mSpotViewModel.updateSpots(mEditSpot);
 //                doCrop();
 //                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
@@ -360,13 +412,13 @@ public class EditSpotActivity extends AppCompatActivity {
                 break;
             case PICK_FROM_FILE:
                 Uri selectedImage_Uri = intent.getData(); // Get return contentURI
-                try {
-                    // Create Bitmap from the return contentURI
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage_Uri);
-                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    // Create Bitmap from the return contentURI
+//                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage_Uri);
+//                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //                File selectedPhoto_File = new File(getFilesDir(), mImageCaptureUri.getPath()); // Create new File in the directory
                 if (PictureUtils.copyUriContentToFile(getApplication(), selectedImage_Uri, mPhotoFile)) {
                     mEditSpot.incrementPhotoCount();
@@ -388,7 +440,6 @@ public class EditSpotActivity extends AppCompatActivity {
 //                File f = new File(mImageCaptureUri.getPath());
 //                if (f.exists()) f.delete();
                 break;
-
         }
 //        switch (requestCode) {
 //            case REQUEST_PHOTO:

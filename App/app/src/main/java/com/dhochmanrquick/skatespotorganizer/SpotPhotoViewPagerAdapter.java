@@ -16,20 +16,20 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 
     private Context mContext;
     private String[] mSpotImages_Array;
     private List<String> mSpotImages_List;
     private LayoutInflater mLayoutInflater;
 
-    public ViewPagerAdapter(Context context, String[] spotImages) {
+    public SpotPhotoViewPagerAdapter(Context context, String[] spotImages) {
 //        super();
         mContext = context;
         mSpotImages_Array = spotImages;
     }
 
-    public ViewPagerAdapter(Context context, List<String> spotImages) {
+    public SpotPhotoViewPagerAdapter(Context context, List<String> spotImages) {
 //        super();
         mContext = context;
         mSpotImages_List = spotImages;

@@ -43,7 +43,7 @@ public class SpotDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_spot_detail);
 
 //        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
-//        ViewPagerAdapter adapter = new ViewPagerAdapter(this, )
+//        SpotPhotoViewPagerAdapter adapter = new SpotPhotoViewPagerAdapter(this, )
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
@@ -73,8 +73,7 @@ public class SpotDetailActivity extends AppCompatActivity
                     ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
 
                     if (mSpot.getPhotoCount() > 0) {
-
-                        viewPager.setBackgroundResource(0);
+                        viewPager.setBackgroundResource(0); // Clear any previously set background resource
                         // Load spot_images ArrayList with Spot's photo file paths
                         ArrayList<String> spotImages_List = new ArrayList<>();
                         int photoCount = spot.getPhotoCount();
@@ -82,9 +81,9 @@ public class SpotDetailActivity extends AppCompatActivity
                             spotImages_List.add(spot.getPhotoFilepath(i));
                         }
 
-                        // Instantiate new ViewPagerAdapter (which knows how to build the View for each
+                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
                         // photo associated with this Spot) with spotImages_List.
-                        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
 
                         LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
                         final int dotsCount = viewPagerAdapter.getCount();
@@ -133,9 +132,9 @@ public class SpotDetailActivity extends AppCompatActivity
 //                        spotImages_List.add(spot.getPhotoFilepath(i));
 //
 //
-//                        // Instantiate new ViewPagerAdapter (which knows how to build the View for each
+//                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
 //                        // photo associated with this Spot) with spotImages_List.
-//                        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+//                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
 
                     }
 
