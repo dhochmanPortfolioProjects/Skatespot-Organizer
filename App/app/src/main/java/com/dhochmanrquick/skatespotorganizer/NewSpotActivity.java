@@ -49,6 +49,7 @@ public class NewSpotActivity extends AppCompatActivity {
     private boolean inCurrentLocationMode = false;
     private File mTempFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
     private File mPhotoFile; // A temporary file where photos will be stored before the user commits to creating a new Spot
+    private AlertDialog upButton_dialog = null;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
@@ -69,7 +70,7 @@ public class NewSpotActivity extends AppCompatActivity {
 
                 rootView.post(new Runnable() {
                     @Override
-                    public void run(){
+                    public void run() {
                         // get the center for the clipping circle
                         int cx = (rootView.getLeft() + rootView.getRight()) / 2;
                         int cy = (rootView.getTop() + rootView.getBottom()) / 2;
@@ -106,7 +107,7 @@ public class NewSpotActivity extends AppCompatActivity {
 //            Toast.makeText(this, "Error creating temp file.", Toast.LENGTH_LONG).show();
 //        }
         // Configure image source selection AlertDialog
-        final String[] items = new String[]{"Take from camera", "Select from gallery"};
+        final String[] items = new String[]{"From camera", "From gallery"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, items);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Image");
@@ -376,21 +377,38 @@ public class NewSpotActivity extends AppCompatActivity {
 
                 // Extract user input from the UI Views, locally update the Spot accordingly, and
                 // then update in the db
-                mNewSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
-                mNewSpot.setLatLng(new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
-                        Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())));
-                mNewSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
-                mNewSpot.setPhotoFilepath(mPhotoFile.getPath(), mNewSpot.getPhotoCount());
+                if (((EditText) findViewById(R.id.new_spot_latitude)).getText().toString().trim().isEmpty()) {
+                    ((EditText) findViewById(R.id.new_spot_latitude)).setError("You must include latitude to create a new spot");
+                } else if (((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString().trim().isEmpty()) {
+                    ((EditText) findViewById(R.id.new_spot_longtitude)).setError("You must include longitude to create a new spot");
+                } else {
+                    mNewSpot.setLatLng(new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
+                            Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())));
+
+                    if (!((EditText) findViewById(R.id.new_spot_name)).getText().toString().trim().isEmpty()) {
+                        mNewSpot.setName(((EditText) findViewById(R.id.new_spot_name)).getText().toString());
+                    } else {
+                        mNewSpot.setName("No name");
+                    }
+
+                    if (!((EditText) findViewById(R.id.new_spot_description)).getText().toString().trim().isEmpty()) {
+                        mNewSpot.setDescription(((EditText) findViewById(R.id.new_spot_description)).getText().toString());
+                    } else {
+                        mNewSpot.setDescription("No description.");
+                    }
+                    if (mPhotoFile != null) {
+                        mNewSpot.setPhotoFilepath(mPhotoFile.getPath(), mNewSpot.getPhotoCount());
+                    }
 //                    mSpotViewModel.getSpot(mNewSpot.getId())
 //                    mNewSpot = new Spot(((EditText) findViewById(R.id.new_spot_name)).getText().toString(),
 //                            new LatLng(Double.parseDouble(((EditText) findViewById(R.id.new_spot_latitude)).getText().toString()),
 //                                    Double.parseDouble(((EditText) findViewById(R.id.new_spot_longtitude)).getText().toString())),
 //                            ((EditText) findViewById(R.id.new_spot_description)).getText().toString(),
 
-                // A Spot is not assigned a unique ID until it is inserted into the database
-                // for the first time. The photo filenames depend on the SpotID, so we need
-                // to insert the Spot here so that it has an ID when its photos are assigned to
-                // it below.
+                    // A Spot is not assigned a unique ID until it is inserted into the database
+                    // for the first time. The photo filenames depend on the SpotID, so we need
+                    // to insert the Spot here so that it has an ID when its photos are assigned to
+                    // it below.
 //                    mSpotViewModel.insert(mNewSpot);
 //                if (mImageCaptureUri != null) {
 //                    InputStream inputStream = null;
@@ -427,11 +445,12 @@ public class NewSpotActivity extends AppCompatActivity {
 ////                            Log.e( TAG, "Exception occurred " + e.getMessage());
 //                    } finally {
 //                    }
-                mSpotViewModel.updateSpots(mNewSpot);
-                Toast.makeText(NewSpotActivity.this,
-                        "Spot " + mNewSpot.getName() + " has been created.", Toast.LENGTH_LONG)
-                        .show();
-                finish();
+                    mSpotViewModel.updateSpots(mNewSpot);
+                    Toast.makeText(NewSpotActivity.this,
+                            "Spot " + mNewSpot.getName() + " has been created.", Toast.LENGTH_LONG)
+                            .show();
+                    finish();
+                }
             }
         });
 //
@@ -560,6 +579,26 @@ public class NewSpotActivity extends AppCompatActivity {
 //                finish(); //
             }
         });
+
+        // Build an alert dialog for when the user presses the up button before saving the Spot
+        AlertDialog.Builder upButton_builder = new AlertDialog.Builder(this);
+        upButton_builder.setTitle("Abort Spot")
+                .setMessage("You have not saved your spot. Leave anyways?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSpotViewModel.deleteSpots(mNewSpot);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        upButton_dialog = upButton_builder.create();
     }
 
     /**
@@ -605,7 +644,7 @@ public class NewSpotActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 //                File selectedPhoto_File = new File(getFilesDir(), mImageCaptureUri.getPath()); // Create new File in the directory
-                if (copyUriContentToFile(selectedImage_Uri, mPhotoFile)) {
+                if (PictureUtils.copyUriContentToFile(getApplication(), selectedImage_Uri, mPhotoFile)) {
                     mNewSpot.incrementPhotoCount();
                 } else {
                     Toast.makeText(NewSpotActivity.this,
@@ -648,41 +687,47 @@ public class NewSpotActivity extends AppCompatActivity {
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
     }
 
-    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
-//        if (mImageCaptureUri != null) {
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-//            File spotPhotoFile;
-            try {
-                ContentResolver content = getContentResolver();
-                inputStream = content.openInputStream(srcURI);
-
-                File root = Environment.getExternalStorageDirectory();
-                if (root == null) {
-//                                Log.d(TAG, "Failed to get root");
-                }
-                // create a directory
-//                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
-                // create direcotory if it doesn't exists
-//                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
-//                            saveDirectory.mkdirs();
-                outputStream = new FileOutputStream(destFile);
-//                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
-                if (outputStream != null) {
-//                                Log.e( TAG, "Output Stream Opened successfully");
-                }
-                byte[] buffer = new byte[1000];
-                int bytesRead = 0;
-                while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
-                    outputStream.write(buffer, 0, buffer.length);
-                }
-//                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
-//                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
-            } catch (Exception e) {
-                return false;
-//                            Log.e( TAG, "Exception occurred " + e.getMessage());
-            } finally {
-            }
-            return true; // Success
-        }
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        upButton_dialog.show();
     }
+
+    //    private boolean copyUriContentToFile(Uri srcURI, File destFile) {
+////        if (mImageCaptureUri != null) {
+//            InputStream inputStream = null;
+//            OutputStream outputStream = null;
+////            File spotPhotoFile;
+//            try {
+//                ContentResolver content = getContentResolver();
+//                inputStream = content.openInputStream(srcURI);
+//
+//                File root = Environment.getExternalStorageDirectory();
+//                if (root == null) {
+////                                Log.d(TAG, "Failed to get root");
+//                }
+//                // create a directory
+////                            File saveDirectory = new File(Environment.getExternalStorageDirectory()+File.separator+ "directory_name" +File.separator);
+//                // create direcotory if it doesn't exists
+////                spotPhotoFile = new File(getFilesDir(), mNewSpot.generateNextPhotoFilename());
+////                            saveDirectory.mkdirs();
+//                outputStream = new FileOutputStream(destFile);
+////                            outputStream = new FileOutputStream( saveDirectory + "filename.extension"); // filename.png, .mp3, .mp4 ...
+//                if (outputStream != null) {
+////                                Log.e( TAG, "Output Stream Opened successfully");
+//                }
+//                byte[] buffer = new byte[1000];
+//                int bytesRead = 0;
+//                while ((bytesRead = inputStream.read(buffer, 0, buffer.length)) >= 0) {
+//                    outputStream.write(buffer, 0, buffer.length);
+//                }
+////                mNewSpot.incrementPhotoCount(); // On photo success, update current photo count
+////                mNewSpot.setPhotoFilepath(spotPhotoFile.getPath(), mNewSpot.getPhotoCount());
+//            } catch (Exception e) {
+//                return false;
+////                            Log.e( TAG, "Exception occurred " + e.getMessage());
+//            } finally {
+//            }
+//            return true; // Success
+//        }
+}

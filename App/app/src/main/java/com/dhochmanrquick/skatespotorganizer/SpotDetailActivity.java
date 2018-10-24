@@ -43,7 +43,7 @@ public class SpotDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_spot_detail);
 
 //        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
-//        ViewPagerAdapter adapter = new ViewPagerAdapter(this, )
+//        SpotPhotoViewPagerAdapter adapter = new SpotPhotoViewPagerAdapter(this, )
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
@@ -70,59 +70,73 @@ public class SpotDetailActivity extends AppCompatActivity
             public void onChanged(@Nullable Spot spot) { // Should this be final? This is the Spot
                 if (spot != null) {
                     mSpot = spot;
-
                     ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
 
-                    // Load spot_images ArrayList with Spot's photo file paths
-                    ArrayList<String> spotImages_List = new ArrayList<>();
-                    int photoCount = spot.getPhotoCount();
-                    for (int i = 1; i <= photoCount; i++) {
-                        spotImages_List.add(spot.getPhotoFilepath(i));
-                    }
-
-                    // Instantiate new ViewPagerAdapter (which knows how to build the View for each
-                    // photo associated with this Spot) with spotImages_List.
-                    ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
-
-                    LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
-                    final int dotsCount = viewPagerAdapter.getCount();
-                    final ImageView[] dotImages_Array = new ImageView[dotsCount];
-
-                    viewPager.setAdapter(viewPagerAdapter);
-
-                    // Create dot ImageViews and add to SliderDotsPanel View
-                    sliderDotsPanel.removeAllViews();
-                    for (int i = 0; i < dotsCount; i++) {
-                        dotImages_Array[i] = new ImageView(SpotDetailActivity.this);
-                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        params.setMargins(8, 0, 8, 0);
-                        sliderDotsPanel.addView(dotImages_Array[i], params);
-                    }
-
-                    dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-
-                    viewPager.removeOnPageChangeListener(mOnPageChangeListener);
-                    mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
-                        @Override
-                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    if (mSpot.getPhotoCount() > 0) {
+                        viewPager.setBackgroundResource(0); // Clear any previously set background resource
+                        // Load spot_images ArrayList with Spot's photo file paths
+                        ArrayList<String> spotImages_List = new ArrayList<>();
+                        int photoCount = spot.getPhotoCount();
+                        for (int i = 1; i <= photoCount; i++) {
+                            spotImages_List.add(spot.getPhotoFilepath(i));
                         }
 
-                        @Override
-                        public void onPageSelected(int position) {
+                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
+                        // photo associated with this Spot) with spotImages_List.
+                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+
+                        LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
+                        final int dotsCount = viewPagerAdapter.getCount();
+                        final ImageView[] dotImages_Array = new ImageView[dotsCount];
+
+                        viewPager.setAdapter(viewPagerAdapter);
+
+                        // Create dot ImageViews and add to SliderDotsPanel View
+                        sliderDotsPanel.removeAllViews();
+                        for (int i = 0; i < dotsCount; i++) {
+                            dotImages_Array[i] = new ImageView(SpotDetailActivity.this);
+                            dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            params.setMargins(8, 0, 8, 0);
+                            sliderDotsPanel.addView(dotImages_Array[i], params);
+                        }
+
+                        dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+                        viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+                        mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
 //                            int dotsCount_local = dotsCount;
 //                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
-                            for (int i = 0; i < dotsCount; i++) {
-                                dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                for (int i = 0; i < dotsCount; i++) {
+                                    dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                }
+                                dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
                             }
-                            dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                        }
 
-                        @Override
-                        public void onPageScrollStateChanged(int state) {
-                        }
-                    };
-                    viewPager.addOnPageChangeListener(mOnPageChangeListener);
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+                            }
+                        };
+                        viewPager.addOnPageChangeListener(mOnPageChangeListener);
+                    } else { // Spot has no photos
+                        viewPager.setBackgroundResource(R.drawable.ic_no_image);
+
+//                        // Load spot_images ArrayList with Spot's photo file paths
+//                        ArrayList<String> spotImages_List = new ArrayList<>();
+//                        spotImages_List.add(spot.getPhotoFilepath(i));
+//
+//
+//                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
+//                        // photo associated with this Spot) with spotImages_List.
+//                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(SpotDetailActivity.this, spotImages_List);
+
+                    }
 
                     // Populate UI Views with this Spot's information
                     ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
