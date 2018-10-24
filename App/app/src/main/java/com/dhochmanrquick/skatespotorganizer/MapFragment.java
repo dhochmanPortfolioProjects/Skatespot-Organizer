@@ -281,15 +281,18 @@ public class MapFragment extends Fragment implements
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: I put this in as a quick and dirty check
+                    Toast.makeText(mContext,
+                            "You need to provide network permissions, please change your settings.",
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
-                locationCt = locationManager
-                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                LatLng latLng = new LatLng(locationCt.getLatitude(),
-                        locationCt.getLongitude());
+                locationCt = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                LatLng latLng = new LatLng(locationCt.getLatitude(), locationCt.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title("Current Location"));
 
             }
         });
@@ -475,7 +478,7 @@ public class MapFragment extends Fragment implements
         googleMap.setPadding(0, 50, 0, 130);
 
         // Set a listener for marker click.
-        googleMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);
         googleMap.setOnInfoWindowClickListener(this);
 
         // An observer for the LiveData<List<Spot>> returned by getAllSpots().
@@ -530,6 +533,8 @@ public class MapFragment extends Fragment implements
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
+        Toast.makeText(mContext, "onMarkerClick called", Toast.LENGTH_SHORT).show();
+
         return false;
     }
 
