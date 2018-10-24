@@ -7,44 +7,44 @@
     android:orientation="vertical"
     tools:context=".EditSpotActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
 
     <android.support.v4.view.ViewPager
         android:id="@+id/edit_spot_image_viewpager"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="10dp">
-    </android.support.v4.view.ViewPager>
+        android:layout_marginTop="10dp"
+        android:scaleType="centerCrop"></android.support.v4.view.ViewPager>
 
     <LinearLayout
         android:id="@+id/SliderDots"
-        android:layout_below="@+id/spot_image_viewpager"
-        android:orientation="horizontal"
-        android:gravity="center_vertical|center_horizontal"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:layout_alignBottom="@+id/edit_spot_image_viewpager"/>
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp" />
+    <!--android:layout_below="@+id/spot_image_viewpager"-->
+    <!--android:layout_alignBottom="@+id/edit_spot_image_viewpager"-->
 
-        <Button
-            android:id="@+id/edit_spot_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableTop="@drawable/ic_camera_alt_black_24dp"
-            android:text="Edit"
-            android:layout_alignParentRight="true"
-            android:layout_alignBottom="@id/edit_spot_image_viewpager"
-            android:clickable="false"/>
-    </RelativeLayout>
-
-    <ImageButton
+    <Button
+        android:id="@+id/edit_spot_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/edit_spot_image_viewpager"
+        android:layout_alignParentRight="true"
+        android:clickable="false"
+        android:drawableTop="@drawable/ic_camera_alt_black_24dp"
+        android:text="Edit" />
+    <!--</RelativeLayout>-->
+
+    <ImageButton
         android:id="@+id/edit_spot_add_photo"
-        android:src="@drawable/ic_add_a_photo_black_24dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_a_photo_black_24dp" />
 
     <EditText
         android:id="@+id/edit_spot_name"

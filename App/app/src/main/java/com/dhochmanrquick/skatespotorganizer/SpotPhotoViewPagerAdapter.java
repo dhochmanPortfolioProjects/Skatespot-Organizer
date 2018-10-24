@@ -32,6 +32,8 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
     private Spot mSpot;
     private SpotViewModel mSpotViewModel;
     private LayoutInflater mLayoutInflater;
+//    private ImageView noImageIcon = null;
+    private boolean mSpotHasNoPhoto;
 
     public SpotPhotoViewPagerAdapter(Context context, String[] spotImages) {
 //        super();
@@ -50,14 +52,24 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
         mSpot = spot;
         mSpotViewModel = spotViewModel;
     }
+//
+//    public SpotPhotoViewPagerAdapter(Context context, ImageView imageView) {
+//        mContext = context;
+//        noImageIcon = imageView;
+//    }
+
+    public SpotPhotoViewPagerAdapter(Context context, boolean spotHasNoPhoto) {
+        mContext = context;
+        mSpotHasNoPhoto = spotHasNoPhoto;
+    }
 
     @Override
     public int getCount() {
-        if (mContext instanceof EditSpotActivity) {
-            return mSpot.getPhotoCount();
-        } else {
-            return mSpotImages_List.size();
-        }
+//        if (mContext instanceof EditSpotActivity) {
+            return mSpotHasNoPhoto ? 1 : mSpot.getPhotoCount();
+//        } else {
+//            return mSpotImages_List.size();
+//        }
     }
 
     @Override
@@ -66,15 +78,26 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
         return view == object;
     }
 
+    // This method must do 2 things:
+    // 1). Create a View and add it to ViewGroup container
+    // 2). Return the View
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, final int position) { // Have to make final so we can see it inside of onClick()
-        ImageView imageView = new ImageView(mContext);
 
+        ImageView item_ImageView = new ImageView(mContext);
+
+        // If the current Spot has no photos, then set the View to the no image icon, add it to
+        // ViewGroup container, and return it
+        if (mSpotHasNoPhoto) {
+            item_ImageView.setImageResource(R.drawable.ic_no_image);
+            container.addView(item_ImageView);
+            return item_ImageView;
+        }
         if (mContext instanceof EditSpotActivity) {
             final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpot.getPhotoFilepath(position + 1), 1000, 1000);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));;
-            imageView.setImageBitmap(bitmap);
+            item_ImageView.setLayoutParams(new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));;
+            item_ImageView.setImageBitmap(bitmap);
 //            final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpot.getPhotoFilepath(position + 1), 1000, 1000);
 
             final String[] items = new String[]{"Remove photo", "Edit photo"};
@@ -91,23 +114,24 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
                 }
             });
             final AlertDialog dialog = builder.create();
-            imageView.setOnClickListener(new View.OnClickListener() {
+            item_ImageView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     dialog.show();
                 }
             });
         } else {
         // Get current Spot image path from mSpotImages_List and create bitmap
-        final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpotImages_List.get(position), 1000, 1000);
+//        final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpotImages_List.get(position), 1000, 1000);
+            final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpot.getPhotoFilepath(position + 1), 1000, 1000);
 //            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
 //        final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
 //        ImageView imageView = new ImageView(mContext);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));;
+        item_ImageView.setLayoutParams(new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));;
 
 //        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        ImageView imageView = (ImageView) mLayoutInflater.inflate(R.layout.spot_image_viewpager_item, container, false);
 //        ImageView imageView = (ImageView) container.findViewById(R.id.spot_detail_image_iv);
-        imageView.setImageBitmap(bitmap);
+        item_ImageView.setImageBitmap(bitmap);
 
 //        return super.instantiateItem(container, position);
 //        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -121,7 +145,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 //                .into(imageView);
 ////        ImageView imageView = new ImageView(mContext);
 
-            imageView.setOnClickListener(new View.OnClickListener() {
+            item_ImageView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     //this will log the page number that was click
 //                Log.i("TAG", "This page was clicked: " + position);
@@ -138,9 +162,8 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
                 }
             });
         }
-        container.addView(imageView);
-
-        return imageView;
+        container.addView(item_ImageView);
+        return item_ImageView;
     }
 
     @Override

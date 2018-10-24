@@ -3,12 +3,19 @@ package com.dhochmanrquick.skatespotorganizer.utils;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.dhochmanrquick.skatespotorganizer.EditSpotActivity;
+import com.dhochmanrquick.skatespotorganizer.R;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 
 import java.io.File;
@@ -104,5 +111,54 @@ public class PictureUtils {
         } finally {
         }
         return true; // Success
+    }
+
+    public static void configureDotSlider(LinearLayout sliderDotsPanel, final int dotsCount,
+                                          final Context context,/* ViewPager viewPager,*/ int photoIndexToDisplay){
+//        LinearLayout sliderDotsPanel = sliderDotsView; //findViewById(R.id.SliderDots);
+//        final int dotsCount = numOfDots; // viewPagerAdapter.getCount();
+        final ImageView[] dotImages_Array = new ImageView[dotsCount];
+
+        // Dynamically create dot ImageViews for each item (spot photo) in the adapter and add to
+        // SliderDotsPanel View
+        sliderDotsPanel.removeAllViews();
+        for (int i = 0; i < dotsCount; i++) {
+            dotImages_Array[i] = new ImageView(context/*EditSpotActivity.this*/);
+            dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.non_active_dot));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(8, 0, 8, 0);
+            sliderDotsPanel.addView(dotImages_Array[i], params);
+        }
+
+        // Set the active dot
+        if (photoIndexToDisplay == -1) {
+            // Set first dot to active
+            dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.active_dot));
+        } else {
+            dotImages_Array[photoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.active_dot));
+        }
+
+//        viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+//        mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+////                            int dotsCount_local = dotsCount;
+////                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
+//                // Set all dots to inactive
+//                for (int i = 0; i < dotsCount; i++) {
+//                    dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.non_active_dot));
+//                }
+//                // Set the dot corresponding to the current page to active
+//                dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.active_dot));
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//            }
+//        };
     }
 }
