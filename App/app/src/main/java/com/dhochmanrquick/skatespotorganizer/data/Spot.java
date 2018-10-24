@@ -398,7 +398,7 @@ public class Spot {
     public void setPhotoFilepath(String photoFilepath, int photoNumber) {
         switch (photoNumber) {
             case 1: mPhotoFilepath1 = photoFilepath;
-            break;
+                break;
             case 2: mPhotoFilepath2 = photoFilepath;
                 break;
             case 3: mPhotoFilepath3 = photoFilepath;
@@ -439,5 +439,28 @@ public class Spot {
 
     public void decrementPhotoCount(){
         mPhotoCount--;
+    }
+
+    public void removePhotoFilepath(int photoNumber) {
+        switch (photoNumber) {
+            // To eliminate a given photo filepath, shift all later filepaths down 1
+            case 1:     mPhotoFilepath1 = mPhotoFilepath2;
+                        mPhotoFilepath2 = mPhotoFilepath3;
+                        mPhotoFilepath3 = mPhotoFilepath4;
+                        mPhotoFilepath4 = mPhotoFilepath5;
+                        break;
+            case 2:     mPhotoFilepath2 = mPhotoFilepath3;
+                        mPhotoFilepath3 = mPhotoFilepath4;
+                        mPhotoFilepath4 = mPhotoFilepath5;
+                        break;
+            case 3:     mPhotoFilepath3 = mPhotoFilepath4;
+                        mPhotoFilepath4 = mPhotoFilepath5;
+                        break;
+            case 4:     mPhotoFilepath4 = mPhotoFilepath5;
+                        break;
+            case 5:     mPhotoFilepath5 = null;
+                        break;
+        }
+        decrementPhotoCount();
     }
 }

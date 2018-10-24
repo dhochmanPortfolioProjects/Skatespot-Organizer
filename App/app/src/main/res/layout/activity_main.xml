@@ -38,9 +38,10 @@
             android:elevation="6dp"
             app:layout_constraintBottom_toTopOf="@+id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/add_64_white"
+
             app:fabSize="normal"
             app:rippleColor="#FFFF00"/>
+        <!--app:srcCompat="@drawable/add_64_white"-->
 
             <com.arlib.floatingsearchview.FloatingSearchView
                 android:id="@+id/floating_search_view"

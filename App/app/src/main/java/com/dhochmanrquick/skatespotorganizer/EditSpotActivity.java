@@ -38,6 +38,7 @@ public class EditSpotActivity extends AppCompatActivity {
     private File mPhotoFile;
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
     private int mPhotoIndexToDisplay = -1;
+    private LinearLayout mDotSlider_View;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
@@ -49,6 +50,8 @@ public class EditSpotActivity extends AppCompatActivity {
 
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+
+        mDotSlider_View = findViewById(R.id.SliderDots);
 
         // Edit mode:
 //        if (getIntent().hasExtra("EDIT_SPOT")) {
@@ -77,71 +80,79 @@ public class EditSpotActivity extends AppCompatActivity {
 //                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
+                    mDotSlider_View.removeAllViews(); // Clear any previous dots from the slider
                     ViewPager viewPager = findViewById(R.id.edit_spot_image_viewpager);
-                    if (spot.getPhotoCount() > 0) {
+//                    if (spot.getPhotoCount() > 0) {
                         viewPager.setBackgroundResource(0); // Clear any previously set background resource
                         // Load spot_images ArrayList with Spot's photo file paths
-                        ArrayList<String> spotImages_List = new ArrayList<>();
-                        int photoCount = spot.getPhotoCount();
-                        for (int i = 1; i <= photoCount; i++) {
-                            spotImages_List.add(spot.getPhotoFilepath(i));
-                        }
-
+//                        ArrayList<String> spotImages_List = new ArrayList<>();
+//                        int photoCount = spot.getPhotoCount();
+//                        for (int i = 1; i <= photoCount; i++) {
+//                            spotImages_List.add(spot.getPhotoFilepath(i));
+//                        }
+                    final SpotPhotoViewPagerAdapter viewPagerAdapter;
                         // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
                         // photo associated with this Spot) with spotImages_List.
-                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
+//                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
+                    if (mEditSpot.getPhotoCount() == 0) {
+//                        ImageView item_ImageView = new ImageView(EditSpotActivity.this);
+//                        item_ImageView.setImageResource(R.drawable.ic_no_image);
+                        viewPagerAdapter = new SpotPhotoViewPagerAdapter(
+                                EditSpotActivity.this, true);
+                    } else { // Spot has at least one photo
+                        viewPagerAdapter = new SpotPhotoViewPagerAdapter(
+                                EditSpotActivity.this, mEditSpot, mSpotViewModel);
+                        if (mEditSpot.getPhotoCount() > 1) { // Set up dot slider
+                            final int dotsCount = viewPagerAdapter.getCount();
+                            final ImageView[] dotImages_Array = new ImageView[dotsCount];
 
-                        LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
-                        final int dotsCount = viewPagerAdapter.getCount();
-                        final ImageView[] dotImages_Array = new ImageView[dotsCount];
-
-                        // Create dot ImageViews and add to SliderDotsPanel View
-                        sliderDotsPanel.removeAllViews();
-                        for (int i = 0; i < dotsCount; i++) {
-                            dotImages_Array[i] = new ImageView(EditSpotActivity.this);
-                            dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                            params.setMargins(8, 0, 8, 0);
-                            sliderDotsPanel.addView(dotImages_Array[i], params);
-                        }
-
-                        if (mPhotoIndexToDisplay == -1) {
-                            dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                        } else {
-                            dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                        }
-
-                        viewPager.removeOnPageChangeListener(mOnPageChangeListener);
-                        mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
-                            @Override
-                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                            // Dynamically create dot ImageViews for each item (spot photo) in the
+                            // adapter and add to SliderDotsPanel View
+                            for (int i = 0; i < dotsCount; i++) {
+                                dotImages_Array[i] = new ImageView(EditSpotActivity.this);
+                                dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                params.setMargins(8, 0, 8, 0);
+                                mDotSlider_View.addView(dotImages_Array[i], params);
                             }
 
-                            @Override
-                            public void onPageSelected(int position) {
+                            if (mPhotoIndexToDisplay == -1) {
+                                dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                            } else {
+                                dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                            }
+//                        PictureUtils.configureDotSlider((LinearLayout) findViewById(R.id.SliderDots),
+//                                viewPagerAdapter.getCount(), EditSpotActivity.this, mPhotoIndexToDisplay );
+                            viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+                            mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+                                @Override
+                                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                                }
+
+                                @Override
+                                public void onPageSelected(int position) {
 //                            int dotsCount_local = dotsCount;
 //                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
-                                for (int i = 0; i < dotsCount; i++) {
-                                    dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                    for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+                                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                    }
+                                    dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
                                 }
-                                dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                            }
 
-                            @Override
-                            public void onPageScrollStateChanged(int state) {
-                            }
-                        };
+                                @Override
+                                public void onPageScrollStateChanged(int state) {
+                                }
+                            };
+                        }
+                    }
                         viewPager.setAdapter(viewPagerAdapter);
                         if (mPhotoIndexToDisplay != -1) {
                             viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
                             mPhotoIndexToDisplay = -1;
                         }
                         viewPager.addOnPageChangeListener(mOnPageChangeListener);
-                    } else {
-//                        ((ImageView) findViewById(R.id.edit_spot_photo_iv)).setImageResource(R.drawable.ic_no_image);
                     }
                 }
-            }
         });
 
         Button saveChanges_Button = findViewById(R.id.edit_spot_create_btn);
@@ -411,6 +422,7 @@ public class EditSpotActivity extends AppCompatActivity {
                 mEditSpot.incrementPhotoCount();
                 mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
                 mSpotViewModel.updateSpots(mEditSpot);
+                Toast.makeText(EditSpotActivity.this, "Your photo has been added to the spot.", Toast.LENGTH_LONG).show();
 //                doCrop();
 //                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
@@ -433,7 +445,7 @@ public class EditSpotActivity extends AppCompatActivity {
                     mEditSpot.incrementPhotoCount();
                     mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
                     mSpotViewModel.updateSpots(mEditSpot);
-                    Toast.makeText(EditSpotActivity.this, "The selected photo has been added to the spot.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditSpotActivity.this, "The selected photo has been added to the spot.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(EditSpotActivity.this,
                             "An error has occurred while saving the selected photo.",
