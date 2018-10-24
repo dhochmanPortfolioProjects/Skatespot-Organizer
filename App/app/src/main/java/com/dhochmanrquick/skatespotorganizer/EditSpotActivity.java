@@ -89,7 +89,8 @@ public class EditSpotActivity extends AppCompatActivity {
 
                         // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
                         // photo associated with this Spot) with spotImages_List.
-                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
+//                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
+                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, mEditSpot, mSpotViewModel);
 
                         LinearLayout sliderDotsPanel = findViewById(R.id.SliderDots);
                         final int dotsCount = viewPagerAdapter.getCount();
@@ -411,6 +412,7 @@ public class EditSpotActivity extends AppCompatActivity {
                 mEditSpot.incrementPhotoCount();
                 mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
                 mSpotViewModel.updateSpots(mEditSpot);
+                Toast.makeText(EditSpotActivity.this, "Your photo has been added to the spot.", Toast.LENGTH_LONG).show();
 //                doCrop();
 //                photoFile = new File(filesDir, mNewSpot.getPhotoFilename()); // Create new File in the directory
 //                bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
@@ -433,7 +435,7 @@ public class EditSpotActivity extends AppCompatActivity {
                     mEditSpot.incrementPhotoCount();
                     mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
                     mSpotViewModel.updateSpots(mEditSpot);
-                    Toast.makeText(EditSpotActivity.this, "The selected photo has been added to the spot.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditSpotActivity.this, "The selected photo has been added to the spot.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(EditSpotActivity.this,
                             "An error has occurred while saving the selected photo.",
