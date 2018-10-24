@@ -23,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Display back/up button in action bar
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Display back/up button in action bar
 
         // An observer for the LiveData returned by getAllWords().
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
@@ -197,43 +199,90 @@ public class MainActivity extends AppCompatActivity implements
 //                }
 //            }
 //        });
+
+        final FloatingSearchView mSearchView = findViewById(R.id.floating_search_view);
+        mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+        mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+
+            }
+
+            @Override
+            public void onSearchAction(String currentQuery) {
+                if (mCurrentFragment instanceof MapFragment) {
+                    // Your activity can call methods in the fragment by acquiring a reference to the
+                    // Fragment from FragmentManager, using findFragmentById() or findFragmentByTag().
+                    ((MapFragment) mCurrentFragment).handleSearchQuery(currentQuery);
+                } else if (mCurrentFragment instanceof SpotMasterFragment) {
+                    Toast.makeText(getBaseContext(), "Displaying query results for " + currentQuery, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
+            @Override
+            public void onMenuOpened() {
+                Toast.makeText(getBaseContext(), "onMenuOpened has been called", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMenuClosed() {
+                Toast.makeText(getBaseContext(), "onMenuClosed has been called", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                if (mActionBarDrawerToggle.onOptionsItemSelected(item))
+
+                switch (item.getItemId()) {
+                    case R.id.create_new_spot_menu:
+                        Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+                        startActivity(intent);
+
+                }
+
+            }
+        });
     }
 
-    /**
-     * If the current activity is not the searchable activity, then the normal activity lifecycle
-     * events are triggered once the user executes a handleSearchQuery (the current activity receives onPause()
-     * and so forth, as described in the Activities document). If, however, the current activity is
-     * the searchable activity, then one of two things happens:
-     * <p>
-     * 1). By default, the searchable activity receives the ACTION_SEARCH intent with a call to
-     * onCreate() and a new instance of the activity is brought to the top of the activity stack.
-     * There are now two instances of your searchable activity in the activity stack (so pressing
-     * the Back button goes back to the previous instance of the searchable activity, rather than
-     * exiting the searchable activity).
-     * <p>
-     * 2). If you set android:launchMode to "singleTop", then the searchable activity receives the
-     * ACTION_SEARCH intent with a call to onNewIntent(Intent), passing the new ACTION_SEARCH intent here.
-     * <p>
-     * Case 2 applies to our app; this activity is declared as the Searchable Activity and set to
-     * launch in singleTop mode.
-     *
-     * @param intent The Intent that triggered this activity to be relaunched in singleTop mode.
-     *               Generally, this should be the ACTION_SEARCH Intent.
-     */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        // Handle a search query
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            if (mCurrentFragment instanceof MapFragment) {
-                // Your activity can call methods in the fragment by acquiring a reference to the
-                // Fragment from FragmentManager, using findFragmentById() or findFragmentByTag().
-                ((MapFragment) mCurrentFragment).handleSearchQuery(query);
-            } else if (mCurrentFragment instanceof SpotMasterFragment) {
-                Toast.makeText(this, "Displaying query results for " + query, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
+//    /**
+//     * If the current activity is not the searchable activity, then the normal activity lifecycle
+//     * events are triggered once the user executes a handleSearchQuery (the current activity receives onPause()
+//     * and so forth, as described in the Activities document). If, however, the current activity is
+//     * the searchable activity, then one of two things happens:
+//     * <p>
+//     * 1). By default, the searchable activity receives the ACTION_SEARCH intent with a call to
+//     * onCreate() and a new instance of the activity is brought to the top of the activity stack.
+//     * There are now two instances of your searchable activity in the activity stack (so pressing
+//     * the Back button goes back to the previous instance of the searchable activity, rather than
+//     * exiting the searchable activity).
+//     * <p>
+//     * 2). If you set android:launchMode to "singleTop", then the searchable activity receives the
+//     * ACTION_SEARCH intent with a call to onNewIntent(Intent), passing the new ACTION_SEARCH intent here.
+//     * <p>
+//     * Case 2 applies to our app; this activity is declared as the Searchable Activity and set to
+//     * launch in singleTop mode.
+//     *
+//     * @param intent The Intent that triggered this activity to be relaunched in singleTop mode.
+//     *               Generally, this should be the ACTION_SEARCH Intent.
+//     */
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        // Handle a search query
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            if (mCurrentFragment instanceof MapFragment) {
+//                // Your activity can call methods in the fragment by acquiring a reference to the
+//                // Fragment from FragmentManager, using findFragmentById() or findFragmentByTag().
+//                ((MapFragment) mCurrentFragment).handleSearchQuery(query);
+//            } else if (mCurrentFragment instanceof SpotMasterFragment) {
+//                Toast.makeText(this, "Displaying query results for " + query, Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -297,25 +346,25 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_catalog.xml file.
-        // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        // The call to getSearchableInfo() obtains a SearchableInfo object that is created from the
-        // searchable configuration XML file. When the searchable configuration is correctly associated
-        // with your SearchView, the SearchView starts an activity with the ACTION_SEARCH intent when
-        // a user submits a query. Assumes current activity is the searchable activity.
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        searchView.setSubmitButtonEnabled(true);
-
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu options from the res/menu/menu_catalog.xml file.
+//        // This adds menu items to the app bar.
+//        getMenuInflater().inflate(R.menu.options_menu, menu);
+//
+//        // Get the SearchView and set the searchable configuration
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//        // The call to getSearchableInfo() obtains a SearchableInfo object that is created from the
+//        // searchable configuration XML file. When the searchable configuration is correctly associated
+//        // with your SearchView, the SearchView starts an activity with the ACTION_SEARCH intent when
+//        // a user submits a query. Assumes current activity is the searchable activity.
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+//        searchView.setSubmitButtonEnabled(true);
+//
+//        return true;
+//    }
 
     /**
      * Called when any item from the action bar is clicked.

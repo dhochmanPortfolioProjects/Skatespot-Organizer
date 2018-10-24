@@ -6,11 +6,11 @@
         android:id="@+id/create_new_spot_menu"
         android:title="Create new spot" />
 
-    <item android:id="@+id/action_search"
-        android:title="@string/search_hint"
-        android:icon="@drawable/ic_search_white_24dp"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView" />
+    <!--<item android:id="@+id/action_search"-->
+        <!--android:title="@string/search_hint"-->
+        <!--android:icon="@drawable/ic_search_white_24dp"-->
+        <!--app:showAsAction="ifRoom|collapseActionView"-->
+        <!--app:actionViewClass="android.support.v7.widget.SearchView" />-->
 
     <item android:id="@+id/map_style_standard"
         android:title="Standard">

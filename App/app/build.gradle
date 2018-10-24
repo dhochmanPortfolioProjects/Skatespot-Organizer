@@ -56,5 +56,7 @@ dependencies {
         transitive = true
     }
 
+    implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+
 
 }
