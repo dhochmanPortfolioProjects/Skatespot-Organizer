@@ -39,14 +39,15 @@ public class SpotDetailActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
 
+    // The key used in onSaveInstanceState to write the active dot to the bundle
+    private static final String KEY_ACTIVE_DOT = "active_dot";
+
     private SpotViewModel mSpotViewModel;
     private Spot mSpot;
     private GoogleMap mMap;
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
     private LinearLayout mDotSlider_LinearLayout;
     private int mActiveDot; // The current active dot in the dot slider
-    // The key used in onSaveInstanceState to write the active dot to the bundle
-    private static final String KEY_ACTIVE_DOT = "active_dot";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

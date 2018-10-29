@@ -28,34 +28,38 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class EditSpotActivity extends AppCompatActivity {
+
+    // The key used in onSaveInstanceState to write the active dot to the bundle
+    private static final String KEY_ACTIVE_DOT = "active_dot";
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
 
     private SpotViewModel mSpotViewModel;
     private Spot mEditSpot;
     private File mPhotoFile;
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
-    private int mPhotoIndexToDisplay = -1;
-    private LinearLayout mDotSlider_View;
+    private int mPhotoIndexToDisplay = 0; // Keeps track of which photo and dot is currently active and should be displayed
+    private LinearLayout mDotSlider_LinearLayout;
 
-    private static final int PICK_FROM_CAMERA = 1;
-    private static final int CROP_FROM_CAMERA = 2;
-    private static final int PICK_FROM_FILE = 3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_spot); // For now, use same layout as NewSpot
+        setContentView(R.layout.activity_edit_spot);
+
+        // Get the previous active dot (if this Activity is being recreated)
+        if (savedInstanceState != null) {
+//            mActiveDot = savedInstanceState.getInt(KEY_ACTIVE_DOT, 0);
+            mPhotoIndexToDisplay = savedInstanceState.getInt(KEY_ACTIVE_DOT, 0);
+        }
 
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
-        mDotSlider_View = findViewById(R.id.SliderDots);
-
-        // Edit mode:
-//        if (getIntent().hasExtra("EDIT_SPOT")) {
-//            inEditMode = true;
+        mDotSlider_LinearLayout = findViewById(R.id.SliderDots);
 
         // The Activity that launches this one sends the spotID in an extra. Get the spotID for the
         // spot that we are editing.
@@ -80,19 +84,19 @@ public class EditSpotActivity extends AppCompatActivity {
 //                    File photoFile = new File(getFilesDir(), spot.getPhotoFilepath(1)); // Create new File in the directory
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), 1000, 1000);
 //                    Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-                    mDotSlider_View.removeAllViews(); // Clear any previous dots from the slider
+                    mDotSlider_LinearLayout.removeAllViews(); // Clear any previous dots from the slider
                     ViewPager viewPager = findViewById(R.id.edit_spot_image_viewpager);
 //                    if (spot.getPhotoCount() > 0) {
-                        viewPager.setBackgroundResource(0); // Clear any previously set background resource
-                        // Load spot_images ArrayList with Spot's photo file paths
+                    viewPager.setBackgroundResource(0); // Clear any previously set background resource
+                    // Load spot_images ArrayList with Spot's photo file paths
 //                        ArrayList<String> spotImages_List = new ArrayList<>();
 //                        int photoCount = spot.getPhotoCount();
 //                        for (int i = 1; i <= photoCount; i++) {
 //                            spotImages_List.add(spot.getPhotoFilepath(i));
 //                        }
                     final SpotPhotoViewPagerAdapter viewPagerAdapter;
-                        // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
-                        // photo associated with this Spot) with spotImages_List.
+                    // Instantiate new SpotPhotoViewPagerAdapter (which knows how to build the View for each
+                    // photo associated with this Spot) with spotImages_List.
 //                        SpotPhotoViewPagerAdapter viewPagerAdapter = new SpotPhotoViewPagerAdapter(EditSpotActivity.this, spotImages_List);
                     if (mEditSpot.getPhotoCount() == 0) {
 //                        ImageView item_ImageView = new ImageView(EditSpotActivity.this);
@@ -113,16 +117,17 @@ public class EditSpotActivity extends AppCompatActivity {
                                 dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                 params.setMargins(8, 0, 8, 0);
-                                mDotSlider_View.addView(dotImages_Array[i], params);
+                                mDotSlider_LinearLayout.addView(dotImages_Array[i], params);
                             }
 
-                            if (mPhotoIndexToDisplay == -1) {
-                                dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                            } else {
-                                dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-                            }
-//                        PictureUtils.configureDotSlider((LinearLayout) findViewById(R.id.SliderDots),
-//                                viewPagerAdapter.getCount(), EditSpotActivity.this, mPhotoIndexToDisplay );
+                            dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+
+//                            if (mPhotoIndexToDisplay == -1) {
+//                                dotImages_Array[mActiveDot].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+//                            } else {
+//                                dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+//                            }
+
                             viewPager.removeOnPageChangeListener(mOnPageChangeListener);
                             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
                                 @Override
@@ -131,11 +136,16 @@ public class EditSpotActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onPageSelected(int position) {
-//                            int dotsCount_local = dotsCount;
-//                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
-                                    for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
-                                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-                                    }
+                                    // Deactivate previously active dot
+                                    dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                    mPhotoIndexToDisplay = position;
+//                                    mActiveDot = position; // Update mActiveDot to the new dot
+                                    // Instead of iterating through all the dots and deactivating them,
+                                    // more efficient to just deactivate the previous dot and then
+                                    // activate the new dot
+//                                    for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+//                                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+//                                    }
                                     dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
                                 }
 
@@ -145,14 +155,16 @@ public class EditSpotActivity extends AppCompatActivity {
                             };
                         }
                     }
-                        viewPager.setAdapter(viewPagerAdapter);
-                        if (mPhotoIndexToDisplay != -1) {
-                            viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
-                            mPhotoIndexToDisplay = -1;
-                        }
-                        viewPager.addOnPageChangeListener(mOnPageChangeListener);
-                    }
+                    viewPager.setAdapter(viewPagerAdapter);
+                    viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
+
+//                    if (mPhotoIndexToDisplay != -1) {
+//                        viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
+//                        mPhotoIndexToDisplay = -1;
+//                    }
+                    viewPager.addOnPageChangeListener(mOnPageChangeListener);
                 }
+            }
         });
 
         Button saveChanges_Button = findViewById(R.id.edit_spot_create_btn);
@@ -312,33 +324,33 @@ public class EditSpotActivity extends AppCompatActivity {
                 mPhotoFile = new File(getFilesDir(), mEditSpot.generateNextPhotoFilename());
                 if (item == 0) {
 
-                        // Create camera/image capture implicit intent
-                        final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        // Determine whether there is a camera app available
-                        boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
+                    // Create camera/image capture implicit intent
+                    final Intent captureImage_Intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    // Determine whether there is a camera app available
+                    boolean canTakePhoto = captureImage_Intent.resolveActivity(getPackageManager()) != null;
 
 //                        mPhotoFile = new File(getFilesDir(), mEditSpot.generateNextPhotoFilename());
 
 //                    File mPhotoFile = PictureUtils.getPhotoFile(getApplication(), mNewSpot);
 //                File mPhotoFile = mTempFile;
-                        // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
-                        Uri uri = FileProvider.getUriForFile(getApplicationContext(),
-                                "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+                    // Translate the local filepath stored in mPhotoFile into a Uri the camera app can see
+                    Uri uri = FileProvider.getUriForFile(getApplicationContext(),
+                            "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
 
-                        // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
-                        // then camera activity will write the captured image to that path and it will not
-                        // return the bitmap in the onActivityResult method.
-                        captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    // If you pass the extra parameter MediaStore.EXTRA_OUTPUT with the camera intent
+                    // then camera activity will write the captured image to that path and it will not
+                    // return the bitmap in the onActivityResult method.
+                    captureImage_Intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
-                        // Query Package Manager for every activity cameraImage_Intent can resolve to
-                        List<ResolveInfo> cameraActivity =
-                                getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
+                    // Query Package Manager for every activity cameraImage_Intent can resolve to
+                    List<ResolveInfo> cameraActivity =
+                            getPackageManager().queryIntentActivities(captureImage_Intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-                        // Grant write permission for this Uri to each activity
-                        for (ResolveInfo activity : cameraActivity) {
-                            grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        }
-                        startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
+                    // Grant write permission for this Uri to each activity
+                    for (ResolveInfo activity : cameraActivity) {
+                        grantUriPermission(activity.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+                    startActivityForResult(captureImage_Intent, PICK_FROM_CAMERA);
                 } else { // Pick from file
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 //                    Intent intent = new Intent();
@@ -485,6 +497,13 @@ public class EditSpotActivity extends AppCompatActivity {
 
 
 //                    ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(imageBitmap);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        outState.putInt(KEY_ACTIVE_DOT, mActiveDot);
+        outState.putInt(KEY_ACTIVE_DOT, mPhotoIndexToDisplay);
     }
 }
 
