@@ -24,27 +24,39 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
-
+/**
+ * The UI controller for the Spot Detail view. This class is responsible for displaying the
+ * detailed spot information to the user. The Spot Detail view consists of:
+ * <p>
+ * 1). A photo carousel (to display the photos of the Spot), including a dot slider to show the
+ * user their location within the carousel.
+ * 2). The Spot title
+ * 3). The Spot description
+ * 4). A map showing the Spot's location
+ * 5). An edit Spot FAB
+ */
 public class SpotDetailActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
 
     private SpotViewModel mSpotViewModel;
-    //    private LiveData<Spot> spot; // Since the Spot is only accessed and manipulated in onChanged,
-    // do we need this member variable?
     private Spot mSpot;
     private GoogleMap mMap;
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
-    private LinearLayout mDotSlider_View;
+    private LinearLayout mDotSlider_LinearLayout;
+    private int mActiveDot; // The current active dot in the dot slider
+    // The key used in onSaveInstanceState to write the active dot to the bundle
+    private static final String KEY_ACTIVE_DOT = "active_dot";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_detail);
 
-//        ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
-//        SpotPhotoViewPagerAdapter adapter = new SpotPhotoViewPagerAdapter(this, )
+        // Get the previous active dot (if this Activity is being recreated)
+        if (savedInstanceState != null) {
+            mActiveDot = savedInstanceState.getInt(KEY_ACTIVE_DOT, 0);
+        }
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
         MapView mapView = findViewById(R.id.spotmap);
@@ -63,62 +75,68 @@ public class SpotDetailActivity extends AppCompatActivity
         // Retrieve intent extra
         int id = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
 
-        mDotSlider_View = findViewById(R.id.SliderDots);
+        mDotSlider_LinearLayout = findViewById(R.id.SliderDots);
 
         // Get the ViewModel
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
-        // Set Observer on the LiveData wrapping the current Spot
+        // Get the Spot to display from the ViewModel and set an Observer on the LiveData ( which
+        // wraps the current Spot)
         mSpotViewModel.getSpot(id).observe(this, new Observer<Spot>() {
             @Override
             public void onChanged(@Nullable Spot spot) { // Should this be final? This is the Spot
                 if (spot != null) {
-                    mSpot = spot;
-                    mDotSlider_View.removeAllViews(); // Clear any previous dots from the slider
-                    ViewPager viewPager = findViewById(R.id.spot_image_viewpager);
-                    final SpotPhotoViewPagerAdapter viewPagerAdapter;
-
+                    mSpot = spot; // Cache the Spot locally to access it outside of this Observer
+                    mDotSlider_LinearLayout.removeAllViews(); // Clear any previous dots from the slider
+                    ViewPager spotImage_ViewPager = findViewById(R.id.spot_image_viewpager);
+                    final SpotPhotoViewPagerAdapter spotPhotoViewPagerAdapter; // Declared final for use in OnPageChangeListener
+                    // Build an appropriate SpotPhotoViewPagerAdapter according to whether
+                    // the Spot has 0, 1, or 1+ photos; the SpotPhotoViewPagerAdapter knows how to
+                    // build appropriate views in all three cases.
                     if (spot.getPhotoCount() == 0) {
-//                        ImageView item_ImageView = new ImageView(EditSpotActivity.this);
-//                        item_ImageView.setImageResource(R.drawable.ic_no_image);
-                        viewPagerAdapter = new SpotPhotoViewPagerAdapter(
+                        spotPhotoViewPagerAdapter = new SpotPhotoViewPagerAdapter(
                                 SpotDetailActivity.this, true);
                     } else { // Spot has at least one photo
-                        viewPagerAdapter = new SpotPhotoViewPagerAdapter(
+                        spotPhotoViewPagerAdapter = new SpotPhotoViewPagerAdapter(
                                 SpotDetailActivity.this, spot, mSpotViewModel);
-                        if (spot.getPhotoCount() > 1) { // Set up dot slider
-                            final int dotsCount = viewPagerAdapter.getCount();
-                            final ImageView[] dotImages_Array = new ImageView[dotsCount];
-
-                            // Dynamically create dot ImageViews for each item (spot photo) in the
-                            // adapter and add to SliderDotsPanel View
+                        if (spot.getPhotoCount() > 1) { // Only set up dot slider for 1+ photos
+                            final int dotsCount = spotPhotoViewPagerAdapter.getCount();
+                            final ImageView[] dotImages_Array = new ImageView[dotsCount]; // Declared final for use in OnPageChangeListener
+                            // Dynamically create "non active" dot ImageViews for each item
+                            // (spot photo) in the adapter and add to mDotSlider_LinearLayout
                             for (int i = 0; i < dotsCount; i++) {
-                                dotImages_Array[i] = new ImageView(SpotDetailActivity.this);
+                                dotImages_Array[i] = new ImageView(SpotDetailActivity.this); // Create new dot and add to array
+                                // Set dot to non active
                                 dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                // Set layout params
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                 params.setMargins(8, 0, 8, 0);
-                                mDotSlider_View.addView(dotImages_Array[i], params);
+                                // Although each dot View is added to the mDotSlider_LinearLayout,
+                                // its visual appearance is still manipulated by taking from
+                                // dotImages_Array[] and calling methods on it.
+                                mDotSlider_LinearLayout.addView(dotImages_Array[i], params);
                             }
-
-//                            if (mPhotoIndexToDisplay == -1) {
-                                dotImages_Array[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-//                            } else {
-//                                dotImages_Array[mPhotoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
-//                            }
-//                        PictureUtils.configureDotSlider((LinearLayout) findViewById(R.id.SliderDots),
-//                                viewPagerAdapter.getCount(), EditSpotActivity.this, mPhotoIndexToDisplay );
-                            viewPager.removeOnPageChangeListener(mOnPageChangeListener);
+                            // Set the active dot; mActiveDot is initially 0 but may be another value
+                            // if the Activity is being recreated.
+                            dotImages_Array[mActiveDot].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
+                            spotImage_ViewPager.removeOnPageChangeListener(mOnPageChangeListener);
                             mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+                                // The following methods must be overridden
                                 @Override
                                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                                 }
 
                                 @Override
                                 public void onPageSelected(int position) {
-//                            int dotsCount_local = dotsCount;
-//                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
-                                    for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
-                                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
-                                    }
+                                    // Deactivate previously active dot
+                                    dotImages_Array[mActiveDot].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+                                    mActiveDot = position; // Update mActiveDot to the new dot
+                                    // Instead of iterating through all the dots and deactivating them,
+                                    // more efficient to just deactivate the previous dot and then
+                                    // activate the new dot
+//                                    for (int i = 0; i < spotPhotoViewPagerAdapter.getCount(); i++) {
+//                                        dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.non_active_dot));
+//                                    }
+                                    // Set active dot
                                     dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
                                 }
 
@@ -128,42 +146,12 @@ public class SpotDetailActivity extends AppCompatActivity
                             };
                         }
                     }
-                    viewPager.setAdapter(viewPagerAdapter);
-//                    if (mPhotoIndexToDisplay != -1) {
-//                        viewPager.setCurrentItem(mPhotoIndexToDisplay, true);
-//                        mPhotoIndexToDisplay = -1;
-//                    }
-                    viewPager.addOnPageChangeListener(mOnPageChangeListener);
+                    spotImage_ViewPager.setAdapter(spotPhotoViewPagerAdapter);
+                    spotImage_ViewPager.addOnPageChangeListener(mOnPageChangeListener);
 
                     // Populate UI Views with this Spot's information
                     ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
                     ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
-//                File filesDir = getFilesDir(); // Get handle to directory for private application files
-//                File photoFile = new File(filesDir, spot.getPhotoFilepath(1)); // Create new File in the directory
-
-
-//                    final Bitmap bitmap = PictureUtils.getScaledBitmap(spot.getPhotoFilepath(1), 1000, 1000);
-////            Bitmap bitmap = PictureUtils.getScaledBitmap("/data/user/0/com.dhochmanrquick.skatespotorganizer/files/IMG_0.jpg", 50, 50);
-//                    final ImageView spot_ImageView = (ImageView) findViewById(R.id.spot_detail_image_iv);
-//                    spot_ImageView.setImageBitmap(bitmap);
-//
-//
-//                    spot_ImageView.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            Dialog spotImage_Dialog = new Dialog(SpotDetailActivity.this);
-////                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-//                            ImageView imageView = new ImageView(SpotDetailActivity.this);
-//                            imageView.setImageBitmap(bitmap);
-//                            spotImage_Dialog.getWindow().setContentView(imageView);
-////                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
-////                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
-////                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));
-//                            spotImage_Dialog.setCancelable(true);
-//                            spotImage_Dialog.show();
-//                        }
-//                    });
-
 
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
@@ -177,30 +165,14 @@ public class SpotDetailActivity extends AppCompatActivity
             }
         });
 
-//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-//            @Override
-//            public void onChanged(@Nullable final List<Spot> words) {
-//                // Update the cached copy of the words in the adapter.
-//                adapter.setWords(words);
-//            }
-//        });
-//
-//        Toast.makeText(this, "Spot ID number " + spot.getName() + " has been selected", Toast.LENGTH_SHORT)
-//                .show();
-
-//        ((TextView) findViewById(R.id.spot_detail_title_tv)).setText("Spot ID number " + id);
-
         // Setup FAB to open EditSpotActivity
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.spot_edit_fab);
+        FloatingActionButton fab = findViewById(R.id.spot_edit_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SpotDetailActivity.this, EditSpotActivity.class);
                 intent.putExtra("EDIT_SPOT", mSpot.getId());
                 startActivity(intent);
-//                mCurrentPlayer.createCryptogram(PlayableGamesActivity.this);
-//                Intent intent = new Intent(PlayableGamesActivity.this, CreateGameActivity.class);
-//                startActivity(intent);
             }
         });
     }
@@ -210,15 +182,9 @@ public class SpotDetailActivity extends AppCompatActivity
      */
     @Override
     public boolean onMarkerClick(final Marker marker) {
-
         Intent spotStreetView_Intent = new Intent(this, SpotStreetViewActivity.class);
-//        Intent spot_Intent = new Intent(getContext(), NewSpotActivity.class);
-//        spot_Intent.setData(marker.getTag());
-
         spotStreetView_Intent.putExtra("Spot", mSpot.getLatLng());
-
         startActivity(spotStreetView_Intent);
-
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
@@ -238,15 +204,13 @@ public class SpotDetailActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
-//        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+    }
 
-        // Triggers a null reference as is; mSpot hasn't been properly assigned yet.
-//        googleMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude))
-//                .title(mSpot.getName())
-//                .snippet(mSpot.getDescription()));
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_ACTIVE_DOT, mActiveDot);
     }
 }
