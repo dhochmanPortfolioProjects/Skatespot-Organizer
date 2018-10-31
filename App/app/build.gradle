@@ -36,6 +36,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
 
     // Room components
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
@@ -57,6 +58,8 @@ dependencies {
     }
 
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+
+
 
 
 }

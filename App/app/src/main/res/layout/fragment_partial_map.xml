@@ -33,7 +33,8 @@
             map:layout_constraintHorizontal_bias="0.0"
             map:layout_constraintStart_toStartOf="parent"
             map:uiCompass="false"
-            map:uiZoomControls="false" />
+            map:uiZoomControls="false"
+            />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/map_style_button"

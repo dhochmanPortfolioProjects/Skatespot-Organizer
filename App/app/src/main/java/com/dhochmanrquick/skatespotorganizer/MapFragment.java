@@ -20,6 +20,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PermissionUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +47,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +65,8 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
-        GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnInfoWindowClickListener {
 
     /**
      * Request code for location permission request.
@@ -69,6 +75,7 @@ public class MapFragment extends Fragment implements
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
+    private static final String TAG = MapFragment.class.getSimpleName();
 
     /**
      * Flag indicating whether a requested permission has been denied after returning in
@@ -88,6 +95,20 @@ public class MapFragment extends Fragment implements
     private CameraPosition mCameraPosition;
     private boolean mLoadFromCurrentLocation = true;
     private boolean mIsFirstInstantiation = true;
+    private Location mLastKnownLocation;
+    private boolean mLocationPermissionGranted;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 15;
+
+    // Use the fused location provider to retrieve the device's last known location
+    // The fused location provider is one of the location APIs in Google Play services.
+    // It manages the underlying location technology and provides a simple API so that you can
+    // specify requirements at a high level, like high accuracy or low power. It also optimizes
+    // the device's use of battery power.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
+
 
     /**
      * Default constructor. Every fragment must have an empty constructor, so it can be instantiated
@@ -188,8 +209,11 @@ public class MapFragment extends Fragment implements
         mMapView.onResume();
         mMapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
 
+        // Construct a FusedLocationProviderClient.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+
         FloatingActionButton map_style_fab = view.findViewById(R.id.map_style_button);
-        FloatingActionButton gps_locater_fab = view.findViewById(R.id.current_location_button);
+        FloatingActionButton current_location_fab = view.findViewById(R.id.current_location_button);
 
         super.onViewCreated(view, savedInstanceState);
 
@@ -273,26 +297,29 @@ public class MapFragment extends Fragment implements
             }
         });
 
-        gps_locater_fab.setOnClickListener(new View.OnClickListener() {
+        current_location_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Location locationCt;
-                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: I put this in as a quick and dirty check
-                    Toast.makeText(mContext,
-                            "You need to provide network permissions, please change your settings.",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                locationCt = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                LatLng latLng = new LatLng(locationCt.getLatitude(), locationCt.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title("Current Location"));
+//                Location locationCt;
+//                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+//                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                    // TODO: I put this in as a quick and dirty check
+//                    Toast.makeText(mContext,
+//                            "You need to provide network permissions, please change your settings.",
+//                            Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                locationCt = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                LatLng latLng = new LatLng(locationCt.getLatitude(), locationCt.getLongitude());
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//
+////                This bit of code should be moved to a long click
+////                mMap.addMarker(new MarkerOptions()
+////                .position(latLng)
+////                .title("Current Location"));
+                getDeviceLocation();
 
             }
         });
@@ -404,8 +431,16 @@ public class MapFragment extends Fragment implements
 //    public void onMapReady(GoogleMap googleMap) {
     public void onMapReady(GoogleMap googleMap) { // Declared final because LiveData Observer onChanged()
         mMap = googleMap;
-        // Sets the map type to be "hybrid"
-//        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        // Prompt the user for permission.
+        getLocationPermission();
+
+        // Turn on the My Location layer and the related control on the map.
+        updateLocationUI();
+
+        // Get the current location of the device and set the position of the map.
+        getDeviceLocation();
+
 
         // If you have added a MapFragment (or MapView) programmatically, then you can configure its
         // initial state by passing in a GoogleMapOptions object with your options specified.
@@ -430,99 +465,184 @@ public class MapFragment extends Fragment implements
         // getContext() will return null.
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) // Triggers null pointer when fragment is recreated
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+//        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+//                == PackageManager.PERMISSION_GRANTED) {
             // Access to the location has been granted to the app.
-            mMap.setMyLocationEnabled(true);
-        } else {
+//            mMap.setMyLocationEnabled(true);
+//        } else {
             // Show rationale and request permission.
 //            Toast.makeText(mContext, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
             // Permission to access the location is missing.
 //            PermissionUtils.requestPermission(((MainActivity) getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
 //                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-            PermissionUtils.requestPermission((MainActivity) mActivity, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+//            PermissionUtils.requestPermission((MainActivity) mActivity, LOCATION_PERMISSION_REQUEST_CODE,
+//                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+//
+//            // Todo: I thought a check after requestPermission would be necessary to make changes take effect immediately, but we need to find another solution
+////            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+////                    == PackageManager.PERMISSION_GRANTED) {
+////                // Access to the location has been granted to the app.
+////                mMap.setMyLocationEnabled(true);
+////            }
+//        }
 
-            // Todo: I thought a check after requestPermission would be necessary to make changes take effect immediately, but we need to find another solution
-            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                // Access to the location has been granted to the app.
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-
-        if (mIsFirstInstantiation) {
-            // Update Google Maps to display current location when first loaded
-            if (mMap.isMyLocationEnabled()) {
-//                mLoadFromCurrentLocation = false;
-                mIsFirstInstantiation = false;
-                Location locationCt;
-                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
-                locationCt = locationManager
-                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                LatLng latLng = new LatLng(locationCt.getLatitude(),
-                        locationCt.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-            }
-        } else {
-            // Restore CameraPosition from how it was before
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-        }
-        mMap.setOnMyLocationButtonClickListener(this);
-        mMap.setOnMyLocationClickListener(this);
+//        if (mIsFirstInstantiation) {
+//            // Update Google Maps to display current location when first loaded
+//            if (mMap.isMyLocationEnabled()) {
+////                mLoadFromCurrentLocation = false;
+//                mIsFirstInstantiation = false;
+//                Location locationCt;
+//                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+//                locationCt = locationManager
+//                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//                LatLng latLng = new LatLng(locationCt.getLatitude(),
+//                        locationCt.getLongitude());
+//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//            }
+//        } else {
+//            // Restore CameraPosition from how it was before
+//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+//        }
+//        mMap.setOnMyLocationButtonClickListener(this);
+//        mMap.setOnMyLocationClickListener(this);
 
 
-        // public final void setPadding (int left, int top, int right, int bottom)
-        googleMap.setPadding(0, 50, 0, 130);
-
-        // Set a listener for marker click.
-        mMap.setOnMarkerClickListener(this);
-        googleMap.setOnInfoWindowClickListener(this);
-
-        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
-        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-            @Override
-            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-                if (spots != null) {
-                    if (spots.size() > 0) {
-
-//                        mMapView.onCreate(savedInstanceState);
-//                        mMapView.onResume();
-//                        mMapView.getMapAsync(MapFragment.this);
-
-                        mSpotList = spots; // Locally cache the SpotList
-                        // Update the cached copy of the words in the adapter.
-//                adapter.setWords(words);
-                        // Set markers on the map
-                        for (Spot spot : spots) {
-//                    googleMap.addMarker(new MarkerOptions()
-                            mMap.addMarker(new MarkerOptions()
-//                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                                    .title(spot.getName())
-                                    .snippet(spot.getDescription()));
-//                            .snippet("" + spot.getId()));
-                        }
-                    } else {
-                            mMap.clear();
-                        }
-                    }
-//                } else {
-//                    mMap.clear();
-//                }
-            }
-        });
+//        // public final void setPadding (int left, int top, int right, int bottom)
+//        googleMap.setPadding(0, 50, 0, 130);
+//
+//        // Set a listener for marker click.
+//        mMap.setOnMarkerClickListener(this);
+//        googleMap.setOnInfoWindowClickListener(this);
+//
+//        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
+//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
+//                if (spots != null) {
+//                    if (spots.size() > 0) {
+//
+////                        mMapView.onCreate(savedInstanceState);
+////                        mMapView.onResume();
+////                        mMapView.getMapAsync(MapFragment.this);
+//
+//                        mSpotList = spots; // Locally cache the SpotList
+//                        // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//                        // Set markers on the map
+//                        for (Spot spot : spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//                            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
+////                            .snippet("" + spot.getId()));
+//                        }
+//                    } else {
+//                            mMap.clear();
+//                        }
+//                    }
+////                } else {
+////                    mMap.clear();
+////                }
+//            }
+//        });
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
 //        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
 
-//        MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
-//        mMap.setMapStyle(style);
+
     }
+
+    /**
+     * Prompts the user for permission to use the device location
+     */
+    private void getLocationPermission(){
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(mContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(mActivity,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    /**
+     * Updates the map's UI settings based on whether the user has granted location permission.
+     */
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                // Display the user selected map type
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+                MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
+                mMap.setMapStyle(style);
+
+                mMap.setMyLocationEnabled(true);
+                // Don't want to display the default location button because
+                // we are already displaying using a FAB
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mLastKnownLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the current location of the device, and positions the map's camera.
+     */
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            if (mLocationPermissionGranted) {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(mActivity, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            mLastKnownLocation = task.getResult();
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mLastKnownLocation.getLatitude(),
+                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                        } else {
+                            Log.d(TAG, "Current location is null. Using defaults.");
+                            Log.e(TAG, "Exception: %s", task.getException());
+                            mMap.moveCamera(CameraUpdateFactory
+                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
 
     /**
      * Called when the user clicks a marker (the default appears to be popping the info window).
