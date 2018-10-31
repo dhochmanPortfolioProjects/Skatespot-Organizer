@@ -37,6 +37,7 @@ public class EditSpotActivity extends AppCompatActivity {
     private static final int PICK_FROM_CAMERA = 1;
     private static final int CROP_FROM_CAMERA = 2;
     private static final int PICK_FROM_FILE = 3;
+    private static final int EDIT_PHOTO = 4;
 
     private SpotViewModel mSpotViewModel;
     private Spot mEditSpot;
@@ -421,8 +422,15 @@ public class EditSpotActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 //        super.onActivityResult(requestCode, resultCode, intent);
+
+        // When SpotPhotoViewPagerAdapter starts for result the ACTION_EDIT Intent, this class is
+        // the launching class, so this onActivityResult is called. ACTION_EDIT doesn't
+        // seem to be defined to return a result, however, this method is still called anyways.
+        // intent is null, resultCode is 0 (generally -1 means success), but requestCode is still
+        // EDIT_PHOTO (4). This is odd but works. We just need to move the if (resultCode != RESULT_OK) return;
+        // to inside each case except for EDIT_PHOTO.
         // if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null)
-        if (resultCode != RESULT_OK) return;
+//        if (resultCode != RESULT_OK) return;
         File filesDir = getFilesDir(); // Get handle to directory for private application files
         File photoFile;
         Bitmap bitmap;
@@ -430,6 +438,7 @@ public class EditSpotActivity extends AppCompatActivity {
         switch (requestCode) {
 //            case REQUEST_PHOTO:
             case PICK_FROM_CAMERA:
+                if (resultCode != RESULT_OK) return;
                 mPhotoIndexToDisplay = mEditSpot.getPhotoCount();
                 mEditSpot.incrementPhotoCount();
                 mEditSpot.setPhotoFilepath(mPhotoFile.getPath(), mEditSpot.getPhotoCount());
@@ -443,6 +452,7 @@ public class EditSpotActivity extends AppCompatActivity {
 //                ((ImageView) findViewById(R.id.new_spot_photo_iv)).setImageBitmap(bitmap);
                 break;
             case PICK_FROM_FILE:
+                if (resultCode != RESULT_OK) return;
                 Uri selectedImage_Uri = intent.getData(); // Get return contentURI
 //                try {
 //                    // Create Bitmap from the return contentURI
@@ -468,6 +478,7 @@ public class EditSpotActivity extends AppCompatActivity {
 //                doCrop();
                 break;
             case CROP_FROM_CAMERA:
+                if (resultCode != RESULT_OK) return;
 //                Bundle extras = intent.getExtras();
 //                if (extras != null) {
 //                    Bitmap photo = extras.getParcelable("data");
@@ -476,6 +487,9 @@ public class EditSpotActivity extends AppCompatActivity {
 //                File f = new File(mImageCaptureUri.getPath());
 //                if (f.exists()) f.delete();
                 break;
+            case EDIT_PHOTO:
+//                Toast.makeText(EditSpotActivity.this, "Edit photo", Toast.LENGTH_LONG).show();
+                mSpotViewModel.updateSpots(mEditSpot);
         }
 //        switch (requestCode) {
 //            case REQUEST_PHOTO:

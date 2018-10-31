@@ -1,12 +1,14 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -15,16 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
-import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 public class SpotPhotoViewPagerAdapter extends PagerAdapter {
+
+    private static final int EDIT_PHOTO = 4;
 
     private final Context mContext;
     private String[] mSpotImages_Array;
@@ -83,7 +86,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
     // 2). Return the View
     @NonNull
     @Override
-    public Object instantiateItem(@NonNull ViewGroup container, final int position) { // Have to make final so we can see it inside of onClick()
+    public Object instantiateItem(@NonNull final ViewGroup container, final int position) { // Have to make final so we can see it inside of onClick()
 
         ImageView item_ImageView = new ImageView(mContext);
 
@@ -107,9 +110,35 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
             builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     if (item == 0) {
-                        mSpot.removePhotoFilepath(position + 1);
+                        mSpot.removePhotoFilepathAndShiftDown(position + 1);
                         mSpotViewModel.updateSpots(mSpot);
 //                        mSpotViewModel.deleteSpots(mSpotList.get(position));
+                    } else if (item == 1) {
+                        File outputFile = new File(mContext.getFilesDir(), mSpot.generateNextPhotoFilename());
+//                        Uri outputUri = FileProvider.getUriForFile(mContext.getApplicationContext(),
+//                                "com.dhochmanrquick.skatespotorganizer.fileprovider", outputFile);
+
+
+                        Intent editIntent = new Intent(Intent.ACTION_EDIT);
+//                        editIntent.setClass(mContext, EditSpotActivity.class);
+//                        Intent editIntent = new Intent(mContext, EditSpotActivity.class);
+//                        editIntent.setAction(Intent.ACTION_EDIT);
+                        File mPhotoFile = new File(mSpot.getPhotoFilepath(position + 1));
+//                        Uri uri = Uri.fromFile(mPhotoFile); // Causes error
+                        Uri uri = FileProvider.getUriForFile(mContext.getApplicationContext(),
+                            "com.dhochmanrquick.skatespotorganizer.fileprovider", mPhotoFile);
+//                        editIntent.setDataAndType(uri, "image/*");
+                        editIntent.setDataAndType(uri, "image/*");
+                        editIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                        editIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+
+//                        mContext.startActivity(Intent.createChooser(editIntent, null));
+                        ((EditSpotActivity) mContext).startActivityForResult(Intent.createChooser(editIntent, null), EDIT_PHOTO);
+//                        mSpot.removePhotoFilepath(position + 1);
+//                        mSpotViewModel.updateSpots(mSpot);
+//                        mSpot.setPhotoFilepath(mPhotoFile.getPath() ,position + 1);
+//                        mSpotViewModel.updateSpots(mSpot);
+//                        container.getContext().startActivityFor
                     }
                 }
             });
@@ -170,5 +199,9 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
 //        super.destroyItem(container, position, object);
         container.removeView((View) object);
+    }
+
+    public  void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("MyAdapter", "onActivityResult");
     }
 }

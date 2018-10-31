@@ -285,11 +285,16 @@ public class Spot {
 
     public String getPhotoFilepath(int photoNumber) {
         switch (photoNumber) {
-            case 1: return mPhotoFilepath1;
-            case 2: return mPhotoFilepath2;
-            case 3: return mPhotoFilepath3;
-            case 4: return mPhotoFilepath4;
-            case 5: return mPhotoFilepath5;
+            case 1:
+                return mPhotoFilepath1;
+            case 2:
+                return mPhotoFilepath2;
+            case 3:
+                return mPhotoFilepath3;
+            case 4:
+                return mPhotoFilepath4;
+            case 5:
+                return mPhotoFilepath5;
         }
         return null;
     }
@@ -397,15 +402,20 @@ public class Spot {
 
     public void setPhotoFilepath(String photoFilepath, int photoNumber) {
         switch (photoNumber) {
-            case 1: mPhotoFilepath1 = photoFilepath;
+            case 1:
+                mPhotoFilepath1 = photoFilepath;
                 break;
-            case 2: mPhotoFilepath2 = photoFilepath;
+            case 2:
+                mPhotoFilepath2 = photoFilepath;
                 break;
-            case 3: mPhotoFilepath3 = photoFilepath;
+            case 3:
+                mPhotoFilepath3 = photoFilepath;
                 break;
-            case 4: mPhotoFilepath4 = photoFilepath;
+            case 4:
+                mPhotoFilepath4 = photoFilepath;
                 break;
-            case 5: mPhotoFilepath5 = photoFilepath;
+            case 5:
+                mPhotoFilepath5 = photoFilepath;
                 break;
         }
     }
@@ -423,8 +433,8 @@ public class Spot {
      * converted into a URI, and exported to other apps (namely, camera apps) so that they can
      * write data (i.e., image data) to the file at this location.
      *
-     * @return  A filename representing the target location of a file to be created and then written
-     *          to by an external app. The filename format is: "IMG_SPOT<spotID>_<photo number>.jpg"
+     * @return A filename representing the target location of a file to be created and then written
+     * to by an external app. The filename format is: "IMG_SPOT<spotID>_<photo number>.jpg"
      */
     public String generateNextPhotoFilename() {
         if (mPhotoCount >= 5) { // Reached max photo limit
@@ -433,33 +443,59 @@ public class Spot {
         return "IMG_Spot" + getId() + "_" + (mPhotoCount + 1) + ".jpg";
     }
 
-    public void incrementPhotoCount(){
+    public void incrementPhotoCount() {
         mPhotoCount++;
     }
 
-    public void decrementPhotoCount(){
+    public void decrementPhotoCount() {
         mPhotoCount--;
+    }
+
+    public void removePhotoFilepathAndShiftDown(int photoNumber) {
+        switch (photoNumber) {
+            // To eliminate a given photo filepath, shift all later filepaths down 1
+            case 1:
+                mPhotoFilepath1 = mPhotoFilepath2;
+                mPhotoFilepath2 = mPhotoFilepath3;
+                mPhotoFilepath3 = mPhotoFilepath4;
+                mPhotoFilepath4 = mPhotoFilepath5;
+                break;
+            case 2:
+                mPhotoFilepath2 = mPhotoFilepath3;
+                mPhotoFilepath3 = mPhotoFilepath4;
+                mPhotoFilepath4 = mPhotoFilepath5;
+                break;
+            case 3:
+                mPhotoFilepath3 = mPhotoFilepath4;
+                mPhotoFilepath4 = mPhotoFilepath5;
+                break;
+            case 4:
+                mPhotoFilepath4 = mPhotoFilepath5;
+                break;
+            case 5:
+                mPhotoFilepath5 = null;
+                break;
+        }
+        decrementPhotoCount();
     }
 
     public void removePhotoFilepath(int photoNumber) {
         switch (photoNumber) {
-            // To eliminate a given photo filepath, shift all later filepaths down 1
-            case 1:     mPhotoFilepath1 = mPhotoFilepath2;
-                        mPhotoFilepath2 = mPhotoFilepath3;
-                        mPhotoFilepath3 = mPhotoFilepath4;
-                        mPhotoFilepath4 = mPhotoFilepath5;
-                        break;
-            case 2:     mPhotoFilepath2 = mPhotoFilepath3;
-                        mPhotoFilepath3 = mPhotoFilepath4;
-                        mPhotoFilepath4 = mPhotoFilepath5;
-                        break;
-            case 3:     mPhotoFilepath3 = mPhotoFilepath4;
-                        mPhotoFilepath4 = mPhotoFilepath5;
-                        break;
-            case 4:     mPhotoFilepath4 = mPhotoFilepath5;
-                        break;
-            case 5:     mPhotoFilepath5 = null;
-                        break;
+            case 1:
+                mPhotoFilepath1 = null;
+                break;
+            case 2:
+                mPhotoFilepath2 = null;
+                break;
+            case 3:
+                mPhotoFilepath3 = null;
+                break;
+            case 4:
+                mPhotoFilepath4 = null;
+                break;
+            case 5:
+                mPhotoFilepath5 = null;
+                break;
         }
         decrementPhotoCount();
     }
