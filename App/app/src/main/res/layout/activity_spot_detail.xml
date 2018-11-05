@@ -1,179 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/spot_image_viewpager"
+        <android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"
-            app:layout_constraintDimensionRatio="H,16:9"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"></android.support.v4.view.ViewPager>
+            android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/SliderDots"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/spot_image_viewpager"
-            android:gravity="center_vertical|center_horizontal"
-            android:orientation="horizontal"
-            android:paddingBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/spot_image_viewpager" />
+            <TextView
+                android:id="@+id/spot_detail_title_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="cursive"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="#DE000000"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <!--<ImageView-->
-        <!--android:id="@+id/spot_detail_image_iv"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:scaleType="centerCrop"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"-->
-        <!--app:layout_constraintDimensionRatio="H,16:9"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_chainStyle="packed" />-->
+            <android.support.v4.view.ViewPager
+                android:id="@+id/spot_detail_image_viewpager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="H,4:3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spot_detail_title_tv" />
 
-        <!--<HorizontalScrollView-->
-        <!--android:id="@+id/spot_detail_image_iv"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:scaleType="centerCrop"-->
-        <!--app:layout_constraintBottom_toTopOf="@+id/spot_detail_title_tv"-->
-        <!--app:layout_constraintDimensionRatio="H,16:9"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_chainStyle="packed">-->
-        <!---->
-        <!--<LinearLayout-->
-        <!--android:id="@+id/gallery"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical">-->
-        <!--</LinearLayout>-->
+            <LinearLayout
+                android:id="@+id/spot_detail_dot_slider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/spot_detail_image_viewpager"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spot_detail_image_viewpager" />
 
-        <!--</HorizontalScrollView>-->
+            <TextView
+                android:id="@+id/spot_detail_description_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/playfair_display"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="#8A000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spot_detail_dot_slider" />
 
-        <TextView
-            android:id="@+id/spot_detail_title_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="#DE000000"
-            app:layout_constraintBottom_toTopOf="@+id/spot_detail_description_tv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/SliderDots" />
+            <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/spot_detail_spotmap"
+                android:layout_width="280dp"
+                android:layout_height="200dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                map:cameraZoom="15"
+                map:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
+                map:uiCompass="true"
+                map:uiZoomControls="true" />
 
-        <TextView
-            android:id="@+id/spot_detail_description_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="#8A000000"
-            app:layout_constraintBottom_toTopOf="@+id/spot_detail_button_1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_detail_title_tv" />
-
-        <Button
-            android:id="@+id/spot_detail_button_1"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:minWidth="0dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:text="action 1"
-            android:textColor="#DE000000"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv" />
-
-        <!--<fragment xmlns:map="http://schemas.android.com/apk/res-auto"-->
-        <!--xmlns:tools="http://schemas.android.com/tools"-->
-        <!--android:id="@+id/spotmap"-->
-        <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
-        <!--android:layout_width="280dp"-->
-        <!--android:layout_height="280dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="84dp"-->
-        <!--map:layout_constraintEnd_toEndOf="parent"-->
-        <!--map:layout_constraintStart_toStartOf="parent"-->
-        <!--map:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"-->
-        <!--map:mapType="normal"-->
-        <!--map:uiCompass="true"-->
-        <!--map:uiZoomControls="true"-->
-        <!--tools:context=".SpotDetailActivity" />-->
-
-        <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/spotmap"
-            android:layout_width="280dp"
-            android:layout_height="200dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="64dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
-            map:cameraZoom="15"
-            map:uiCompass="true"
-            map:uiZoomControls="true" />
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/spot_edit_fab"
+            android:id="@+id/spot_detail_edit_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_edit_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/spot_detail_title_tv"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/spotmap"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.531" />
-
-    </android.support.constraint.ConstraintLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            app:borderWidth="0dp"
+            app:elevation="10dp"
+            android:src="@drawable/ic_edit_black_24dp" />
+    </RelativeLayout>
 </ScrollView>
-
-    <!--<ImageView--><!--android:id="@+id/spot_image_iv"--><!--android:layout_width="0dp"--><!--android:layout_height="0dp"--><!--android:scaleType="centerCrop"--><!--app:layout_constraintBottom_toTopOf="@+id/spot_title_tv"--><!--app:layout_constraintDimensionRatio="H,16:9"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toTopOf="parent"--><!--app:layout_constraintVertical_chainStyle="packed" />-->
-
-    <!--<TextView--><!--android:id="@+id/spot_detail_title_tv"--><!--android:layout_width="0dp"--><!--android:layout_height="wrap_content"--><!--android:layout_marginEnd="16dp"--><!--android:layout_marginStart="16dp"--><!--android:layout_marginTop="24dp"--><!--android:textAppearance="@style/TextAppearance.AppCompat.Headline"--><!--android:textColor="#DE000000"--><!--app:layout_constraintEnd_toEndOf="parent"--><!--app:layout_constraintStart_toStartOf="parent"--><!--app:layout_constraintTop_toBottomOf="@+id/spot_image_iv" />-->
-
-    <!--</android.support.constraint.ConstraintLayout>-->
-
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--android:orientation="vertical"--><!--tools:context=".SpotDetailActivity">-->
-
-    <!--<ImageView--><!--android:id="@+id/spot_detail_image_iv"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--android:src="@drawable/paju_spot_landscape" />-->
-
-    <!--<TextView--><!--android:id="@+id/spot_detail_title_tv"--><!--android:layout_width="wrap_content"--><!--android:layout_height="wrap_content"--><!--tools:text="Bulgwang Spot" />-->
-
-    <!--</LinearLayout>-->

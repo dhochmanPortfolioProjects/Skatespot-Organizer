@@ -60,7 +60,7 @@ public class SpotDetailActivity extends AppCompatActivity
         }
 
         // Within your UI, a map will be represented by either a MapFragment or MapView object.
-        MapView mapView = findViewById(R.id.spotmap);
+        MapView mapView = findViewById(R.id.spot_detail_spotmap);
         // When using the API in fully interactive mode, users of the MapView class must forward the
         // following activity lifecycle methods to the corresponding methods in the MapView class:
         // onCreate(), onStart(), onResume(), onPause(), onStop(), onDestroy(), onSaveInstanceState(),
@@ -76,7 +76,7 @@ public class SpotDetailActivity extends AppCompatActivity
         // Retrieve intent extra
         int id = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
 
-        mDotSlider_LinearLayout = findViewById(R.id.SliderDots);
+        mDotSlider_LinearLayout = findViewById(R.id.spot_detail_dot_slider);
 
         // Get the ViewModel
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
@@ -88,7 +88,7 @@ public class SpotDetailActivity extends AppCompatActivity
                 if (spot != null) {
                     mSpot = spot; // Cache the Spot locally to access it outside of this Observer
                     mDotSlider_LinearLayout.removeAllViews(); // Clear any previous dots from the slider
-                    ViewPager spotImage_ViewPager = findViewById(R.id.spot_image_viewpager);
+                    ViewPager spotImage_ViewPager = findViewById(R.id.spot_detail_image_viewpager);
                     final SpotPhotoViewPagerAdapter spotPhotoViewPagerAdapter; // Declared final for use in OnPageChangeListener
                     // Build an appropriate SpotPhotoViewPagerAdapter according to whether
                     // the Spot has 0, 1, or 1+ photos; the SpotPhotoViewPagerAdapter knows how to
@@ -167,7 +167,7 @@ public class SpotDetailActivity extends AppCompatActivity
         });
 
         // Setup FAB to open EditSpotActivity
-        FloatingActionButton fab = findViewById(R.id.spot_edit_fab);
+        FloatingActionButton fab = findViewById(R.id.spot_detail_edit_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

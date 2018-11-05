@@ -60,7 +60,7 @@ public class EditSpotActivity extends AppCompatActivity {
         // Get the ViewModel to access the underlying database
         mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
 
-        mDotSlider_LinearLayout = findViewById(R.id.SliderDots);
+        mDotSlider_LinearLayout = findViewById(R.id.spot_detail_dot_slider);
 
         // The Activity that launches this one sends the spotID in an extra. Get the spotID for the
         // spot that we are editing.
