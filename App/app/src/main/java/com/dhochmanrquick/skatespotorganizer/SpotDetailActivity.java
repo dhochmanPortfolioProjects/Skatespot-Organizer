@@ -157,7 +157,6 @@ public class SpotDetailActivity extends AppCompatActivity
                     spotImage_ViewPager.setAdapter(spotPhotoViewPagerAdapter);
                     spotImage_ViewPager.addOnPageChangeListener(mOnPageChangeListener);
 
-                    // Populate UI Views with this Spot's information
                     mSpotTitle_TextView = findViewById(R.id.spot_detail_title_tv);
                     mSpotTitle_TextView.setText(spot.getName());
                     final AlertDialog editSpotTitle_Dialog = new AlertDialog.Builder(SpotDetailActivity.this).create();
@@ -186,7 +185,34 @@ public class SpotDetailActivity extends AppCompatActivity
                         }
                     });
 
-                    ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
+                    TextView spotDescription_TextView = findViewById(R.id.spot_detail_description_tv);
+                    spotDescription_TextView.setText(spot.getDescription());
+                    final EditText editSpotDescription_EditText = new EditText(SpotDetailActivity.this);
+                    final AlertDialog editSpotDescription_Dialog = new AlertDialog.Builder(SpotDetailActivity.this).create();
+                    editSpotDescription_Dialog.setTitle("Edit Spot Description");
+                    editSpotDescription_Dialog.setView(editSpotDescription_EditText);
+                    editSpotDescription_Dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSpot.setDescription(editSpotDescription_EditText.getText().toString());
+                            mSpotViewModel.updateSpots(mSpot);
+                        }
+                    });
+
+                    editSpotDescription_Dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editSpotDescription_Dialog.cancel();
+                        }
+                    });
+
+                    spotDescription_TextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            editSpotDescription_EditText.setText(mSpot.getDescription());
+                            editSpotDescription_Dialog.show();
+                        }
+                    });
 
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(mSpot.getLatLng().latitude, mSpot.getLatLng().longitude)));
