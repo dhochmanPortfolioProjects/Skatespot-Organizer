@@ -30,13 +30,13 @@
             android:layout_marginTop="24dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="#DE000000"
-            app:layout_constraintBottom_toTopOf="@+id/spot_detail_description_tv"
+            app:layout_constraintBottom_toTopOf="@+id/spot_detail_description_title_tv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spot_image_iv" />
 
         <TextView
-            android:id="@+id/spot_detail_description_tv"
+            android:id="@+id/spot_detail_description_title_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -62,7 +62,7 @@
             android:text="action 1"
             app:layout_constraintBottom_toTopOf="@+id/supporting_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/spot_detail_description_title_tv" />
 
         <Button
             android:id="@+id/action_button_2"

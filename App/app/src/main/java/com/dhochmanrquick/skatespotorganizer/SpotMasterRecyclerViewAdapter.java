@@ -2,7 +2,6 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,7 +39,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
             super(view);
             mView = view; // fragment_spotmaster_list_item inflated
             mSpotTitle_TextView = view.findViewById(R.id.spot_detail_title_tv);
-            mSpotDescription_TextView = view.findViewById(R.id.spot_detail_description_tv);
+            mSpotDescription_TextView = view.findViewById(R.id.spot_detail_description_title_tv);
             mSpotImage_ImageView = view.findViewById(R.id.spot_image_iv);
         }
 

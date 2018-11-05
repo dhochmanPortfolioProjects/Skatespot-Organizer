@@ -15,25 +15,24 @@
 
             <TextView
                 android:id="@+id/spot_detail_title_tv"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:fontFamily="cursive"
+                android:fontFamily="@font/playfair_display"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="#DE000000"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Paju Ledge Spot" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/spot_detail_image_viewpager"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginBottom="3dp"
                 android:layout_marginTop="8dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintDimensionRatio="H,4:3"
@@ -57,18 +56,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spot_detail_image_viewpager" />
 
-            <TextView
-                android:id="@+id/spot_detail_description_tv"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/spot_detail_description_block"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/playfair_display"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="#8A000000"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spot_detail_dot_slider" />
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/spot_detail_dot_slider">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:elevation="@dimen/cardview_default_elevation"
+                    android:fontFamily="@font/playfair_display"
+                    android:text="@string/spot_description"
+                    android:textColor="#DE000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/spot_detail_description_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/playfair_display"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="#8A000000"
+                    tools:text="A good ledge spot with several marble ledges in a row. Some are knee high while others are higher. The ledges slide pretty well." />
+            </LinearLayout>
 
             <com.google.android.gms.maps.MapView xmlns:map="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/spot_detail_spotmap"
@@ -76,11 +94,11 @@
                 android:layout_height="200dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 map:cameraZoom="15"
-                map:layout_constraintTop_toBottomOf="@+id/spot_detail_description_tv"
+                map:layout_constraintTop_toBottomOf="@+id/spot_detail_description_block"
                 map:uiCompass="true"
                 map:uiZoomControls="true" />
 
@@ -94,8 +112,8 @@
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="20dp"
             android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_edit_black_24dp"
             app:borderWidth="0dp"
-            app:elevation="10dp"
-            android:src="@drawable/ic_edit_black_24dp" />
+            app:elevation="10dp" />
     </RelativeLayout>
 </ScrollView>
