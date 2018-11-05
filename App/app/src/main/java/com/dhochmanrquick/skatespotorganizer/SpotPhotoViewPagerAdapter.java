@@ -10,11 +10,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
@@ -118,7 +120,6 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 //                        Uri outputUri = FileProvider.getUriForFile(mContext.getApplicationContext(),
 //                                "com.dhochmanrquick.skatespotorganizer.fileprovider", outputFile);
 
-
                         Intent editIntent = new Intent(Intent.ACTION_EDIT);
 //                        editIntent.setClass(mContext, EditSpotActivity.class);
 //                        Intent editIntent = new Intent(mContext, EditSpotActivity.class);
@@ -176,13 +177,16 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 
             item_ImageView.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    //this will log the page number that was click
-//                Log.i("TAG", "This page was clicked: " + position);
-                    Dialog spotImage_Dialog = new Dialog(mContext);
-//                            spotImage_Dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
                     ImageView imageView = new ImageView(mContext);
                     imageView.setImageBitmap(bitmap);
+                    Dialog spotImage_Dialog = new Dialog(mContext);
                     spotImage_Dialog.getWindow().setContentView(imageView);
+
+//                    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+//                    lp.copyFrom(spotImage_Dialog.getWindow().getAttributes());
+//                    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+//                    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+
 //                            settingsDialog.getWindow().setContentView(spot_ImageView); // java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
 //                            settingsDialog.getWindow().setBackgroundDrawableResource(R.drawable.paju_spot_landscape);
 //                            settingsDialog.setContentView(getLayoutInflater().inflate(spot_ImageView/*R.layout.image_layout*/, null));

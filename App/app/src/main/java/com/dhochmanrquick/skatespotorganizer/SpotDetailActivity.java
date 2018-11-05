@@ -2,14 +2,18 @@ package com.dhochmanrquick.skatespotorganizer;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +52,8 @@ public class SpotDetailActivity extends AppCompatActivity
     private ViewPager.OnPageChangeListener mOnPageChangeListener;
     private LinearLayout mDotSlider_LinearLayout;
     private int mActiveDot; // The current active dot in the dot slider
+
+    private TextView mSpotTitle_TextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,11 +153,39 @@ public class SpotDetailActivity extends AppCompatActivity
                             };
                         }
                     }
+
                     spotImage_ViewPager.setAdapter(spotPhotoViewPagerAdapter);
                     spotImage_ViewPager.addOnPageChangeListener(mOnPageChangeListener);
 
                     // Populate UI Views with this Spot's information
-                    ((TextView) findViewById(R.id.spot_detail_title_tv)).setText(spot.getName());
+                    mSpotTitle_TextView = findViewById(R.id.spot_detail_title_tv);
+                    mSpotTitle_TextView.setText(spot.getName());
+                    final AlertDialog editSpotTitle_Dialog = new AlertDialog.Builder(SpotDetailActivity.this).create();
+                    editSpotTitle_Dialog.setTitle("Edit Spot Title");
+                    final EditText editSpotTitle_EditText = new EditText(SpotDetailActivity.this);
+                    editSpotTitle_Dialog.setView(editSpotTitle_EditText);
+                    editSpotTitle_Dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSpot.setName(editSpotTitle_EditText.getText().toString());
+                            mSpotViewModel.updateSpots(mSpot);
+                        }
+                    });
+                    editSpotTitle_Dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editSpotTitle_Dialog.cancel();
+                        }
+                    });
+
+                    mSpotTitle_TextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            editSpotTitle_EditText.setText(mSpot.getName());
+                            editSpotTitle_Dialog.show();
+                        }
+                    });
+
                     ((TextView) findViewById(R.id.spot_detail_description_tv)).setText(spot.getDescription());
 
                     mMap.addMarker(new MarkerOptions()
