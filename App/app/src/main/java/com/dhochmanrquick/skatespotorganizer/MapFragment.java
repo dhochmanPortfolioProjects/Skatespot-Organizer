@@ -66,7 +66,7 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMyLocationClickListener,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnInfoWindowClickListener {
+        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapLongClickListener {
 
     /**
      * Request code for location permission request.
@@ -238,6 +238,14 @@ public class MapFragment extends Fragment implements
         super.onPause();
     }
 
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .draggable(true)
+                .title("New Spot"));
+    }
+
     /**
      * This interface must be implemented by activities that contain this fragment to allow an
      * interaction in this fragment to be communicated to the activity and potentially other
@@ -380,6 +388,9 @@ public class MapFragment extends Fragment implements
                 }
             }
         });
+
+        mMap.setOnMapLongClickListener(this);
+        mMap.setOnMarkerClickListener(this);
     }
 
     /**
