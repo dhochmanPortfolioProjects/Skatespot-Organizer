@@ -41,6 +41,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -66,7 +67,7 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMyLocationClickListener,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener {
 
     /**
      * Request code for location permission request.
@@ -99,6 +100,10 @@ public class MapFragment extends Fragment implements
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
+    private Marker mNewSpotMarker;
+    private FloatingActionButton mCurrentLocationFAB;
+    private FloatingActionButton mMapStyleFAB;
+    private boolean mFullScreen = false;
 
     // Use the fused location provider to retrieve the device's last known location
     // The fused location provider is one of the location APIs in Google Play services.
@@ -207,19 +212,19 @@ public class MapFragment extends Fragment implements
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
 
-        FloatingActionButton map_style_fab = view.findViewById(R.id.map_style_button);
-        FloatingActionButton current_location_fab = view.findViewById(R.id.current_location_button);
+        mMapStyleFAB = view.findViewById(R.id.map_style_button);
+        mCurrentLocationFAB = view.findViewById(R.id.current_location_button);
 
         super.onViewCreated(view, savedInstanceState);
 
-        map_style_fab.setOnClickListener(new View.OnClickListener() {
+        mMapStyleFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, "need to figure out how to get a dialog to open", Toast.LENGTH_SHORT).show();
             }
         });
 
-        current_location_fab.setOnClickListener(new View.OnClickListener() {
+        mCurrentLocationFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getDeviceLocation();
@@ -240,10 +245,44 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .draggable(true)
-                .title("New Spot"));
+        if (mNewSpotMarker != null) {
+            mNewSpotMarker.remove();
+            mNewSpotMarker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .draggable(true)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    .title("New Spot"));
+        } else {
+            mNewSpotMarker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .draggable(true)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    .title("New Spot"));
+        }
+        if (mFullScreen) {
+            setFullScreen(mFullScreen);
+        }
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if(mNewSpotMarker != null) {
+            mNewSpotMarker.remove();
+        }
+        setFullScreen(mFullScreen);
+
+    }
+
+    private void setFullScreen(Boolean fullScreen){
+        if(!fullScreen) {
+            mCurrentLocationFAB.setVisibility(View.INVISIBLE);
+            mMapStyleFAB.setVisibility(View.INVISIBLE);
+            mFullScreen = true;
+        }else{
+            mCurrentLocationFAB.setVisibility(View.VISIBLE);
+            mMapStyleFAB.setVisibility(View.VISIBLE);
+            mFullScreen = false;
+        }
     }
 
     /**
@@ -391,6 +430,7 @@ public class MapFragment extends Fragment implements
 
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
 
     /**
