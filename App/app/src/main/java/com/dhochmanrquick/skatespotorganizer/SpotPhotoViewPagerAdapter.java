@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 
-    private static final int EDIT_PHOTO = 4;
+    private static final int EDIT_PHOTO = 3;
 
     private final Context mContext;
     private String[] mSpotImages_Array;
@@ -39,6 +39,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
     private LayoutInflater mLayoutInflater;
 //    private ImageView noImageIcon = null;
     private boolean mSpotHasNoPhoto;
+    private int mPhotoIndexToDisplay;
 
     public SpotPhotoViewPagerAdapter(Context context, String[] spotImages) {
 //        super();
@@ -56,6 +57,13 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
         mContext = context;
         mSpot = spot;
         mSpotViewModel = spotViewModel;
+    }
+
+    public SpotPhotoViewPagerAdapter(Context context, Spot spot, SpotViewModel spotViewModel, int photoIndexToDisplay) {
+        mContext = context;
+        mSpot = spot;
+        mSpotViewModel = spotViewModel;
+        mPhotoIndexToDisplay = photoIndexToDisplay;
     }
 //
 //    public SpotPhotoViewPagerAdapter(Context context, ImageView imageView) {
@@ -99,7 +107,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
             container.addView(item_ImageView);
             return item_ImageView;
         }
-        if (mContext instanceof EditSpotActivity) {
+        if (mContext instanceof EditSpotActivity || mContext instanceof SpotDetailActivity) {
             final Bitmap bitmap = PictureUtils.getScaledBitmap(mSpot.getPhotoFilepath(position + 1), 1000, 1000);
             item_ImageView.setLayoutParams(new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));;
             item_ImageView.setImageBitmap(bitmap);
@@ -108,7 +116,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
             final String[] items = new String[]{"Remove photo", "Edit photo"};
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.select_dialog_item, items);
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setTitle("Edit spot photo");
+            builder.setTitle("EDIT SPOT PHOTO");
             builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     if (item == 0) {
@@ -134,7 +142,8 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
 //                        editIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
 //                        mContext.startActivity(Intent.createChooser(editIntent, null));
-                        ((EditSpotActivity) mContext).startActivityForResult(Intent.createChooser(editIntent, null), EDIT_PHOTO);
+//                        ((EditSpotActivity) mContext).startActivityForResult(Intent.createChooser(editIntent, null), EDIT_PHOTO);
+                        ((SpotDetailActivity) mContext).startActivityForResult(Intent.createChooser(editIntent, null), EDIT_PHOTO);
 //                        mSpot.removePhotoFilepath(position + 1);
 //                        mSpotViewModel.updateSpots(mSpot);
 //                        mSpot.setPhotoFilepath(mPhotoFile.getPath() ,position + 1);
@@ -205,7 +214,4 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
-    public  void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("MyAdapter", "onActivityResult");
-    }
 }
