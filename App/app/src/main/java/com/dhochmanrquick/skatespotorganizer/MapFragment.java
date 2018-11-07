@@ -40,6 +40,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -63,7 +64,6 @@ import java.util.Map;
  */
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
-        GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnInfoWindowClickListener {
@@ -73,7 +73,7 @@ public class MapFragment extends Fragment implements
      *
      * @see #onRequestPermissionsResult(int, String[], int[])
      */
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
     private static final String TAG = MapFragment.class.getSimpleName();
 
@@ -81,7 +81,7 @@ public class MapFragment extends Fragment implements
      * Flag indicating whether a requested permission has been denied after returning in
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
-    private boolean mPermissionDenied = false;
+
     // Will hold a reference to activity's implementation of OnFragmentInteractionListener, so that
     // this fragment can share events with the activity by calling methods defined by the
     // OnFragmentInteractionListener interface.
@@ -93,7 +93,6 @@ public class MapFragment extends Fragment implements
     private Context mContext;
     private Activity mActivity;
     private CameraPosition mCameraPosition;
-    private boolean mLoadFromCurrentLocation = true;
     private boolean mIsFirstInstantiation = true;
     private Location mLastKnownLocation;
     private boolean mLocationPermissionGranted;
@@ -107,8 +106,6 @@ public class MapFragment extends Fragment implements
     // specify requirements at a high level, like high accuracy or low power. It also optimizes
     // the device's use of battery power.
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
-
 
     /**
      * Default constructor. Every fragment must have an empty constructor, so it can be instantiated
@@ -157,14 +154,14 @@ public class MapFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
 
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
         // When the activity is destroyed, for example through a configuration change,
         // the ViewModel persists. When the activity is re-created,
         // the ViewModelProviders return the existing ViewModel.
-//        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
-        mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
+        // mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
         // In the section Share data between fragments of the ViewModel documentation, 2 co-hosted
         // fragments get a shared ViewModel (in onCreate()) and send it getActivity() instead of "this":
         // Notice that both fragments use getActivity() when getting the ViewModelProvider.
@@ -188,8 +185,6 @@ public class MapFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        // Retrieve and inflate the content view that renders the map for this fragment
         return inflater.inflate(R.layout.fragment_partial_map, container, false);
     }
 
@@ -208,7 +203,7 @@ public class MapFragment extends Fragment implements
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
         mMapView.getMapAsync(this); // when you already implement OnMapReadyCallback in your fragment
-
+//
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
 
@@ -216,79 +211,6 @@ public class MapFragment extends Fragment implements
         FloatingActionButton current_location_fab = view.findViewById(R.id.current_location_button);
 
         super.onViewCreated(view, savedInstanceState);
-
-        // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
-        // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
-//        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
-//                String searchString = searchString_EditText.getText().toString();
-//                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
-
-//                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
-//                    @Override
-//                    public void onChanged(@Nullable Spot spot) {
-////                        mMap.addMarker(new MarkerOptions()
-//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-////                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-////                                .title(spot.getName())
-////                                .snippet(spot.getDescription()));
-//                        if (spot != null) {
-////                            mMap.clear();
-////                            mMap.addMarker(new MarkerOptions()
-//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-////                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-////                                    .title(spot.getName())
-////                                    .snippet(spot.getDescription()));
-//
-//                            // Adding the circle to the GoogleMap
-//                            Circle circle = mMap.addCircle(new CircleOptions()
-//                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .radius(10)
-//                                    .strokeColor(Color.BLACK) // Border color of the circle
-//                                    // Fill color of the circle.
-//                                    // 0x represents, this is an hexadecimal code
-//                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
-//                                    // For 0% transparency ( ie, opaque ) , specify ff
-//                                    // The remaining 6 characters(00ff00) specify the fill color
-//                                    .fillColor(0x8800ff00)
-//                                    // Border width of the circle
-//                                    .strokeWidth(2)); // Todo: Make this transparent blue?
-//
-//                            // To change the position of the camera, you must specify where you want
-//                            // to move the camera, using a CameraUpdate. The Maps API allows you to
-//                            // create many different types of CameraUpdate using CameraUpdateFactory.
-//                            // Animate the move of the camera position to spot's coordinates and zoom in
-//                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
-//                                    2000, null);
-//                        } else {
-//                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                });
-
-        // An observer for the LiveData returned by getAllWords().
-        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-//                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
-//                    @Override
-//                    public void onChanged(@Nullable final List<Spot> spots) {
-//                        // Update the cached copy of the words in the adapter.
-////                adapter.setWords(words);
-//                        // Set markers:
-//                        for (Spot spot: spots) {
-////                    googleMap.addMarker(new MarkerOptions()
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
-//                        }
-//                    }
-//                });
-//            }
-//        });
 
         map_style_fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -300,27 +222,7 @@ public class MapFragment extends Fragment implements
         current_location_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Location locationCt;
-//                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
-//                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                        ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    // TODO: I put this in as a quick and dirty check
-//                    Toast.makeText(mContext,
-//                            "You need to provide network permissions, please change your settings.",
-//                            Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                locationCt = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                LatLng latLng = new LatLng(locationCt.getLatitude(), locationCt.getLongitude());
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//
-////                This bit of code should be moved to a long click
-////                mMap.addMarker(new MarkerOptions()
-////                .position(latLng)
-////                .title("Current Location"));
                 getDeviceLocation();
-
             }
         });
     }
@@ -455,113 +357,35 @@ public class MapFragment extends Fragment implements
         GoogleMapOptions options = new GoogleMapOptions();
         options.ambientEnabled(true);
 
-        // Enable the My Location layer on the map
-        //mMap.setMyLocationEnabled(true); // Works with pre-API 23 permissions model
+        if (mIsFirstInstantiation) {
+            // Update Google Maps to display current location when first loaded
+            if (mLocationPermissionGranted) {
+                mIsFirstInstantiation = false;
+                getDeviceLocation();
+            }
+        } else {
+            // Restore CameraPosition from how it was before
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
+        }
 
-        // From Fragment Documentation:
-        // Caution: If you need a Context object within your Fragment, you can call getContext().
-        // However, be careful to call getContext() only when the fragment is attached to an activity.
-        // When the fragment is not yet attached, or was detached during the end of its lifecycle,
-        // getContext() will return null.
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) // Triggers null pointer when fragment is recreated
-//        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-            // Access to the location has been granted to the app.
-//            mMap.setMyLocationEnabled(true);
-//        } else {
-            // Show rationale and request permission.
-//            Toast.makeText(mContext, "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
-            // Permission to access the location is missing.
-//            PermissionUtils.requestPermission(((MainActivity) getActivity()), LOCATION_PERMISSION_REQUEST_CODE,
-//                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-//            PermissionUtils.requestPermission((MainActivity) mActivity, LOCATION_PERMISSION_REQUEST_CODE,
-//                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-//
-//            // Todo: I thought a check after requestPermission would be necessary to make changes take effect immediately, but we need to find another solution
-////            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
-////                    == PackageManager.PERMISSION_GRANTED) {
-////                // Access to the location has been granted to the app.
-////                mMap.setMyLocationEnabled(true);
-////            }
-//        }
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable List<Spot> spots) {
+                for (Spot spot : spots) {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                            .title(spot.getName())
+                            .snippet(spot.getDescription()));
 
-//        if (mIsFirstInstantiation) {
-//            // Update Google Maps to display current location when first loaded
-//            if (mMap.isMyLocationEnabled()) {
-////                mLoadFromCurrentLocation = false;
-//                mIsFirstInstantiation = false;
-//                Location locationCt;
-//                LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
-//                locationCt = locationManager
-//                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//
-//                LatLng latLng = new LatLng(locationCt.getLatitude(),
-//                        locationCt.getLongitude());
-//                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//            }
-//        } else {
-//            // Restore CameraPosition from how it was before
-//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
-//        }
-//        mMap.setOnMyLocationButtonClickListener(this);
-//        mMap.setOnMyLocationClickListener(this);
-
-
-//        // public final void setPadding (int left, int top, int right, int bottom)
-//        googleMap.setPadding(0, 50, 0, 130);
-//
-//        // Set a listener for marker click.
-//        mMap.setOnMarkerClickListener(this);
-//        googleMap.setOnInfoWindowClickListener(this);
-//
-//        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
-//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-//            @Override
-//            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-//                if (spots != null) {
-//                    if (spots.size() > 0) {
-//
-////                        mMapView.onCreate(savedInstanceState);
-////                        mMapView.onResume();
-////                        mMapView.getMapAsync(MapFragment.this);
-//
-//                        mSpotList = spots; // Locally cache the SpotList
-//                        // Update the cached copy of the words in the adapter.
-////                adapter.setWords(words);
-//                        // Set markers on the map
-//                        for (Spot spot : spots) {
-////                    googleMap.addMarker(new MarkerOptions()
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
-////                            .snippet("" + spot.getId()));
-//                        }
-//                    } else {
-//                            mMap.clear();
-//                        }
-//                    }
-////                } else {
-////                    mMap.clear();
-////                }
-//            }
-//        });
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
-//        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
-//        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
-//        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
-
-
+                }
+            }
+        });
     }
 
     /**
      * Prompts the user for permission to use the device location
      */
-    private void getLocationPermission(){
+    private void getLocationPermission() {
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
@@ -587,23 +411,26 @@ public class MapFragment extends Fragment implements
         }
         try {
             if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+
                 // Display the user selected map type
                 mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                 MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(mContext, R.raw.map_style_night);
                 mMap.setMapStyle(style);
 
-                mMap.setMyLocationEnabled(true);
                 // Don't want to display the default location button because
                 // we are already displaying using a FAB
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+                mMap.setOnMyLocationClickListener(this);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -638,7 +465,7 @@ public class MapFragment extends Fragment implements
                     }
                 });
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -679,21 +506,30 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (permissions.length == 1 &&
-                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    // Access to the location has been granted to the app.
-                    mMap.setMyLocationEnabled(true);
-                    Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
+        mLocationPermissionGranted = false;
+//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+//            if (permissions.length == 1 &&
+//                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+//                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+//                        == PackageManager.PERMISSION_GRANTED) {
+//                    // Access to the location has been granted to the app.
+//                    mLocationPermissionGranted = true;
+//                    Toast.makeText(getContext(), "Location permission has been granted.", Toast.LENGTH_LONG).show();
+//                }
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
                 } else {
                     // Permission was denied. Display an error message.
                     Toast.makeText(getContext(), "You must grant permission in order to see spots near your current location.", Toast.LENGTH_LONG).show();
                 }
             }
         }
+        updateLocationUI();
     }
 
     @Override
@@ -705,14 +541,6 @@ public class MapFragment extends Fragment implements
 //        location.getLongitude();
     }
 
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-//        Toast.makeText(getContext(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
-        return false;
-    }
 
     /**
      * A method to respond to the action of a user submitting a search via the app bar. MainActivity
@@ -776,19 +604,138 @@ public class MapFragment extends Fragment implements
         mIsFirstInstantiation = false;
     }
 
-//    public void updateUI(List<Spot> spots) {
-//        mSpotList = spots; // Locally cache the SpotList
-//        // Update the cached copy of the words in the adapter.
+    public void updateUI(List<Spot> spots) {
+        mSpotList = spots; // Locally cache the SpotList
+        // Update the cached copy of the words in the adapter.
+//                adapter.setWords(words);
+        // Set markers on the map
+        for (Spot spot : spots) {
+//                    googleMap.addMarker(new MarkerOptions()
+            mMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                    .title(spot.getName())
+                    .snippet(spot.getDescription()));
+//                            .snippet("" + spot.getId()));
+        }
+    }
+
+    // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
+    // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
+//        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
+//                String searchString = searchString_EditText.getText().toString();
+//                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
+
+//                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
+//                    @Override
+//                    public void onChanged(@Nullable Spot spot) {
+////                        mMap.addMarker(new MarkerOptions()
+//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+////                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+////                                .title(spot.getName())
+////                                .snippet(spot.getDescription()));
+//                        if (spot != null) {
+////                            mMap.clear();
+////                            mMap.addMarker(new MarkerOptions()
+//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+////                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+////                                    .title(spot.getName())
+////                                    .snippet(spot.getDescription()));
+//
+//                            // Adding the circle to the GoogleMap
+//                            Circle circle = mMap.addCircle(new CircleOptions()
+//                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .radius(10)
+//                                    .strokeColor(Color.BLACK) // Border color of the circle
+//                                    // Fill color of the circle.
+//                                    // 0x represents, this is an hexadecimal code
+//                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
+//                                    // For 0% transparency ( ie, opaque ) , specify ff
+//                                    // The remaining 6 characters(00ff00) specify the fill color
+//                                    .fillColor(0x8800ff00)
+//                                    // Border width of the circle
+//                                    .strokeWidth(2)); // Todo: Make this transparent blue?
+//
+//                            // To change the position of the camera, you must specify where you want
+//                            // to move the camera, using a CameraUpdate. The Maps API allows you to
+//                            // create many different types of CameraUpdate using CameraUpdateFactory.
+//                            // Animate the move of the camera position to spot's coordinates and zoom in
+//                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
+//                                    2000, null);
+//                        } else {
+//                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//                });
+
+    // An observer for the LiveData returned by getAllWords().
+    // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
+//                    @Override
+//                    public void onChanged(@Nullable final List<Spot> spots) {
+//                        // Update the cached copy of the words in the adapter.
 ////                adapter.setWords(words);
-//        // Set markers on the map
-//        for (Spot spot : spots) {
+//                        // Set markers:
+//                        for (Spot spot: spots) {
 ////                    googleMap.addMarker(new MarkerOptions()
-//            mMap.addMarker(new MarkerOptions()
+//                            mMap.addMarker(new MarkerOptions()
 ////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                    .title(spot.getName())
-//                    .snippet(spot.getDescription()));
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
+//                        }
+//                    }
+//                });
+//            }
+//        });
+
+    //        // public final void setPadding (int left, int top, int right, int bottom)
+//        googleMap.setPadding(0, 50, 0, 130);
+//
+//        // Set a listener for marker click.
+//        mMap.setOnMarkerClickListener(this);
+//        googleMap.setOnInfoWindowClickListener(this);
+//
+//        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
+//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
+//                if (spots != null) {
+//                    if (spots.size() > 0) {
+//
+////                        mMapView.onCreate(savedInstanceState);
+////                        mMapView.onResume();
+////                        mMapView.getMapAsync(MapFragment.this);
+//
+//                        mSpotList = spots; // Locally cache the SpotList
+//                        // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//                        // Set markers on the map
+//                        for (Spot spot : spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//                            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                                    .title(spot.getName())
+//                                    .snippet(spot.getDescription()));
 ////                            .snippet("" + spot.getId()));
-//        }
-//    }
+//                        }
+//                    } else {
+//                            mMap.clear();
+//                        }
+//                    }
+////                } else {
+////                    mMap.clear();
+////                }
+//            }
+//        });
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
+//        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
+//        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
+//        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
 }
