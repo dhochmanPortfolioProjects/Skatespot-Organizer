@@ -103,7 +103,7 @@ public class MapFragment extends Fragment implements
     private Marker mNewSpotMarker;
     private FloatingActionButton mCurrentLocationFAB;
     private FloatingActionButton mMapStyleFAB;
-    private boolean mFullScreen = false;
+    private static boolean mFullScreen = false;
 
     // Use the fused location provider to retrieve the device's last known location
     // The fused location provider is one of the location APIs in Google Play services.
