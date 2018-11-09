@@ -68,10 +68,10 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragment = SpotMasterFragment.newInstance(1);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
-                case R.id.navigation_notifications:
-                    mCurrentFragment = RatedSpotsFragment.newInstance();
-                    mCurrentFragmentType = CURRENT_FRAGMENT_RATED;
-                    break;
+//                case R.id.navigation_notifications:
+//                    mCurrentFragment = RatedSpotsFragment.newInstance();
+//                    mCurrentFragmentType = CURRENT_FRAGMENT_RATED;
+//                    break;
             }
             // Sanity check; this should never be null because there should always be a fragment loaded
             if (mCurrentFragment != null) {
@@ -96,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get BottomNavigationView widget nested inside activity_main.xml
+        CurvedBottomNavigation navigation = findViewById(R.id.navigation);
+        navigation.inflateMenu(R.menu.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
@@ -123,10 +128,10 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragment = SpotMasterFragment.newInstance(1);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
-                case CURRENT_FRAGMENT_RATED:
-                    mCurrentFragment = RatedSpotsFragment.newInstance();
-                    mCurrentFragmentType = CURRENT_FRAGMENT_RATED;
-                    break;
+//                case CURRENT_FRAGMENT_RATED:
+//                    mCurrentFragment = RatedSpotsFragment.newInstance();
+//                    mCurrentFragmentType = CURRENT_FRAGMENT_RATED;
+//                    break;
                 default: // case CURRENT_FRAGMENT_MAP
                     mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
                     mMapFragment = MapFragment.newInstance();
@@ -161,10 +166,6 @@ public class MainActivity extends AppCompatActivity implements
                 // the user navigates back.
 //                .addToBackStack(null)
                 .commit();
-
-        // Get BottomNavigationView widget nested inside activity_main.xml
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         mFAB_add_spot = findViewById(R.id.add_spot_fab);
         mFAB_add_spot.setTransitionName("reveal");

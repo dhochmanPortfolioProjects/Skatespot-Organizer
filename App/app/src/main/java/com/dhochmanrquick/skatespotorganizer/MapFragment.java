@@ -27,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
@@ -67,7 +69,10 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMyLocationClickListener,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener {
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.InfoWindowAdapter{
 
     /**
      * Request code for location permission request.
@@ -251,13 +256,14 @@ public class MapFragment extends Fragment implements
                     .position(latLng)
                     .draggable(true)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .title("New Spot"));
+                    .title("Click to add new Spot"));
+
         } else {
             mNewSpotMarker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .draggable(true)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .title("New Spot"));
+                    .title("Click to add new Spot"));
         }
         if (mFullScreen) {
             setFullScreen(mFullScreen);
@@ -283,6 +289,19 @@ public class MapFragment extends Fragment implements
             mMapStyleFAB.setVisibility(View.VISIBLE);
             mFullScreen = false;
         }
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        View view = mActivity.getLayoutInflater().inflate(R.layout.custom_info_window, null);
+        ImageView spot_image_iv = view.findViewById(R.id.spot_image_infoWindow);
+        TextView spot_name_tv = view.findViewById(R.id.spot_name_infoWindow);
+        return null;
     }
 
     /**
@@ -431,6 +450,7 @@ public class MapFragment extends Fragment implements
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     /**
@@ -655,21 +675,21 @@ public class MapFragment extends Fragment implements
         mIsFirstInstantiation = false;
     }
 
-    public void updateUI(List<Spot> spots) {
-        mSpotList = spots; // Locally cache the SpotList
-        // Update the cached copy of the words in the adapter.
-//                adapter.setWords(words);
-        // Set markers on the map
-        for (Spot spot : spots) {
-//                    googleMap.addMarker(new MarkerOptions()
-            mMap.addMarker(new MarkerOptions()
-//                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                    .title(spot.getName())
-                    .snippet(spot.getDescription()));
-//                            .snippet("" + spot.getId()));
-        }
-    }
+//    public void updateUI(List<Spot> spots) {
+//        mSpotList = spots; // Locally cache the SpotList
+//        // Update the cached copy of the words in the adapter.
+////                adapter.setWords(words);
+//        // Set markers on the map
+//        for (Spot spot : spots) {
+////                    googleMap.addMarker(new MarkerOptions()
+//            mMap.addMarker(new MarkerOptions()
+////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
+//                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                    .title(spot.getName())
+//                    .snippet(spot.getDescription()));
+////                            .snippet("" + spot.getId()));
+//        }
+//    }
 
     // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
     // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
