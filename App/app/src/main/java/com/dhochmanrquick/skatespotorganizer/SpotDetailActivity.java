@@ -344,7 +344,10 @@ public class SpotDetailActivity extends AppCompatActivity
         mSpotTitle_TextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editSpotTitle_EditText.setText(mSpot.getName()); // Load EditText with the current Spot name
+                // Load EditText with the text currently in mSpotTitle_TextView (which should be the
+                // Spot name)
+                editSpotTitle_EditText.setText(mSpotTitle_TextView.getText().toString());
+//                editSpotTitle_EditText.setText(mSpot.getName()); // Load EditText with the current Spot name
                 editSpotTitle_Dialog.show();
             }
         });
