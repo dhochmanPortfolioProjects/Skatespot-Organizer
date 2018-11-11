@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
@@ -120,9 +121,15 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
             builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
                     if (item == 0) { // Remove photo
+                        File fileToDelete = new File(mSpot.getPhotoFilepath(position + 1));
+                        if (fileToDelete.delete()) {
+//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
+                        } else {
+//                            Toast.makeText(SpotDetailActivity.this, mSpot.getPhotoFilepath(mSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+                        }
                         mSpot.removePhotoFilepathAndShiftDown(position + 1);
                         mSpotViewModel.updateSpots(mSpot);
-                        // Todo: Delete photo from file system
 //                        mSpotViewModel.deleteSpots(mSpotList.get(position));
                     } else if (item == 1) {
                         File outputFile = new File(mContext.getFilesDir(), mSpot.generateNextPhotoFilename());
