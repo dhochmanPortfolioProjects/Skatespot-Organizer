@@ -1,5 +1,6 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -61,8 +63,13 @@ public class SpotDetailActivity extends AppCompatActivity
     private static final int PICK_FROM_FILE = 2;
     private static final int EDIT_PHOTO = 3;
 
+    private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.extra_current_location";
+    private static final String EXTRA_NEW_SPOT = "com.dhochmanrquick.skatespotorganizer.extra_new_spot";
+    private static final String TEMP_SPOT_NAME = "No name";
+
     // Member variables
     private Spot mSpot;
+    private int mSpotId;
     private File mPhotoFile;
     private SpotViewModel mSpotViewModel;
     private GoogleMap mMap;
@@ -70,6 +77,10 @@ public class SpotDetailActivity extends AppCompatActivity
     private int mActivePosition;    // Keeps track of which photo and dot is currently active and
                                     // should be displayed. This is necessary if the UI state of
                                     // this Activity needs to be restored (i.e., after a rotation)
+    private boolean mIsNewSpot = false;
+    private boolean mIsBlankSpot = true;
+    private AlertDialog upButton_dialog = null;
+    private String mNewSpotName = TEMP_SPOT_NAME;
 
     // Member UI Views (in order of appearance)
     private TextView mSpotTitle_TextView;
@@ -99,7 +110,7 @@ public class SpotDetailActivity extends AppCompatActivity
         if (savedInstanceState != null) {
             // Restore previously active position (if this Activity is being recreated)
             mActivePosition = savedInstanceState.getInt(KEY_ACTIVE_DOT, 0);
-        } else { // This Activity is being launched for the first time
+        } else { // This Activity is being launched for the first time; display 1st photo and activate 1st dot
             mActivePosition = 0;
         }
 
@@ -117,14 +128,28 @@ public class SpotDetailActivity extends AppCompatActivity
         // callback will not be triggered until the user installs Play services.
         mapView.getMapAsync(this);
 
+        // Check if this Activity is being launched to create a new spot
+        mIsNewSpot = getIntent().getBooleanExtra(EXTRA_NEW_SPOT, false);
+        // Check if this Activity is being launched to create a new spot with known coordinates
+//        Location location = getIntent().getParcelableExtra(EXTRA_CURRENT_LOCATION);
+//        if (location != null) {
+////            ((EditText) findViewById(R.id.new_spot_latitude)).setText("" + location.getLatitude());
+////            ((EditText) findViewById(R.id.new_spot_longtitude)).setText("" + location.getLongitude());
+//        }
+
         // Retrieve intent extra
-        int id = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
+        if (!mIsNewSpot) {
+            mSpotId = getIntent().getIntExtra("com.dhochmanrquick.skatespotorganizer", 0);
+        }
 
         setUpAddPhotoButton();
 
         // Get the Spot (by ID) to display from the ViewModel and set an Observer on the LiveData (which
         // wraps the current Spot)
-        mSpotViewModel.getSpot(id).observe(this, new Observer<Spot>() {
+        LiveData<Spot> spot_LiveData;
+        spot_LiveData = mIsNewSpot ? mSpotViewModel.getSpot(TEMP_SPOT_NAME) : mSpotViewModel.getSpot(mSpotId);
+//        mSpotViewModel.getSpot(id).observe(this, new Observer<Spot>() {
+        spot_LiveData.observe(this, new Observer<Spot>() {
             @Override
             public void onChanged(@Nullable Spot spot) { // Should this be final?
                 if (spot != null) { // spot may be null if no Spot was found in the db
@@ -139,7 +164,13 @@ public class SpotDetailActivity extends AppCompatActivity
                     mSpotImage_ViewPager.addOnPageChangeListener(mOnPageChangeListener);
 
                     // Update Spot title and description TextViews
-                    mSpotTitle_TextView.setText(spot.getName());
+//                    mSpotTitle_TextView.setText(spot.getName());
+                    if (mIsNewSpot) {
+                        mSpotTitle_TextView.setText(mNewSpotName);
+                    } else {
+                        mSpotTitle_TextView.setText(spot.getName());
+                    }
+
                     mSpotDescription_TextView.setText(spot.getDescription());
 
                     // Update map
@@ -165,6 +196,27 @@ public class SpotDetailActivity extends AppCompatActivity
 //                startActivity(intent);
 //            }
 //        });
+
+        // Build an alert dialog for when the user presses the up button before saving the Spot
+        AlertDialog.Builder upButton_builder = new AlertDialog.Builder(this);
+        upButton_builder.setTitle("Abort Spot")
+//                .setMessage("You have not saved your spot. Leave anyways?")
+                .setMessage("All spots must have a name. Please name this spot before leaving or abort it.")
+                .setCancelable(false)
+                .setPositiveButton("Abort", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSpotViewModel.deleteSpots(mSpot);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Name spot", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        upButton_dialog = upButton_builder.create();
     }
 
     /**
@@ -268,8 +320,17 @@ public class SpotDetailActivity extends AppCompatActivity
         editSpotTitle_Dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mSpot.setName(editSpotTitle_EditText.getText().toString()); // Update Spot name with user input
-                mSpotViewModel.updateSpots(mSpot); // Trigger UI update
+//                mSpot.setName(editSpotTitle_EditText.getText().toString()); // Update Spot name with user input
+                // Instead of updating the Spot name, which causes problems for the Observer to
+                // refetch the updated Spot from the database, let's try updating the name only
+                // when the user leaves this Activity
+                if (mIsNewSpot) {
+                    mSpotTitle_TextView.setText(editSpotTitle_EditText.getText().toString());
+                    mNewSpotName = editSpotTitle_EditText.getText().toString();
+                } else {
+                    mSpot.setName(editSpotTitle_EditText.getText().toString()); // Update Spot name with user input
+                    mSpotViewModel.updateSpots(mSpot); // Trigger UI update
+                }
             }
         });
 
@@ -390,7 +451,7 @@ public class SpotDetailActivity extends AppCompatActivity
     // build appropriate views in all three cases.
     private SpotPhotoViewPagerAdapter setUpSpotPhotoViewPagerAdapter(Spot spot) {
         // Declared final for use in ViewPager.OnPageChangeListener()
-        final SpotPhotoViewPagerAdapter spotPhotoViewPagerAdapter;
+        SpotPhotoViewPagerAdapter spotPhotoViewPagerAdapter;
         if (spot.getPhotoCount() == 0) { // Spot has no photos; tell the ViewPagerAdapter
             // so it can set the View to the "no image" icon
             spotPhotoViewPagerAdapter = new SpotPhotoViewPagerAdapter(
@@ -418,6 +479,15 @@ public class SpotDetailActivity extends AppCompatActivity
                 }
                 // Set the active dot; mActivePosition is initially 0 but may be another value
                 // if the Activity is being recreated.
+                if (mActivePosition >= dotImages_Array.length) {
+                    // When the user removes a photo, mActivePosition is not properly updated
+                    // (decremented) because the code that handles the photo removal is in
+                    // SpotPhotoViewPagerAdapter, which doesn't have access to mActivePosition.
+                    // As a quick fix, here, we simply assume that if dotImages_Array[mActivePosition]
+                    // would cause an out of bounds error, it means that a photo was removed and
+                    // mActivePosition wasn't decremented; so we decrement it here.
+                    mActivePosition = dotImages_Array.length - 1; // Display last photo
+                }
                 dotImages_Array[mActivePosition].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.active_dot));
                 mSpotImage_ViewPager.removeOnPageChangeListener(mOnPageChangeListener);
                 mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -448,5 +518,33 @@ public class SpotDetailActivity extends AppCompatActivity
             }
         }
         return spotPhotoViewPagerAdapter;
+    }
+
+    // We use this onBackPressed() method in a way similar to a "save" button if this Activity
+    // has been launched to create a new Spot. Since updating the Spot name in the database
+    // immediately when the user edits it in the UI causes the Observer to no longer be able to
+    // retrieve the Spot from the database, instead, we only update the UI; the user thinks they
+    // have updated the Spot name, but it's only the UI that has been updated until they press
+    // back to leave this Activity. So, this is where we do the actual Spot name update in the
+    // database.
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
+        if (mIsNewSpot) {
+//            if(mSpot.getName().equals(TEMP_SPOT_NAME)) {
+            if(mNewSpotName.equals(TEMP_SPOT_NAME)) {
+                // Pop a dialog telling the user that they must either change the Spot name to
+                // something other than "No name" or abort the Spot creation
+                upButton_dialog.show();
+            } else {
+                // The user has changed the Spot name; do the actual Spot name update in the
+                // database
+                mSpot.setName(mSpotTitle_TextView.getText().toString());
+                mSpotViewModel.updateSpots(mSpot); // Update database
+                finish();
+            }
+        } else { // Not launched to create a new Spot; regular behaviour for the back button
+            finish();
+        }
     }
 }

@@ -119,7 +119,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
             builder.setTitle("EDIT SPOT PHOTO");
             builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int item) {
-                    if (item == 0) {
+                    if (item == 0) { // Remove photo
                         mSpot.removePhotoFilepathAndShiftDown(position + 1);
                         mSpotViewModel.updateSpots(mSpot);
 //                        mSpotViewModel.deleteSpots(mSpotList.get(position));

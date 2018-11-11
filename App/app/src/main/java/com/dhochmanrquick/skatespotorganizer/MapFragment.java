@@ -80,7 +80,9 @@ public class MapFragment extends Fragment implements
      * @see #onRequestPermissionsResult(int, String[], int[])
      */
 
-    private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.current_location";
+    private static final String EXTRA_CURRENT_LOCATION = "com.dhochmanrquick.skatespotorganizer.extra_current_location";
+    private static final String EXTRA_NEW_SPOT = "com.dhochmanrquick.skatespotorganizer.extra_new_spot";
+    private static final String TEMP_SPOT_NAME = "No name";
     private static final String TAG = MapFragment.class.getSimpleName();
 
     /**
@@ -606,8 +608,13 @@ public class MapFragment extends Fragment implements
     @Override
     public void onMyLocationClick(@NonNull Location location) {
 //        Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getContext(), NewSpotActivity.class);
+//        Intent intent = new Intent(getContext(), NewSpotActivity.class);
+        Intent intent = new Intent(getContext(), SpotDetailActivity.class);
+        intent.putExtra(EXTRA_NEW_SPOT, true);
         intent.putExtra(EXTRA_CURRENT_LOCATION, location);
+        // Create new blank spot
+        mSpotViewModel.insert(new Spot(TEMP_SPOT_NAME, new LatLng(location.getLatitude(), location.getLongitude())));
+
         startActivity(intent);
 //        location.getLongitude();
     }
