@@ -143,6 +143,7 @@ public class SpotDetailActivity extends AppCompatActivity
         }
 
         setUpAddPhotoButton();
+        setUpDeleteSpot_Button();
 
         // Get the Spot (by ID) to display from the ViewModel and set an Observer on the LiveData (which
         // wraps the current Spot)
@@ -521,6 +522,76 @@ public class SpotDetailActivity extends AppCompatActivity
             }
         }
         return spotPhotoViewPagerAdapter;
+    }
+
+    private void setUpDeleteSpot_Button() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Spot")
+                .setMessage("Are you sure you want to permanently delete this spot?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User has chosen to delete this Spot
+                        // First, need to delete the photo files
+                        while (mSpot.getPhotoCount() > 0) {
+                            // Open the file
+
+                            // Create a path where we will place our picture in the user's
+                            // public download directory and delete the file.  If external
+                            // storage is not currently mounted this will fail.
+//                        File path = Environment.getExternalStoragePublicDirectory(
+//                                Environment.DIRECTORY_DOWNLOADS);
+//                        File file = new File(path, "DemoPicture.jpg");
+//                        file.delete();
+//                        File filesDir = getFilesDir();
+//                        filesDir.
+//                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                            File fileToDelete = new File(mSpot.getPhotoFilepath(mSpot.getPhotoCount()));
+//                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
+//                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+                            if (fileToDelete.delete()) {
+//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(SpotDetailActivity.this, mSpot.getPhotoFilepath(mSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+                            }
+//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+                            mSpot.decrementPhotoCount();
+                        }
+                        if (mSpot.getPhotoCount() == 0) {
+                            mSpotViewModel.deleteSpots(mSpot);
+                            Toast.makeText(SpotDetailActivity.this,
+                                    mSpot.getName() + " has been deleted.",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+
+                        } else {
+                            Toast.makeText(SpotDetailActivity.this,
+                                    "An error has occurred while trying to delete Spot " + mSpot.getName() + ".",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog dialog = builder.create();
+
+        findViewById(R.id.spot_detail_delete_spot_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+
+            }
+        });
     }
 
     // We use this onBackPressed() method in a way similar to a "save" button if this Activity

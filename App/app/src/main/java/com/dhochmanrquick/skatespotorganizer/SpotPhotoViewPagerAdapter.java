@@ -122,6 +122,7 @@ public class SpotPhotoViewPagerAdapter extends PagerAdapter {
                     if (item == 0) { // Remove photo
                         mSpot.removePhotoFilepathAndShiftDown(position + 1);
                         mSpotViewModel.updateSpots(mSpot);
+                        // Todo: Delete photo from file system
 //                        mSpotViewModel.deleteSpots(mSpotList.get(position));
                     } else if (item == 1) {
                         File outputFile = new File(mContext.getFilesDir(), mSpot.generateNextPhotoFilename());
