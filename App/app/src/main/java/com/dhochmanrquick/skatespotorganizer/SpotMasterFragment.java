@@ -26,13 +26,15 @@ import java.util.List;
  */
 public class SpotMasterFragment extends Fragment {
 
+    // Member variables
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private int mColumnCount; // Todo: What is this?
     private OnListFragmentInteractionListener mListener;
     private SpotViewModel mSpotViewModel;
-    private SpotMasterRecyclerViewAdapter adapter;
+    private SpotMasterRecyclerViewAdapter mSpotMasterRecyclerViewAdapter;
+    private SpotMasterRecyclerViewGridAdapter mSpotMasterRecyclerViewGridAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -42,9 +44,22 @@ public class SpotMasterFragment extends Fragment {
     }
 
     // TODO: Customize parameter initialization
+
+    /**
+     * A static factory method for creating a new SpotMasterFragment. This method creates a new
+     * instance of SpotMasterFragment, creates and sets a Bundle containing the columnCount on
+     * the fragment, and returns the fragment.
+     *
+     * (I don't entirely understand why we're using the Factory design pattern for instantiation
+     * but I think I've seen that it's the convention with Fragment creation).
+     *
+     * @param columnCount
+     * @return  The new SpotMasterFragment instance
+     */
     @SuppressWarnings("unused")
     public static SpotMasterFragment newInstance(int columnCount) {
         SpotMasterFragment fragment = new SpotMasterFragment();
+        // Todo: Why the Bundle with the columnCount?
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -63,22 +78,30 @@ public class SpotMasterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate fragment_spotmaster_list.xml, which contains only the RecyclerView widget
         View view = inflater.inflate(R.layout.fragment_spotmaster_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
+        // Set the mSpotMasterRecyclerViewAdapter
+//        if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            RecyclerView recyclerView = view.findViewById(R.id.list);
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mSpotMasterRecyclerViewAdapter = new SpotMasterRecyclerViewAdapter(getContext(), mListener);
+                recyclerView.setAdapter(mSpotMasterRecyclerViewAdapter);
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(context, mColumnCount);
+//                gridLayoutManager.scrollToPosition(0); // This didn't work
+//                gridLayoutManager.setOrientation(GridLayoutManager.VERTICAL); // This didn't work
+//                gridLayoutManager.setStackFromEnd(true); // java.lang.UnsupportedOperationException: GridLayoutManager does not support stack from end. Consider using reverse layout
+//                gridLayoutManager.setReverseLayout(true);
+                recyclerView.setLayoutManager(gridLayoutManager);
+                mSpotMasterRecyclerViewGridAdapter = new SpotMasterRecyclerViewGridAdapter(getContext(), mListener);
+                recyclerView.setAdapter(mSpotMasterRecyclerViewGridAdapter);
             }
-            // Create the adapter and pass it the list of dummy Spots
+            // Create the mSpotMasterRecyclerViewAdapter and pass it the list of dummy Spots
 //            recyclerView.setAdapter(new SpotMasterRecyclerViewAdapter(DummyContent.get(getActivity()).getSpots(), mListener));
-            adapter = new SpotMasterRecyclerViewAdapter(getContext(), mListener);
-            recyclerView.setAdapter(adapter);
-        }
+//        }
 
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
@@ -91,13 +114,18 @@ public class SpotMasterFragment extends Fragment {
 //
 //        // An observer for the LiveData returned by getAllWords().
 //        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-//        // Whenever the data changes, the onChanged() callback is invoked, which calls the adapter's setWord()
-//        // method to update the adapter's cached data and refresh the displayed list.
+//        // Whenever the data changes, the onChanged() callback is invoked, which calls the mSpotMasterRecyclerViewAdapter's setWord()
+//        // method to update the mSpotMasterRecyclerViewAdapter's cached data and refresh the displayed list.
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable final List<Spot> words) {
-                // Update the cached copy of the words in the adapter.
-                adapter.setWords(words);
+                // Update the cached copy of the words in the mSpotMasterRecyclerViewAdapter.
+//                mSpotMasterRecyclerViewAdapter.setWords(words);
+                if (mSpotMasterRecyclerViewAdapter != null) {
+                    mSpotMasterRecyclerViewAdapter.setWords(words);
+                } else {
+                    mSpotMasterRecyclerViewGridAdapter.setWords(words);
+                }
             }
         });
 
@@ -143,12 +171,12 @@ public class SpotMasterFragment extends Fragment {
      *
      * @param query     The search String that the user queried for
      */
-    public void handleSearchQuery(String query) {
+//    public void handleSearchQuery(String query) {
+//
+//    }
 
-    }
-
-    public void updateUI(List<Spot> spots) {
-        // Update the cached copy of the words in the adapter.
-        adapter.setWords(spots);
-    }
+//    public void updateUI(List<Spot> spots) {
+//        // Update the cached copy of the words in the mSpotMasterRecyclerViewAdapter.
+//        mSpotMasterRecyclerViewAdapter.setWords(spots);
+//    }
 }
