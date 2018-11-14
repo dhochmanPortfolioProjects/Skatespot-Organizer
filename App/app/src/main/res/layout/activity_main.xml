@@ -25,22 +25,22 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_spot_fab"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="32dp"
-            android:clickable="true"
-            android:elevation="6dp"
-            android:focusable="true"
-            app:fabSize="normal"
-            app:layout_constraintBottom_toBottomOf="@+id/navigation"
-            app:layout_constraintEnd_toEndOf="@+id/navigation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:rippleColor="#FFFF00"
-            app:srcCompat="@drawable/add_64_white" />
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/add_spot_fab"-->
+            <!--android:layout_width="56dp"-->
+            <!--android:layout_height="56dp"-->
+            <!--android:layout_marginStart="10dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginBottom="32dp"-->
+            <!--android:clickable="true"-->
+            <!--android:elevation="6dp"-->
+            <!--android:focusable="true"-->
+            <!--app:fabSize="normal"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/navigation"-->
+            <!--app:layout_constraintEnd_toEndOf="@+id/navigation"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:rippleColor="#FFFF00"-->
+            <!--app:srcCompat="@drawable/add_64_white" />-->
 
         <com.dhochmanrquick.skatespotorganizer.CurvedBottomNavigation
             android:id="@+id/navigation"

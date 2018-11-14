@@ -171,15 +171,15 @@ public class MainActivity extends AppCompatActivity implements
 //                .addToBackStack(null)
                 .commit();
 
-        mFAB_add_spot = findViewById(R.id.add_spot_fab);
-        mFAB_add_spot.setTransitionName("reveal");
-        mFAB_add_spot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
-                startActivity(intent);
-            }
-        });
+//        mFAB_add_spot = findViewById(R.id.add_spot_fab);
+//        mFAB_add_spot.setTransitionName("reveal");
+//        mFAB_add_spot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         // Get DrawerLayout widget nested inside activity_main.xml
         mDrawerLayout = findViewById(R.id.drawer_layout);
