@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
                     break;
                 case R.id.bottom_navigation_list:
+                    mCurrentFragment = SpotMasterFragment.newInstance();
 //                    mCurrentFragment = SpotMasterFragment.newInstance(1); // The argument is the columnCount
-                    mCurrentFragment = SpotMasterFragment.newInstance(2);
+//                    mCurrentFragment = SpotMasterFragment.newInstance(2);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
 //                case R.id.navigation_notifications:
@@ -126,8 +127,9 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState != null) {
             switch (savedInstanceState.getInt(PREVIOUS_FRAGMENT)) {
                 case CURRENT_FRAGMENT_LIST:
+                    mCurrentFragment = SpotMasterFragment.newInstance();
 //                    mCurrentFragment = SpotMasterFragment.newInstance(1);
-                    mCurrentFragment = SpotMasterFragment.newInstance(2);
+//                    mCurrentFragment = SpotMasterFragment.newInstance(2);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
 //                case CURRENT_FRAGMENT_RATED:
