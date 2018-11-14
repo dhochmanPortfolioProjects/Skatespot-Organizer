@@ -401,7 +401,9 @@ public class MainActivity extends AppCompatActivity implements
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
             case R.id.drawer_view_settings:
-                Toast.makeText(this, "Settings has been selected", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+//                Toast.makeText(this, "Settings has been selected", Toast.LENGTH_LONG).show();
                 break;
         }
         // Close navigation drawer
