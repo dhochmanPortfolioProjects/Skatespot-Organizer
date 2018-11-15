@@ -71,8 +71,7 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMapClickListener,
-        GoogleMap.InfoWindowAdapter{
+        GoogleMap.OnMapClickListener{
 
     /**
      * Request code for location permission request.
@@ -179,6 +178,7 @@ public class MapFragment extends Fragment implements
         // Notice that both fragments use getActivity() when getting the ViewModelProvider.
         // As a result, both fragments receive the same SharedViewModel instance, which is scoped to
         // the activity.
+
     }
 
     /**
@@ -237,6 +237,7 @@ public class MapFragment extends Fragment implements
                 getDeviceLocation();
             }
         });
+
     }
 
     /**
@@ -291,19 +292,6 @@ public class MapFragment extends Fragment implements
             mMapStyleFAB.setVisibility(View.VISIBLE);
             mFullScreen = false;
         }
-    }
-
-    @Override
-    public View getInfoWindow(Marker marker) {
-        return null;
-    }
-
-    @Override
-    public View getInfoContents(Marker marker) {
-        View view = mActivity.getLayoutInflater().inflate(R.layout.custom_info_window, null);
-        ImageView spot_image_iv = view.findViewById(R.id.spot_image_infoWindow);
-        TextView spot_name_tv = view.findViewById(R.id.spot_name_infoWindow);
-        return null;
     }
 
     /**
@@ -436,16 +424,14 @@ public class MapFragment extends Fragment implements
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
         }
 
+        CustomInfoWindow customInfoWindow = new CustomInfoWindow(mContext);
+        mMap.setInfoWindowAdapter(customInfoWindow);
+
         mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
             @Override
             public void onChanged(@Nullable List<Spot> spots) {
-                for (Spot spot : spots) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                            .title(spot.getName())
-                            .snippet(spot.getDescription()));
-
-                }
+                mSpotList = spots;
+                updateMarkers();
             }
         });
 
@@ -453,7 +439,22 @@ public class MapFragment extends Fragment implements
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnInfoWindowClickListener(this);
+
     }
+
+    private void updateMarkers(){
+        for (Spot spot : mSpotList) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                    .title(spot.getName())
+                    .snippet(spot.getDescription());
+
+            Marker m = mMap.addMarker(markerOptions);
+            m.setTag(spot);
+            m.showInfoWindow();
+        }
+    }
+
 
     /**
      * Prompts the user for permission to use the device location
