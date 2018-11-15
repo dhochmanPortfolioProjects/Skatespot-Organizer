@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.dhochmanrquick.skatespotorganizer.utils.PictureUtils;
 
 import java.util.List;
 import java.util.Observer;
@@ -46,16 +47,22 @@ public class SettingsActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        mSpotViewModel.deleteAll
+//                        mSpotViewModel.deleteAll // This is not yet implemented
                         for (Spot spot : mSpots) {
-                            mSpotViewModel.deleteSpots(spot);
+                            PictureUtils.deleteAllSpotPhotos(mSpotViewModel, spot);
+
+                            // Todo: Implement a better check for successful spot deletion
+                            // Todo: Make a utility method for Spot deletion that also deletes the Spot's photos, etc.
+                            if (spot.getPhotoCount() == 0) {
+                                mSpotViewModel.deleteSpots(spot);
+                            } else {
+                                Toast.makeText(SettingsActivity.this,
+                                        "An error has occurred while trying to delete Spot " + spot.getName() + ".",
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                            finish();
                         }
-                        // Todo: Implement a better check for successful spot deletion
-                        // Todo: Make a utility method for Spot deletion that also deletes the Spot's photos, etc.
-                        if (mSpotViewModel.getAllSpots() == null) {
-                        }
-                        Toast.makeText(SettingsActivity.this, "All of your spots have been deleted.", Toast.LENGTH_LONG).show();
-//                        finish();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {

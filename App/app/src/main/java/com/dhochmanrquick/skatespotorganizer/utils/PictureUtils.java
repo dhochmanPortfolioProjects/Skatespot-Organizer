@@ -13,10 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.EditSpotActivity;
 import com.dhochmanrquick.skatespotorganizer.R;
+import com.dhochmanrquick.skatespotorganizer.SpotDetailActivity;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -137,28 +140,34 @@ public class PictureUtils {
         } else {
             dotImages_Array[photoIndexToDisplay].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.active_dot));
         }
+    }
 
-//        viewPager.removeOnPageChangeListener(mOnPageChangeListener);
-//        mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
+    public static void deleteAllSpotPhotos(SpotViewModel spotViewModel, Spot spot) {
+        // Loop through the Spot's photos, delete all the spots
+        while (spot.getPhotoCount() > 0) {
+            // Open photo file
+            File fileToDelete = new File(spot.getPhotoFilepath(spot.getPhotoCount()));
+            // Todo: Implement error handling
+            if (fileToDelete.delete()) {
+            } else {
+//                Toast.makeText(SpotDetailActivity.this, spot.getPhotoFilepath(spot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+            }
+//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+            spot.decrementPhotoCount();
+        }
+//        if (spot.getPhotoCount() == 0) {
+//            spotViewModel.deleteSpots(spot);
+////            Toast.makeText(SpotDetailActivity.this,
+////                    spot.getName() + " has been deleted.",
+////                    Toast.LENGTH_LONG)
+////                    .show();
 //
-//            @Override
-//            public void onPageSelected(int position) {
-////                            int dotsCount_local = dotsCount;
-////                            ImageView[] dotImages_Array_local = new ImageView[dotsCount_local];
-//                // Set all dots to inactive
-//                for (int i = 0; i < dotsCount; i++) {
-//                    dotImages_Array[i].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.non_active_dot));
-//                }
-//                // Set the dot corresponding to the current page to active
-//                dotImages_Array[position].setImageDrawable(ContextCompat.getDrawable(context.getApplicationContext(), R.drawable.active_dot));
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//        };
+//        } else {
+////            Toast.makeText(SpotDetailActivity.this,
+////                    "An error has occurred while trying to delete Spot " + spot.getName() + ".",
+////                    Toast.LENGTH_LONG)
+////                    .show();
+//        }
+//        finish();
     }
 }
