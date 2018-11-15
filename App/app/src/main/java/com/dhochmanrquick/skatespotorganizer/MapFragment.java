@@ -1,9 +1,6 @@
 package com.dhochmanrquick.skatespotorganizer;
 
-import android.Manifest;
-import android.app.ActionBar;
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -12,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,25 +20,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
-import com.dhochmanrquick.skatespotorganizer.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -55,7 +45,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -110,6 +99,7 @@ public class MapFragment extends Fragment implements
     private FloatingActionButton mCurrentLocationFAB;
     private FloatingActionButton mMapStyleFAB;
     private static boolean mFullScreen = false;
+//    private LatLng mTempLatLng;
 
     // Use the fused location provider to retrieve the device's last known location
     // The fused location provider is one of the location APIs in Google Play services.
@@ -253,6 +243,7 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onMapLongClick(LatLng latLng) {
+//        mTempLatLng = latLng;
         if (mNewSpotMarker != null) {
             mNewSpotMarker.remove();
             mNewSpotMarker = mMap.addMarker(new MarkerOptions()
@@ -563,16 +554,33 @@ public class MapFragment extends Fragment implements
         LatLng markerPosition = marker.getPosition();
 //        int spotId = Integer.parseInt(marker.getSnippet());
         Spot clickedSpot;
+
+//        if (mTempLatLng != null) {
+//            mTempLatLng.equals(new Location(markerPosition));
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(markerPosition.latitude);
+            location.setLongitude(markerPosition.longitude);
+            Intent intent = new Intent(getContext(), SpotDetailActivity.class);
+            intent.putExtra(EXTRA_NEW_SPOT, true);
+            intent.putExtra(EXTRA_CURRENT_LOCATION, location);
+            // Create new blank spot
+            mSpotViewModel.insert(new Spot(TEMP_SPOT_NAME, new LatLng(location.getLatitude(), location.getLongitude())));
+
+            startActivity(intent);
+//        }
+
+
         // Search the local SpotList for the Spot located at the clicked marker's position
+        /* Temporarily commented out because otherwise it throws a nullPointer because mSpotList is null
         for (Spot spot : mSpotList) {
-            if (spot.getLatLng().equals((markerPosition))) {
+            if (spot.getLatLng().equals(markerPosition)) {
                 clickedSpot = spot;
                 // Send the event and spot ID to the host activity
                 mListener.onFragmentInteraction(clickedSpot.getId());
                 break;
 //                Toast.makeText(getContext(), "Found spot " + spot.getName(), Toast.LENGTH_LONG).show();
             }
-        }
+        }*/
 
 //        mListener.onFragmentInteraction(markerPosition);
 //        Toast.makeText(getContext(), latLng.toString(), Toast.LENGTH_LONG).show();

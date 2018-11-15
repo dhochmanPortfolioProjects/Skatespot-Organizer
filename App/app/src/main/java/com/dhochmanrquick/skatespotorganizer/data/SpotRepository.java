@@ -103,6 +103,10 @@ public class SpotRepository {
         }
     }
 
+    public void deleteAll() {
+
+    }
+
     public void deleteSpots(Spot... spots) { new deleteSpotsAsyncTask(mSpotDao).execute(spots); }
 
     /**

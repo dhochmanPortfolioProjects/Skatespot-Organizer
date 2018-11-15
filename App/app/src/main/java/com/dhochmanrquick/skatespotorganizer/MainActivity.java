@@ -10,10 +10,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +34,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
         MapFragment.OnFragmentInteractionListener,
-        RatedSpotsFragment.OnFragmentInteractionListener {
+        RatedSpotsFragment.OnFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     // Constants
     private static final int CURRENT_FRAGMENT_MAP = 1;
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements
     private SpotViewModel mSpotViewModel;
     private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
+//    private NavigationView mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private FloatingActionButton mFAB_add_spot;
     private Fragment mCurrentFragment;
@@ -65,8 +69,9 @@ public class MainActivity extends AppCompatActivity implements
                     mCurrentFragmentType = CURRENT_FRAGMENT_MAP;
                     break;
                 case R.id.bottom_navigation_list:
+                    mCurrentFragment = SpotMasterFragment.newInstance();
 //                    mCurrentFragment = SpotMasterFragment.newInstance(1); // The argument is the columnCount
-                    mCurrentFragment = SpotMasterFragment.newInstance(2);
+//                    mCurrentFragment = SpotMasterFragment.newInstance(2);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
 //                case R.id.navigation_notifications:
@@ -126,8 +131,9 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState != null) {
             switch (savedInstanceState.getInt(PREVIOUS_FRAGMENT)) {
                 case CURRENT_FRAGMENT_LIST:
+                    mCurrentFragment = SpotMasterFragment.newInstance();
 //                    mCurrentFragment = SpotMasterFragment.newInstance(1);
-                    mCurrentFragment = SpotMasterFragment.newInstance(2);
+//                    mCurrentFragment = SpotMasterFragment.newInstance(2);
                     mCurrentFragmentType = CURRENT_FRAGMENT_LIST;
                     break;
 //                case CURRENT_FRAGMENT_RATED:
@@ -169,18 +175,20 @@ public class MainActivity extends AppCompatActivity implements
 //                .addToBackStack(null)
                 .commit();
 
-        mFAB_add_spot = findViewById(R.id.add_spot_fab);
-        mFAB_add_spot.setTransitionName("reveal");
-        mFAB_add_spot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
-                startActivity(intent);
-            }
-        });
+//        mFAB_add_spot = findViewById(R.id.add_spot_fab);
+//        mFAB_add_spot.setTransitionName("reveal");
+//        mFAB_add_spot.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         // Get DrawerLayout widget nested inside activity_main.xml
         mDrawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
@@ -240,12 +248,12 @@ public class MainActivity extends AppCompatActivity implements
             public void onActionMenuItemSelected(MenuItem item) {
                 if (mActionBarDrawerToggle.onOptionsItemSelected(item))
 
-                switch (item.getItemId()) {
-                    case R.id.create_new_spot_menu:
-                        Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
-                        startActivity(intent);
+                    switch (item.getItemId()) {
+                        case R.id.create_new_spot_menu:
+                            Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+                            startActivity(intent);
 
-                }
+                    }
 
             }
         });
@@ -299,7 +307,6 @@ public class MainActivity extends AppCompatActivity implements
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
 
         }
-
 
 
         // Always call the superclass so it can save the view hierarchy state
@@ -387,5 +394,20 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        switch (item.getItemId()) {
+            case R.id.drawer_view_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+//                Toast.makeText(this, "Settings has been selected", Toast.LENGTH_LONG).show();
+                break;
+        }
+        // Close navigation drawer
+        mDrawerLayout.closeDrawer(GravityCompat.START); // What is GravityCompat.START?
+        return false;
     }
 }

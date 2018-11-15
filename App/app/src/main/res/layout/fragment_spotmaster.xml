@@ -28,9 +28,13 @@
             android:src="@drawable/ic_apps_black_24dp" />
     </LinearLayout>
 
+    <!--<fragment-->
+        <!--android:id="@+id/fragment_spotmaster_list_fragment"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
 
     <android.support.v7.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/list"
+        android:id="@+id/fragment_spotmaster_list_rv"
         android:name="com.dhochmanrquick.skatespotorganizer.SpotMasterFragment"
         android:layout_width="match_parent"
         android:layout_height="550dp"
@@ -39,9 +43,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
-        tools:context=".SpotMasterFragment"
-        tools:listitem="@layout/fragment_spotmaster_list_smallcard_item" />
+        tools:context=".SpotMasterFragment" />
+    <!--tools:listitem="@layout/fragment_spotmaster_list_smallcard_item"-->
     <!--tools:listitem="@layout/fragment_spotmaster_list_item"-->
+
+    <!--</fragment>-->
 
 </LinearLayout>
 
