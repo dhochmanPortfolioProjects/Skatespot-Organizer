@@ -61,7 +61,7 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMapClickListener,
-        GoogleMap.InfoWindowAdapter{
+        GoogleMap.InfoWindowAdapter {
 
     /**
      * Request code for location permission request.
@@ -265,19 +265,19 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onMapClick(LatLng latLng) {
-        if(mNewSpotMarker != null) {
+        if (mNewSpotMarker != null) {
             mNewSpotMarker.remove();
         }
         setFullScreen(mFullScreen);
 
     }
 
-    private void setFullScreen(Boolean fullScreen){
-        if(!fullScreen) {
+    private void setFullScreen(Boolean fullScreen) {
+        if (!fullScreen) {
             mCurrentLocationFAB.setVisibility(View.INVISIBLE);
             mMapStyleFAB.setVisibility(View.INVISIBLE);
             mFullScreen = true;
-        }else{
+        } else {
             mCurrentLocationFAB.setVisibility(View.VISIBLE);
             mMapStyleFAB.setVisibility(View.VISIBLE);
             mFullScreen = false;
@@ -431,6 +431,7 @@ public class MapFragment extends Fragment implements
             @Override
             public void onChanged(@Nullable List<Spot> spots) {
                 for (Spot spot : spots) {
+                    mSpotList = spots;
                     mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                             .title(spot.getName())
@@ -556,16 +557,16 @@ public class MapFragment extends Fragment implements
 
 //        if (mTempLatLng != null) {
 //            mTempLatLng.equals(new Location(markerPosition));
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(markerPosition.latitude);
-            location.setLongitude(markerPosition.longitude);
-            Intent intent = new Intent(getContext(), SpotDetailActivity.class);
-            intent.putExtra(EXTRA_NEW_SPOT, true);
-            intent.putExtra(EXTRA_CURRENT_LOCATION, location);
-            // Create new blank spot
-            mSpotViewModel.insert(new Spot(TEMP_SPOT_NAME, new LatLng(location.getLatitude(), location.getLongitude())));
+        Location location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(markerPosition.latitude);
+        location.setLongitude(markerPosition.longitude);
+        Intent intent = new Intent(getContext(), SpotDetailActivity.class);
+        intent.putExtra(EXTRA_NEW_SPOT, true);
+        intent.putExtra(EXTRA_CURRENT_LOCATION, location);
+        // Create new blank spot
+        mSpotViewModel.insert(new Spot(TEMP_SPOT_NAME, new LatLng(location.getLatitude(), location.getLongitude())));
 
-            startActivity(intent);
+        startActivity(intent);
 //        }
 
 
@@ -636,48 +637,33 @@ public class MapFragment extends Fragment implements
      * @param query The search String that the user queried for
      */
     public void handleSearchQuery(String query) {
-//        Toast.makeText(getContext(), "Querying for " + query, Toast.LENGTH_LONG).show();
-        mSpotViewModel.getSpot(query).observe(getActivity(), new Observer<Spot>() {
-            @Override
-            public void onChanged(@Nullable Spot spot) {
-//                        mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                .title(spot.getName())
-//                                .snippet(spot.getDescription()));
-                if (spot != null) {
-//                            mMap.clear();
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
 
-                    // Adding the circle to the GoogleMap
-                    Circle circle = mMap.addCircle(new CircleOptions()
-                            .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-                            .radius(10)
-                            .strokeColor(Color.BLACK) // Border color of the circle
-                            // Fill color of the circle.
-                            // 0x represents, this is an hexadecimal code
-                            // 55 represents percentage of transparency. For 100% transparency, specify 00.
-                            // For 0% transparency ( ie, opaque ) , specify ff
-                            // The remaining 6 characters(00ff00) specify the fill color
-                            .fillColor(0x8800ff00)
-                            // Border width of the circle
-                            .strokeWidth(2)); // Todo: Make this transparent blue?
+        Spot spotFound;
+        for (Spot spot : mSpotList) {
+            if (spot.getName().equalsIgnoreCase(query)) {
+                spotFound = spot;
+                mMap.addCircle(new CircleOptions()
+                        .center(new LatLng(spotFound.getLatLng().latitude, spotFound.getLatLng().longitude))
+                        .radius(10)
+                        .strokeColor(Color.BLACK) // Border color of the circle
+                        // Fill color of the circle.
+                        // 0x represents, this is an hexadecimal code
+                        // 55 represents percentage of transparency. For 100% transparency, specify 00.
+                        // For 0% transparency ( ie, opaque ) , specify ff
+                        // The remaining 6 characters(00ff00) specify the fill color
+                        .fillColor(0x8800ff00)
+                        // Border width of the circle
+                        .strokeWidth(2)); // Todo: Make this transparent blue?
 
-                    // To change the position of the camera, you must specify where you want
-                    // to move the camera, using a CameraUpdate. The Maps API allows you to
-                    // create many different types of CameraUpdate using CameraUpdateFactory.
-                    // Animate the move of the camera position to spot's coordinates and zoom in
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
-                            2000, null);
-                } else {
-                    Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
-                }
+                // To change the position of the camera, you must specify where you want
+                // to move the camera, using a CameraUpdate. The Maps API allows you to
+                // create many different types of CameraUpdate using CameraUpdateFactory.
+                // Animate the move of the camera position to spot's coordinates and zoom in
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spotFound.getLatLng(), 18)),
+                        2000, null);
+                break;
             }
-        });
+        }
     }
 
     public CameraPosition getCameraPosition() {
@@ -824,4 +810,9 @@ public class MapFragment extends Fragment implements
 //        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
 //        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
+    public void setMapToSpot(Spot spot) {
+//        mMap.clear();
+
+
+    }
 }

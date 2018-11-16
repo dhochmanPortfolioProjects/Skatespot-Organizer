@@ -1,35 +1,33 @@
 package com.dhochmanrquick.skatespotorganizer;
 
-import android.app.Activity;
-import android.app.SearchManager;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.dhochmanrquick.skatespotorganizer.data.SpotSuggestion;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.maps.model.CameraPosition;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
@@ -45,9 +43,10 @@ public class MainActivity extends AppCompatActivity implements
     private static final String PREVIOUS_CAMERA_POSITION = "PREVIOUS_CAMERA_POSITION";
 
     private SpotViewModel mSpotViewModel;
+    private List<Spot> mSpots;
     private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
-//    private NavigationView mDrawerLayout;
+    //    private NavigationView mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private FloatingActionButton mFAB_add_spot;
     private Fragment mCurrentFragment;
@@ -211,22 +210,63 @@ public class MainActivity extends AppCompatActivity implements
 //            }
 //        });
 
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable List<Spot> spots) {
+                mSpots = spots; // Cache spot list locally for use in other methods; whenever the
+                // underlying data changes, the spot list will be refreshed
+            }
+        });
+
+        // Configure the FloatingSearchView
         final FloatingSearchView mSearchView = findViewById(R.id.floating_search_view);
         mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+
+        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, final String newQuery) {
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    mSearchView.clearSuggestions();
+                } else {
+                    //get suggestions based on newQuery
+                    List<SpotSuggestion> spotSuggestions = new ArrayList<>();
+
+                    // Iterate through the spot list; add any spot whose name contains the query
+                    // string to the spotSuggestions list to be swapped into the SearchView
+                    for (Spot spot : mSpots) {
+                        if (spot.getName().toLowerCase().contains(newQuery.toLowerCase())) {
+                            spotSuggestions.add(new SpotSuggestion(spot.getName()));
+                        }
+                    }
+
+                    //pass them on to the search view
+                    mSearchView.swapSuggestions(spotSuggestions);
+                }
+            }
+        });
+
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+//                Toast.makeText(getBaseContext(), "You've clicked: " + searchSuggestion.getBody(), Toast.LENGTH_LONG).show();
+                if (mCurrentFragment instanceof SpotMasterFragment) {
+
+                } else if (mCurrentFragment instanceof MapFragment) {
+                    ((MapFragment) mCurrentFragment).handleSearchQuery(searchSuggestion.getBody());
+                }
 
             }
 
             @Override
             public void onSearchAction(String currentQuery) {
+                Toast.makeText(getBaseContext(), "Displaying query results for " + currentQuery, Toast.LENGTH_LONG).show();
+
                 if (mCurrentFragment instanceof MapFragment) {
                     // Your activity can call methods in the fragment by acquiring a reference to the
                     // Fragment from FragmentManager, using findFragmentById() or findFragmentByTag().
                     ((MapFragment) mCurrentFragment).handleSearchQuery(currentQuery);
                 } else if (mCurrentFragment instanceof SpotMasterFragment) {
-                    Toast.makeText(getBaseContext(), "Displaying query results for " + currentQuery, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getBaseContext(), "Displaying query results for " + currentQuery, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -252,13 +292,10 @@ public class MainActivity extends AppCompatActivity implements
                         case R.id.create_new_spot_menu:
                             Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
                             startActivity(intent);
-
                     }
-
             }
         });
     }
-
 //    /**
 //     * If the current activity is not the searchable activity, then the normal activity lifecycle
 //     * events are triggered once the user executes a handleSearchQuery (the current activity receives onPause()
@@ -307,8 +344,6 @@ public class MainActivity extends AppCompatActivity implements
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
 
         }
-
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
