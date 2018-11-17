@@ -1,7 +1,10 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,8 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent;
-import com.dhochmanrquick.skatespotorganizer.dummy.DummyContent.DummyItem;
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 
 import java.util.List;
 
@@ -23,11 +26,20 @@ import java.util.List;
  */
 public class SpotMasterFragment extends Fragment {
 
+    // Member variables
+    Context mContext;
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+//    private int mColumnCount; // Todo: What is this?
     private OnListFragmentInteractionListener mListener;
+    private SpotViewModel mSpotViewModel;
+    private List<Spot> mSpots;
+    private RecyclerView mRecyclerView;
+    private SpotMasterRecyclerViewAdapter mListAdapter;
+    private SpotMasterRecyclerViewGridAdapter mGridAdapter;
+    private boolean mIsInListView = false;
+    private boolean mIsInGridView = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,12 +49,24 @@ public class SpotMasterFragment extends Fragment {
     }
 
     // TODO: Customize parameter initialization
+
+    /**
+     * A static factory method for creating a new SpotMasterFragment. This method creates a new
+     * instance of SpotMasterFragment, creates and sets a Bundle containing the columnCount on
+     * the fragment, and returns the fragment.
+     * <p>
+     * (I don't entirely understand why we're using the Factory design pattern for instantiation
+     * but I think I've seen that it's the convention with Fragment creation).
+     *
+     * @return The new SpotMasterFragment instance
+     */
     @SuppressWarnings("unused")
-    public static SpotMasterFragment newInstance(int columnCount) {
+    public static SpotMasterFragment newInstance(/*int columnCount*/) {
         SpotMasterFragment fragment = new SpotMasterFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
+        // Todo: Why the Bundle with the columnCount?
+//        Bundle args = new Bundle();
+//        args.putInt(ARG_COLUMN_COUNT, columnCount);
+//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -50,30 +74,106 @@ public class SpotMasterFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+        // Todo: What is this? Do we need it?
+//        if (getArguments() != null) {
+//            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+//        }
+
+//        mContext = getContext();
+//        mRecyclerView = getActivity().findViewById(R.id.fragment_spotmaster_list_rv);
+
+        // Cannot just use findViewById because this is a Fragment
+        // java.lang.NullPointerException: Attempt to invoke virtual method 'void android.view.View.setOnClickListener(android.view.View$OnClickListener)' on a null object reference
+//        getActivity().findViewById(R.id.fragment_spotmaster_list_listview_ic_btn).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+//                mListAdapter = new SpotMasterRecyclerViewAdapter(getContext(), mListener);
+//                mRecyclerView.setAdapter(mListAdapter);
+//            }
+//        });
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_spotmaster_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        // Find and inflate this Fragment's layout
+        View fragment_spotmaster_parent_View = inflater.inflate(R.layout.fragment_spotmaster, container, false);
+
+        // Set the mListAdapter
+        mContext = fragment_spotmaster_parent_View.getContext(); // Get the Context from the parent View
+        // Get the RecyclerView nested inside the parent View
+        mRecyclerView = fragment_spotmaster_parent_View.findViewById(R.id.fragment_spotmaster_list_rv);
+
+        // Create both Adapters
+        mListAdapter = new SpotMasterRecyclerViewAdapter(getContext(), mListener);
+        mGridAdapter = new SpotMasterRecyclerViewGridAdapter(getContext(), mListener);
+
+//        if (mColumnCount <= 1) {
+            mIsInListView = true;
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+            mRecyclerView.setAdapter(mListAdapter);
+//        } else {
+//            mIsInGridView = true;
+//            mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, mColumnCount));
+//            mRecyclerView.setAdapter(mGridAdapter);
+//        }
+
+        fragment_spotmaster_parent_View.findViewById(R.id.fragment_spotmaster_list_listview_ic_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIsInListView = true;
+                mIsInGridView = false;
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                mListAdapter.setWords(mSpots);
+                mRecyclerView.setAdapter(mListAdapter);
             }
-            recyclerView.setAdapter(new MySpotMasterRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-        }
-        return view;
-    }
+        });
 
+        fragment_spotmaster_parent_View.findViewById(R.id.fragment_spotmaster_list_gridview_ic_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIsInListView = false;
+                mIsInGridView = true;
+                mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
+                mGridAdapter.setWords(mSpots);
+                mRecyclerView.setAdapter(mGridAdapter);
+            }
+        });
+
+        // Use ViewModelProviders to associate your ViewModel with your UI controller.
+        // When the app first starts, the ViewModelProviders will create the ViewModel.
+        // When the activity is destroyed, for example through a configuration change,
+        // the ViewModel persists. When the activity is re-created,
+        // the ViewModelProviders return the existing ViewModel.
+        //
+        // This creates the ViewModel and stores it in the local variable mSpotViewModel.
+        mSpotViewModel = ViewModelProviders.of(this).get(SpotViewModel.class);
+//
+//        // An observer for the LiveData returned by getAllWords().
+//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+//        // Whenever the data changes, the onChanged() callback is invoked, which calls the mListAdapter's setWord()
+//        // method to update the mListAdapter's cached data and refresh the displayed list.
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable final List<Spot> spots) {
+
+                mSpots = spots;
+
+                // Update the cached copy of the words in the mListAdapter.
+//                mListAdapter.setWords(words);
+                if (mListAdapter != null && mIsInListView) {
+                    mListAdapter.setWords(spots);
+                } else if (mGridAdapter != null && mIsInGridView) {
+                    mGridAdapter.setWords(spots);
+                }
+            }
+        });
+
+        return fragment_spotmaster_parent_View;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -104,6 +204,22 @@ public class SpotMasterFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Spot item);
     }
+
+    /**
+     * A method to respond to the action of a user submitting a search via the app bar. MainActivity
+     * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the SpotMasterFragment
+     * is the currently loaded fragment, passing in the search String that the user queried for.
+     *
+     * @param query     The search String that the user queried for
+     */
+//    public void handleSearchQuery(String query) {
+//
+//    }
+
+//    public void updateUI(List<Spot> spots) {
+//        // Update the cached copy of the words in the mListAdapter.
+//        mListAdapter.setWords(spots);
+//    }
 }

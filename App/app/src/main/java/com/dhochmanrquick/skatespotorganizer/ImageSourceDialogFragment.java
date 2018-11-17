@@ -1,8 +1,12 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,16 +16,24 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PartialMapFragment.OnFragmentInteractionListener} interface
+ * {@link ImageSourceDialogFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PartialMapFragment#newInstance} factory method to
+ * Use the {@link ImageSourceDialogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PartialMapFragment extends Fragment {
+public class ImageSourceDialogFragment extends DialogFragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
-    public PartialMapFragment() {
+    public ImageSourceDialogFragment() {
         // Required empty public constructor
     }
 
@@ -29,24 +41,48 @@ public class PartialMapFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment PartialMapFragment.
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment ImageSourceDialogFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PartialMapFragment newInstance() {
-        return new PartialMapFragment();
+    public static ImageSourceDialogFragment newInstance(String param1, String param2) {
+        ImageSourceDialogFragment fragment = new ImageSourceDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
+    /**
+     * The FragmentManager of the hosting activity calls this method as part of putting the
+     * DialogFragment onscreen.
+     *
+     * @param savedInstanceState
+     * @return
+     */
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        return super.onCreateDialog(savedInstanceState);
+        return new AlertDialog.Builder(getActivity()).setTitle("Photo").create();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_partial_map, container, false);
+        return inflater.inflate(R.layout.fragment_image_source_dialog, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
