@@ -23,8 +23,8 @@ The first version of our app will provide four main pieces of functionality:
 
   * Quick search: The search bar at the top of the app allows the user to perform a search based on either spot name or location name (i.e., "Brooklyn Banks", "New York City", "Spain").
   
-  ![MapViewZoomedOut](Documentation/Images/MapViewSearchBar_Screenshot.jpg)
-
+  ![MapViewZoomedOut](Documentation/Images/SearchSuggestion_Demo.gif)
+  
   * Advanced search: Via the sidebar navigation drawer, the user will be able to select Advanced Search to order to further refine the search parameters to consider spot type, radius from a given location, and more.
   
 4). Spot viewing: There are three viewing modes:
@@ -41,5 +41,3 @@ The first version of our app will provide four main pieces of functionality:
   
 Click the image below to see a brief demo of the app as of October 2018: 
 [![Skatespot-Organizer Demo1](https://img.youtube.com/vi/GevTqf5RW1I/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
-
-![MapViewZoomedOut](Documentation/Images/SearchSuggestion_Demo.gif)
