@@ -41,3 +41,5 @@ The first version of our app will provide four main pieces of functionality:
   
 Click the image below to see a brief demo of the app as of October 2018: 
 [![Skatespot-Organizer Demo1](https://img.youtube.com/vi/GevTqf5RW1I/0.jpg)](https://www.youtube.com/watch?v=GevTqf5RW1I&feature=youtu.be)  
+
+![MapViewZoomedOut](Documentation/Images/SearchSuggestion_Demo.gif)
