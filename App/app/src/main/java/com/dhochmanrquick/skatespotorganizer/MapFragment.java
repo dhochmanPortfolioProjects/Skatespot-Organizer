@@ -628,7 +628,6 @@ public class MapFragment extends Fragment implements
 //        location.getLongitude();
     }
 
-
     /**
      * A method to respond to the action of a user submitting a search via the app bar. MainActivity
      * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the MapFragment
@@ -637,13 +636,11 @@ public class MapFragment extends Fragment implements
      * @param query The search String that the user queried for
      */
     public void handleSearchQuery(String query) {
-
-        Spot spotFound;
+        // Iterate through Spot list looking for a Spot whose name matches the search query String
         for (Spot spot : mSpotList) {
             if (spot.getName().equalsIgnoreCase(query)) {
-                spotFound = spot;
                 mMap.addCircle(new CircleOptions()
-                        .center(new LatLng(spotFound.getLatLng().latitude, spotFound.getLatLng().longitude))
+                        .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                         .radius(10)
                         .strokeColor(Color.BLACK) // Border color of the circle
                         // Fill color of the circle.
@@ -659,7 +656,7 @@ public class MapFragment extends Fragment implements
                 // to move the camera, using a CameraUpdate. The Maps API allows you to
                 // create many different types of CameraUpdate using CameraUpdateFactory.
                 // Animate the move of the camera position to spot's coordinates and zoom in
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spotFound.getLatLng(), 18)),
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
                         2000, null);
                 break;
             }
@@ -674,145 +671,5 @@ public class MapFragment extends Fragment implements
         mCameraPosition = cameraPosition;
 //        mLoadFromCurrentLocation = false;
         mIsFirstInstantiation = false;
-    }
-
-//    public void updateUI(List<Spot> spots) {
-//        mSpotList = spots; // Locally cache the SpotList
-//        // Update the cached copy of the words in the adapter.
-////                adapter.setWords(words);
-//        // Set markers on the map
-//        for (Spot spot : spots) {
-////                    googleMap.addMarker(new MarkerOptions()
-//            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                    .title(spot.getName())
-//                    .snippet(spot.getDescription()));
-////                            .snippet("" + spot.getId()));
-//        }
-//    }
-
-    // Set OnClickListener for the handleSearchQuery button: Get text from EditText, query the ViewModel
-    // to for the Spot, if found, zoom in on the spot, if not, pop a toast.
-//        ((ImageButton) view.findViewById(R.id.search_ic)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                EditText searchString_EditText = (EditText) view.findViewById(R.id.spot_search_bar);
-//                String searchString = searchString_EditText.getText().toString();
-//                Toast.makeText(getContext(), "Searching for " + searchString, Toast.LENGTH_LONG).show();
-
-//                mSpotViewModel.getSpot(searchString).observe(getActivity(), new Observer<Spot>() {
-//                    @Override
-//                    public void onChanged(@Nullable Spot spot) {
-////                        mMap.addMarker(new MarkerOptions()
-//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-////                                .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-////                                .title(spot.getName())
-////                                .snippet(spot.getDescription()));
-//                        if (spot != null) {
-////                            mMap.clear();
-////                            mMap.addMarker(new MarkerOptions()
-//////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-////                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-////                                    .title(spot.getName())
-////                                    .snippet(spot.getDescription()));
-//
-//                            // Adding the circle to the GoogleMap
-//                            Circle circle = mMap.addCircle(new CircleOptions()
-//                                    .center(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .radius(10)
-//                                    .strokeColor(Color.BLACK) // Border color of the circle
-//                                    // Fill color of the circle.
-//                                    // 0x represents, this is an hexadecimal code
-//                                    // 55 represents percentage of transparency. For 100% transparency, specify 00.
-//                                    // For 0% transparency ( ie, opaque ) , specify ff
-//                                    // The remaining 6 characters(00ff00) specify the fill color
-//                                    .fillColor(0x8800ff00)
-//                                    // Border width of the circle
-//                                    .strokeWidth(2)); // Todo: Make this transparent blue?
-//
-//                            // To change the position of the camera, you must specify where you want
-//                            // to move the camera, using a CameraUpdate. The Maps API allows you to
-//                            // create many different types of CameraUpdate using CameraUpdateFactory.
-//                            // Animate the move of the camera position to spot's coordinates and zoom in
-//                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(spot.getLatLng(), 18)),
-//                                    2000, null);
-//                        } else {
-//                            Toast.makeText(getContext(), "Spot not found", Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                });
-
-    // An observer for the LiveData returned by getAllWords().
-    // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-//                mSpotViewModel.getSpot().observe(this, new Observer<List<Spot>>() {
-//                    @Override
-//                    public void onChanged(@Nullable final List<Spot> spots) {
-//                        // Update the cached copy of the words in the adapter.
-////                adapter.setWords(words);
-//                        // Set markers:
-//                        for (Spot spot: spots) {
-////                    googleMap.addMarker(new MarkerOptions()
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
-//                        }
-//                    }
-//                });
-//            }
-//        });
-
-    //        // public final void setPadding (int left, int top, int right, int bottom)
-//        googleMap.setPadding(0, 50, 0, 130);
-//
-//        // Set a listener for marker click.
-//        mMap.setOnMarkerClickListener(this);
-//        googleMap.setOnInfoWindowClickListener(this);
-//
-//        // An observer for the LiveData<List<Spot>> returned by getAllSpots().
-//        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
-//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-//            @Override
-//            public void onChanged(@Nullable final List<Spot> spots) { // Must this be final? Seems to work without final.
-//                if (spots != null) {
-//                    if (spots.size() > 0) {
-//
-////                        mMapView.onCreate(savedInstanceState);
-////                        mMapView.onResume();
-////                        mMapView.getMapAsync(MapFragment.this);
-//
-//                        mSpotList = spots; // Locally cache the SpotList
-//                        // Update the cached copy of the words in the adapter.
-////                adapter.setWords(words);
-//                        // Set markers on the map
-//                        for (Spot spot : spots) {
-////                    googleMap.addMarker(new MarkerOptions()
-//                            mMap.addMarker(new MarkerOptions()
-////                            .position(new LatLng(spot.getLatitude(), spot.getLongitude()))
-//                                    .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
-//                                    .title(spot.getName())
-//                                    .snippet(spot.getDescription()));
-////                            .snippet("" + spot.getId()));
-//                        }
-//                    } else {
-//                            mMap.clear();
-//                        }
-//                    }
-////                } else {
-////                    mMap.clear();
-////                }
-//            }
-//        });
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(pajuLedge_Spot.getLatLng())); // Set camera position to Marker
-//        updateUI(mSpotList); // This causes:  java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference
-//        at com.dhochmanrquick.skatespotorganizer.MapFragment.updateUI(MapFragment.java:642)
-//        at com.dhochmanrquick.skatespotorganizer.MapFragment.onMapReady(MapFragment.java:491)
-    public void setMapToSpot(Spot spot) {
-//        mMap.clear();
-
-
     }
 }
