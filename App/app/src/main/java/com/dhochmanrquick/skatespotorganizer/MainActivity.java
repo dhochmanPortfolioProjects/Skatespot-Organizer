@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -290,7 +291,12 @@ public class MainActivity extends AppCompatActivity implements
                 if (mActionBarDrawerToggle.onOptionsItemSelected(item)) ; // What is this? Remove?
                 switch (item.getItemId()) {
                     case R.id.options_menu_tune_ic:
-                        Toast.makeText(MainActivity.this, "Tune clicked", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("Advanced search");
+                        builder.setView(R.layout.advanced_search);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+//                        Toast.makeText(MainActivity.this, "Tune clicked", Toast.LENGTH_SHORT).show();
                         break;
 
 //                        case R.id.create_new_spot_menu:
