@@ -17,7 +17,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -25,7 +29,13 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.dhochmanrquick.skatespotorganizer.data.SpotSuggestion;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements
         SpotMasterFragment.OnListFragmentInteractionListener,
         MapFragment.OnFragmentInteractionListener,
         RatedSpotsFragment.OnFragmentInteractionListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.OnConnectionFailedListener {
 
     // Constants
     private static final int CURRENT_FRAGMENT_MAP = 1;
@@ -42,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final int CURRENT_FRAGMENT_RATED = 3;
     private static final String PREVIOUS_FRAGMENT = "PREVIOUS_FRAGMENT";
     private static final String PREVIOUS_CAMERA_POSITION = "PREVIOUS_CAMERA_POSITION";
+    private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
+            new LatLng(-40, -168), new LatLng(71, 136));
 
     private SpotViewModel mSpotViewModel;
     private List<Spot> mSpots;
@@ -53,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements
     private Fragment mCurrentFragment;
     private MapFragment mMapFragment;
     private int mCurrentFragmentType;
+    private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
+//    private GoogleApiClient mGoogleApiClient;
+    private GeoDataClient mGeoDataClient;
+    private AutoCompleteTextView mAutoCompleteTextView;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -102,6 +120,25 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        mAutoCompleteTextView = findViewById(R.id.advanced_search_AutoCompleteTextView);
+//        getResources().getLayout(R.layout.advanced_search).get;
+
+//        final LayoutInflater factory = getLayoutInflater();
+//        final View textEntryView = factory.inflate(R.layout.advanced_search, null);
+//        mAutoCompleteTextView = textEntryView.findViewById(R.id.advanced_search_AutoCompleteTextView);
+//
+//////        mGoogleApiClient = new GoogleApiClient
+//////                .Builder(this)
+//////                .addApi(Places.GEO_DATA_API)
+//////                .addApi(Places.PLACE_DETECTION_API)
+//////                .enableAutoManage(this, this)
+//////                .build();
+//
+//        // Construct a GeoDataClient.
+//        mGeoDataClient = Places.getGeoDataClient(this, null);
+//        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(this, mGeoDataClient, LAT_LNG_BOUNDS, null);
+//        mAutoCompleteTextView.setAdapter(mPlaceAutocompleteAdapter);
 
         // Get BottomNavigationView widget nested inside activity_main.xml
         CurvedBottomNavigation navigation = findViewById(R.id.navigation);
@@ -291,12 +328,31 @@ public class MainActivity extends AppCompatActivity implements
                 if (mActionBarDrawerToggle.onOptionsItemSelected(item)) ; // What is this? Remove?
                 switch (item.getItemId()) {
                     case R.id.options_menu_tune_ic:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle("Advanced search");
-                        builder.setView(R.layout.advanced_search);
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-//                        Toast.makeText(MainActivity.this, "Tune clicked", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(getBaseContext(), AdvancedSearchActivity.class);
+                        startActivity(intent);
+
+//                        final LayoutInflater factory = getLayoutInflater();
+//                        final View textEntryView = factory.inflate(R.layout.advanced_search, null);
+//                        mAutoCompleteTextView = textEntryView.findViewById(R.id.advanced_search_AutoCompleteTextView);
+
+////        mGoogleApiClient = new GoogleApiClient
+////                .Builder(this)
+////                .addApi(Places.GEO_DATA_API)
+////                .addApi(Places.PLACE_DETECTION_API)
+////                .enableAutoManage(this, this)
+////                .build();
+
+                        // Construct a GeoDataClient.
+//                        mGeoDataClient = Places.getGeoDataClient(MainActivity.this, null);
+//                        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(MainActivity.this, mGeoDataClient, LAT_LNG_BOUNDS, null);
+//                        mAutoCompleteTextView.setAdapter(mPlaceAutocompleteAdapter);
+//
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//                        builder.setTitle("Advanced search");
+//                        builder.setView(R.layout.advanced_search);
+//                        AlertDialog dialog = builder.create();
+//                        dialog.show();
                         break;
 
 //                        case R.id.create_new_spot_menu:
@@ -456,5 +512,10 @@ public class MainActivity extends AppCompatActivity implements
         // Close navigation drawer
         mDrawerLayout.closeDrawer(GravityCompat.START); // What is GravityCompat.START?
         return false;
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

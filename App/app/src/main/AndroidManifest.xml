@@ -92,8 +92,9 @@
         <!-- <meta-data android:name="android.app.searchable" -->
         <!-- android:resource="@xml/searchable"/> -->
         <!-- </activity> -->
-        <activity android:name=".EditSpotActivity"></activity>
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".EditSpotActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".AdvancedSearchActivity"></activity>
     </application>
 
 </manifest>
