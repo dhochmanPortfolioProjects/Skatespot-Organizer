@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements
         // Configure the FloatingSearchView
         final FloatingSearchView mSearchView = findViewById(R.id.floating_search_view);
         mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+//        mSearchView.menu
 
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
@@ -286,13 +287,16 @@ public class MainActivity extends AppCompatActivity implements
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
-                if (mActionBarDrawerToggle.onOptionsItemSelected(item))
+                if (mActionBarDrawerToggle.onOptionsItemSelected(item)) ; // What is this? Remove?
+                switch (item.getItemId()) {
+                    case R.id.options_menu_tune_ic:
+                        Toast.makeText(MainActivity.this, "Tune clicked", Toast.LENGTH_SHORT).show();
+                        break;
 
-                    switch (item.getItemId()) {
-                        case R.id.create_new_spot_menu:
-                            Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
-                            startActivity(intent);
-                    }
+//                        case R.id.create_new_spot_menu:
+//                            Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+//                            startActivity(intent);
+                }
             }
         });
     }
@@ -423,10 +427,12 @@ public class MainActivity extends AppCompatActivity implements
             return true;
 
         switch (item.getItemId()) {
-            case R.id.create_new_spot_menu:
-                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
-                startActivity(intent);
-                return true;
+//            case R.id.options_menu_tune_ic:
+//                Toast.makeText(this, "Tune clicked", Toast.LENGTH_SHORT).show();
+//            case R.id.create_new_spot_menu:
+//                Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
+//                startActivity(intent);
+//                return true;
         }
         return super.onOptionsItemSelected(item);
     }

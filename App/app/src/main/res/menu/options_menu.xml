@@ -2,22 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/create_new_spot_menu"
-        android:title="Create new spot" />
-
-    <!--<item android:id="@+id/action_search"-->
-        <!--android:title="@string/search_hint"-->
-        <!--android:icon="@drawable/ic_search_white_24dp"-->
-        <!--app:showAsAction="ifRoom|collapseActionView"-->
-        <!--app:actionViewClass="android.support.v7.widget.SearchView" />-->
-
+    <item android:id="@+id/options_menu_tune_ic"
+        android:title="Tune"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_tune_black_24dp"/>
     <item android:id="@+id/map_style_standard"
-        android:title="Standard">
-    </item>
+        android:title="Standard" />
     <item android:id="@+id/map_style_retro"
         android:title="retro"/>
     <item android:id="@+id/map_style_night"
         android:title="night"/>
+    <!--<item-->
+    <!--android:id="@+id/create_new_spot_menu"-->
+    <!--android:title="Create new spot" />-->
 
+    <!--<item android:id="@+id/action_search"-->
+    <!--android:title="@string/search_hint"-->
+    <!--android:icon="@drawable/ic_search_white_24dp"-->
+    <!--app:showAsAction="ifRoom|collapseActionView"-->
+    <!--app:actionViewClass="android.support.v7.widget.SearchView" />-->
 </menu>
