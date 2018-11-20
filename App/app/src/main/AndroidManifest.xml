@@ -94,7 +94,7 @@
         <!-- </activity> -->
         <activity android:name=".EditSpotActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".AdvancedSearchActivity"></activity>
+        <activity android:name=".AdvancedSearchDialogFragment"></activity>
     </application>
 
 </manifest>

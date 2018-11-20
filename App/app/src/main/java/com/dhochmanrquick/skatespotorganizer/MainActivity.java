@@ -15,13 +15,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -32,7 +28,6 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -122,10 +117,10 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
 //        mAutoCompleteTextView = findViewById(R.id.advanced_search_AutoCompleteTextView);
-//        getResources().getLayout(R.layout.advanced_search).get;
+//        getResources().getLayout(R.layout.dialogfragment_advanced_search).get;
 
 //        final LayoutInflater factory = getLayoutInflater();
-//        final View textEntryView = factory.inflate(R.layout.advanced_search, null);
+//        final View textEntryView = factory.inflate(R.layout.dialogfragment_advanced_search, null);
 //        mAutoCompleteTextView = textEntryView.findViewById(R.id.advanced_search_AutoCompleteTextView);
 //
 //////        mGoogleApiClient = new GoogleApiClient
@@ -329,11 +324,13 @@ public class MainActivity extends AppCompatActivity implements
                 switch (item.getItemId()) {
                     case R.id.options_menu_tune_ic:
 
-                        Intent intent = new Intent(getBaseContext(), AdvancedSearchActivity.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(getBaseContext(), AdvancedSearchDialogFragment.class);
+//                        startActivity(intent);
+                        AdvancedSearchDialogFragment advancedSearchActivity = new AdvancedSearchDialogFragment();
+                        advancedSearchActivity.show(getSupportFragmentManager(), "Advanced search dialog");
 
 //                        final LayoutInflater factory = getLayoutInflater();
-//                        final View textEntryView = factory.inflate(R.layout.advanced_search, null);
+//                        final View textEntryView = factory.inflate(R.layout.dialogfragment_advanced_search, null);
 //                        mAutoCompleteTextView = textEntryView.findViewById(R.id.advanced_search_AutoCompleteTextView);
 
 ////        mGoogleApiClient = new GoogleApiClient
@@ -350,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements
 //
 //                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 //                        builder.setTitle("Advanced search");
-//                        builder.setView(R.layout.advanced_search);
+//                        builder.setView(R.layout.dialogfragment_advanced_search);
 //                        AlertDialog dialog = builder.create();
 //                        dialog.show();
                         break;
