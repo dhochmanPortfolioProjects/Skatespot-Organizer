@@ -534,33 +534,34 @@ public class SpotDetailActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which) {
                         // User has chosen to delete this Spot
                         // First, need to delete the photo files
-                        while (mSpot.getPhotoCount() > 0) {
-                            // Open the file
-
-                            // Create a path where we will place our picture in the user's
-                            // public download directory and delete the file.  If external
-                            // storage is not currently mounted this will fail.
-//                        File path = Environment.getExternalStoragePublicDirectory(
-//                                Environment.DIRECTORY_DOWNLOADS);
-//                        File file = new File(path, "DemoPicture.jpg");
-//                        file.delete();
-//                        File filesDir = getFilesDir();
-//                        filesDir.
-//                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
-                            File fileToDelete = new File(mSpot.getPhotoFilepath(mSpot.getPhotoCount()));
-//                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
-//                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
-//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
-//                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
-                            if (fileToDelete.delete()) {
-//                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
-//                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(SpotDetailActivity.this, mSpot.getPhotoFilepath(mSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
-                            }
-//                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
-                            mSpot.decrementPhotoCount();
-                        }
+                        PictureUtils.deleteAllSpotPhotos(mSpotViewModel, mSpot);
+//                        while (mSpot.getPhotoCount() > 0) {
+//                            // Open the file
+//
+//                            // Create a path where we will place our picture in the user's
+//                            // public download directory and delete the file.  If external
+//                            // storage is not currently mounted this will fail.
+////                        File path = Environment.getExternalStoragePublicDirectory(
+////                                Environment.DIRECTORY_DOWNLOADS);
+////                        File file = new File(path, "DemoPicture.jpg");
+////                        file.delete();
+////                        File filesDir = getFilesDir();
+////                        filesDir.
+////                        deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+//                            File fileToDelete = new File(mSpot.getPhotoFilepath(mSpot.getPhotoCount()));
+////                            File fileToDelete = new File(getFilesDir(), mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()));
+////                        if (deleteFile(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()))) {
+////                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+////                        if (deleteFile(mEditSpot.getAbbreviatedPhotoFilepath(mEditSpot.getPhotoCount()))) {
+//                            if (fileToDelete.delete()) {
+////                            Toast.makeText(NewSpotActivity.this, mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()) + " has been deleted.", Toast.LENGTH_LONG).show();
+////                                Toast.makeText(EditSpotActivity.this, mEditSpot.getName() + " has been deleted.", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(SpotDetailActivity.this, mSpot.getPhotoFilepath(mSpot.getPhotoCount()) + " has not been deleted.", Toast.LENGTH_LONG).show();
+//                            }
+////                        Files.delete(mEditSpot.getPhotoFilepath(mEditSpot.getPhotoCount()));
+//                            mSpot.decrementPhotoCount();
+//                        }
                         if (mSpot.getPhotoCount() == 0) {
                             mSpotViewModel.deleteSpots(mSpot);
                             Toast.makeText(SpotDetailActivity.this,
