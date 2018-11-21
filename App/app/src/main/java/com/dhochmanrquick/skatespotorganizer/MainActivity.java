@@ -523,12 +523,14 @@ public class MainActivity extends AppCompatActivity implements
      * this interface, AdvancedSearchDialogFragment.OnAdvancedSearchResult, so that
      * AdvancedSearchDialogFragment can send its results to MainActivity.
      *
-     * @param searchResult
+     * @param searchResult_LatLng
      */
     @Override
-    public void sendAdvancedSearchResult(LatLng searchResult) {
+    public void sendAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
         if (mCurrentFragment instanceof MapFragment) {
-            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(CameraPosition.fromLatLngZoom(searchResult, 18));
+            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
+
+//                    CameraPosition.fromLatLngZoom(searchResult, 18));
 //            ((MapFragment) mCurrentFragment).setCameraPosition(CameraPosition.fromLatLngZoom(searchResult, 18));
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
 

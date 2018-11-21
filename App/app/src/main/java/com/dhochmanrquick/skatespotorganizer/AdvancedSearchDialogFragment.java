@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.PendingResult;
@@ -28,17 +30,24 @@ import com.google.android.gms.tasks.Task;
 
 public class AdvancedSearchDialogFragment extends DialogFragment {
 
+    // Constants
     private static final LatLngBounds LAT_LNG_BOUNDS = new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
 
+    // Widgets
+    private AutoCompleteTextView mAutoCompleteTextView;
+    private TextView mRadius_TextView;
+
+    // Vars
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     //    private GoogleApiClient mGoogleApiClient;
     private GeoDataClient mGeoDataClient;
-    private AutoCompleteTextView mAutoCompleteTextView;
     private Place mPlace;
+    private LatLng mLatLng;
+    private int mRadius = 0;
 
     public interface OnAdvancedSearchResult{
-        void sendAdvancedSearchResult(LatLng searchResult);
+        void sendAdvancedSearchResult(LatLng searchResult, int radius);
     }
 
     public OnAdvancedSearchResult mOnAdvancedSearchResult;
@@ -50,6 +59,7 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialogfragment_advanced_search, container, false);
 
         mAutoCompleteTextView = view.findViewById(R.id.advanced_search_AutoCompleteTextView);
+        mRadius_TextView = view.findViewById(R.id.advanced_search_radius_tv);
 
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(getContext(), null); // TODO: I never know if I should use getContext(), getApplication(), etc.
@@ -72,13 +82,15 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
                             PlaceBufferResponse places = task.getResult();
 //                            Place myPlace = places.get(0);
                             mPlace = places.get(0);
+                            mLatLng = mPlace.getLatLng();
 
 //                            Toast.makeText(getContext(), myPlace.getName() + " clicked. LatLng: " + myPlace.getLatLng(), Toast.LENGTH_SHORT).show();
 
 //                            myPlace.
 //                            myPlace.getLatLng();
 //                            Log.i(TAG, "Place found: " + myPlace.getName());
-//                            places.release();
+                            // TODO: This needs to be released later; remember to uncomment this later
+                            places.release();
                         } else {
 //                            Log.e(TAG, "Place not found.");
                         }
@@ -100,8 +112,26 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
         view.findViewById(R.id.dialogfragment_advanced_search_search_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnAdvancedSearchResult.sendAdvancedSearchResult(mPlace.getLatLng());
+                mOnAdvancedSearchResult.sendAdvancedSearchResult(mLatLng, mRadius);
                 getDialog().dismiss();
+            }
+        });
+
+        ((SeekBar) view.findViewById(R.id.advanced_search_radius_seekbar)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mRadius_TextView.setText(String.valueOf(progress));
+                mRadius = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 

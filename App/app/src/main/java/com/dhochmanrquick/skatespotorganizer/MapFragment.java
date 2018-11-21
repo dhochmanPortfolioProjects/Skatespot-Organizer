@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.List;
 
@@ -673,8 +674,43 @@ public class MapFragment extends Fragment implements
         mIsFirstInstantiation = false;
     }
 
-    public void displayAdvancedSearchResult(CameraPosition cameraPosition) {
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+    public void displayAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
+        mMap.clear();
+        for (Spot spot: mSpotList) {
+//            double distance = SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng());
+//            Toast.makeText(getContext(), spot.getName() + " is " + distance + " from search origin", Toast.LENGTH_LONG).show();
+            if(SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng()) <= radius * 1000) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+                        .title(spot.getName())
+                        .snippet(spot.getDescription()));
+            }
+//                Toast.makeText(getContext(), spot.getName() + " is within the search radius", Toast.LENGTH_LONG).show();
+
+//            }
+        }
+
+        mMap.addCircle(new CircleOptions()
+                .center(searchResult_LatLng)
+                .radius(radius * 1000) // CircleOptions().radius sets the radius in meters, we want kilometers
+                .strokeColor(Color.BLACK) // Border color of the circle
+                // Fill color of the circle.
+                // 0x represents, this is an hexadecimal code
+                // 55 represents percentage of transparency. For 100% transparency, specify 00.
+                // For 0% transparency ( ie, opaque ) , specify ff
+                // The remaining 6 characters(00ff00) specify the fill color
+                .fillColor(0x8800ff00)
+                // Border width of the circle
+                .strokeWidth(2)); // Todo: Make this transparent blue?
+
+        // To change the position of the camera, you must specify where you want
+        // to move the camera, using a CameraUpdate. The Maps API allows you to
+        // create many different types of CameraUpdate using CameraUpdateFactory.
+        // Animate the move of the camera position to spot's coordinates and zoom in
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(searchResult_LatLng, 10)),
                 2000, null);
+
+//        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+//                2000, null);
     }
 }
