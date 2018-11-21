@@ -672,4 +672,9 @@ public class MapFragment extends Fragment implements
 //        mLoadFromCurrentLocation = false;
         mIsFirstInstantiation = false;
     }
+
+    public void displayAdvancedSearchResult(CameraPosition cameraPosition) {
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                2000, null);
+    }
 }

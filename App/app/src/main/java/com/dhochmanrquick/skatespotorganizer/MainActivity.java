@@ -28,6 +28,7 @@ import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -40,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements
         MapFragment.OnFragmentInteractionListener,
         RatedSpotsFragment.OnFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        AdvancedSearchDialogFragment.OnAdvancedSearchResult {
 
     // Constants
     private static final int CURRENT_FRAGMENT_MAP = 1;
@@ -513,6 +515,23 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // This is an interface method, but it seems we don't need it in the end
+    }
 
+    /**
+     * An interface method declared in AdvancedSearchDialogFragment. MainActivity implements
+     * this interface, AdvancedSearchDialogFragment.OnAdvancedSearchResult, so that
+     * AdvancedSearchDialogFragment can send its results to MainActivity.
+     *
+     * @param searchResult
+     */
+    @Override
+    public void sendAdvancedSearchResult(LatLng searchResult) {
+        if (mCurrentFragment instanceof MapFragment) {
+            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(CameraPosition.fromLatLngZoom(searchResult, 18));
+//            ((MapFragment) mCurrentFragment).setCameraPosition(CameraPosition.fromLatLngZoom(searchResult, 18));
+        } else if (mCurrentFragment instanceof SpotMasterFragment) {
+
+        }
     }
 }
