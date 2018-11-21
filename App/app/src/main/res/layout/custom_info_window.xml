@@ -8,22 +8,27 @@
 
     <ImageView
         android:id="@+id/spot_image_infoWindow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+         tools:src="@drawable/bulgwang_spot_landscape"
+        android:layout_margin="4dp"/>
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="4dp">
     <TextView
         android:id="@+id/spot_name_infoWindow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="test"/>
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        tools:text="Title"/>
     <TextView
-        android:id="@+id/spot_name_infoWindow_test"
+        android:id="@+id/spot_description_infoWindow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="test"/>
-    <TextView
-        android:id="@+id/spot_name_infoWindow_test1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="test"/>
+        tools:text="Description"/>
 
+</LinearLayout>
 </LinearLayout>

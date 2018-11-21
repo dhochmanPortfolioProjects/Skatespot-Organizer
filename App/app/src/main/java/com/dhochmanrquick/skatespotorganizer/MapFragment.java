@@ -432,10 +432,21 @@ public class MapFragment extends Fragment implements
             public void onChanged(@Nullable List<Spot> spots) {
                 for (Spot spot : spots) {
                     mSpotList = spots;
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                    mMap.addMarker(new MarkerOptions()
+//                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
+//                            .title(spot.getName())
+//                            .snippet(spot.getDescription()));
+
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(spot.getLatLng())
                             .title(spot.getName())
-                            .snippet(spot.getDescription()));
+                            .snippet(spot.getDescription());
+
+                    CustomInfoWindow customInfoWindow = new CustomInfoWindow(mContext);
+                    mMap.setInfoWindowAdapter(customInfoWindow);
+
+                    Marker m = mMap.addMarker(markerOptions);
+                    m.setTag(spot);
 
                 }
             }
