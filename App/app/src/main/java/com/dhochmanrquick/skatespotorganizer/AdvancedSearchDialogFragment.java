@@ -121,7 +121,7 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mRadius_TextView.setText(String.valueOf(progress));
-                mRadius = progress;
+                mRadius = progress * 1000; // Convert to kilometers
             }
 
             @Override

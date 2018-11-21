@@ -677,22 +677,19 @@ public class MapFragment extends Fragment implements
     public void displayAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
         mMap.clear();
         for (Spot spot: mSpotList) {
-//            double distance = SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng());
-//            Toast.makeText(getContext(), spot.getName() + " is " + distance + " from search origin", Toast.LENGTH_LONG).show();
-            if(SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng()) <= radius * 1000) {
+            // "static double	computeDistanceBetween(LatLng from, LatLng to)"
+            // Returns the distance between two LatLngs, in meters.
+            if(SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng()) <= radius) {
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
                         .title(spot.getName())
                         .snippet(spot.getDescription()));
             }
-//                Toast.makeText(getContext(), spot.getName() + " is within the search radius", Toast.LENGTH_LONG).show();
-
-//            }
         }
 
         mMap.addCircle(new CircleOptions()
                 .center(searchResult_LatLng)
-                .radius(radius * 1000) // CircleOptions().radius sets the radius in meters, we want kilometers
+                .radius(radius) // CircleOptions().radius sets the radius in meters
                 .strokeColor(Color.BLACK) // Border color of the circle
                 // Fill color of the circle.
                 // 0x represents, this is an hexadecimal code
