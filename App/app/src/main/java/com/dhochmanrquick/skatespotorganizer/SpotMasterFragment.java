@@ -15,7 +15,11 @@ import android.view.ViewGroup;
 
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.SphericalUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -212,7 +216,7 @@ public class SpotMasterFragment extends Fragment {
      * receives the ACTION_SEARCH Intent in onNewIntent() and calls this method if the SpotMasterFragment
      * is the currently loaded fragment, passing in the search String that the user queried for.
      *
-     * @param query     The search String that the user queried for
+     * @param      The search String that the user queried for
      */
 //    public void handleSearchQuery(String query) {
 //
@@ -222,4 +226,21 @@ public class SpotMasterFragment extends Fragment {
 //        // Update the cached copy of the words in the mListAdapter.
 //        mListAdapter.setWords(spots);
 //    }
+
+    public void displayAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
+        List<Spot> spots = new ArrayList<>();
+        for (Spot spot: mSpots) {
+            // "static double	computeDistanceBetween(LatLng from, LatLng to)"
+            // Returns the distance between two LatLngs, in meters.
+            if(SphericalUtil.computeDistanceBetween(searchResult_LatLng, spot.getLatLng()) <= radius) {
+                spots.add(spot);
+            }
+        }
+
+        if (mListAdapter != null && mIsInListView) {
+            mListAdapter.setWords(spots);
+        } else if (mGridAdapter != null && mIsInGridView) {
+            mGridAdapter.setWords(spots);
+        }
+    }
 }

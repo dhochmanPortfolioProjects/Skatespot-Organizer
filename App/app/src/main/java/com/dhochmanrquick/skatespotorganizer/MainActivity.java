@@ -529,11 +529,8 @@ public class MainActivity extends AppCompatActivity implements
     public void sendAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
         if (mCurrentFragment instanceof MapFragment) {
             ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
-
-//                    CameraPosition.fromLatLngZoom(searchResult, 18));
-//            ((MapFragment) mCurrentFragment).setCameraPosition(CameraPosition.fromLatLngZoom(searchResult, 18));
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
-
+            ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
         }
     }
 }
