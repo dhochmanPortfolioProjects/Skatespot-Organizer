@@ -35,20 +35,23 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter {
 
         Spot spot = (Spot) marker.getTag();
 
-        String spotImagePath = spot.getPhotoFilepath1();
 
-        if(spotImagePath != null) {
-            Glide
-                    .with(view)
-                    .load(spot.getPhotoFilepath1())
-//                    .apply(new RequestOptions().override(40, 40))
-                    .into(spot_image_iv);
 
+        if (spot != null) {
+            spot_name_tv.setText(spot.getName());
+            spot_description_tv.setText(spot.getName());
+            String spotImagePath = spot.getPhotoFilepath1();
+            if (spotImagePath != null) {
+                Glide
+                        .with(view)
+                        .load(spot.getPhotoFilepath1())
+                        .apply(new RequestOptions().override(100, 100))
+                        .into(spot_image_iv);
+
+            }
+        }else {
+            spot_name_tv.setText("Add new spot");
         }
-
-        spot_name_tv.setText(spot.getName());
-        spot_description_tv.setText(spot.getName());
-
 
         return view;
     }
