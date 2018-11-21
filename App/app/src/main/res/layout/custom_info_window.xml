@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/spot_image_infoWindow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        tools:src="@drawable/bulgwang_spot_landscape"
+        android:layout_margin="4dp"/>
+
     <TextView
         android:id="@+id/spot_name_infoWindow"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        tools:text="Title"/>
+    <TextView
+        android:id="@+id/spot_description_infoWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Description"
+        android:layout_marginStart="4dp"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
