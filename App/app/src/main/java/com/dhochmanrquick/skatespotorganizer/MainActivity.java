@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
@@ -27,7 +28,7 @@ import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.places.GeoDataClient;
+//import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -65,8 +66,10 @@ public class MainActivity extends AppCompatActivity implements
     private int mCurrentFragmentType;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
 //    private GoogleApiClient mGoogleApiClient;
-    private GeoDataClient mGeoDataClient;
+//    private GeoDataClient mGeoDataClient;
     private AutoCompleteTextView mAutoCompleteTextView;
+    private FloatingSearchView mSearchView;
+    private CurvedBottomNavigation mNavigationBar;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 //            Fragment selectedFragment = null;
-            // Match and start fragment which corresponds to bottom navigation touch event
+            // Match and start fragment which corresponds to bottom mNavigationBar touch event
             switch (item.getItemId()) {
                 case R.id.bottom_navigation_map:
                     // Todo: Is a new Fragment created every time? Are the old Fragments properly destroyed?
@@ -138,9 +141,9 @@ public class MainActivity extends AppCompatActivity implements
 //        mAutoCompleteTextView.setAdapter(mPlaceAutocompleteAdapter);
 
         // Get BottomNavigationView widget nested inside activity_main.xml
-        CurvedBottomNavigation navigation = findViewById(R.id.navigation);
-        navigation.inflateMenu(R.menu.bottom_navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mNavigationBar = findViewById(R.id.navigation);
+        mNavigationBar.inflateMenu(R.menu.bottom_navigation);
+        mNavigationBar.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
@@ -254,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         // Configure the FloatingSearchView
-        final FloatingSearchView mSearchView = findViewById(R.id.floating_search_view);
+        mSearchView = findViewById(R.id.floating_search_view);
         mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
 //        mSearchView.menu
 
@@ -324,12 +327,12 @@ public class MainActivity extends AppCompatActivity implements
             public void onActionMenuItemSelected(MenuItem item) {
                 if (mActionBarDrawerToggle.onOptionsItemSelected(item)) ; // What is this? Remove?
                 switch (item.getItemId()) {
-                    case R.id.options_menu_tune_ic:
-
-//                        Intent intent = new Intent(getBaseContext(), AdvancedSearchDialogFragment.class);
-//                        startActivity(intent);
-                        AdvancedSearchDialogFragment advancedSearchActivity = new AdvancedSearchDialogFragment();
-                        advancedSearchActivity.show(getSupportFragmentManager(), "Advanced search dialog");
+//                    case R.id.options_menu_tune_ic:
+//
+////                        Intent intent = new Intent(getBaseContext(), AdvancedSearchDialogFragment.class);
+////                        startActivity(intent);
+//                        AdvancedSearchDialogFragment advancedSearchActivity = new AdvancedSearchDialogFragment();
+//                        advancedSearchActivity.show(getSupportFragmentManager(), "Advanced search dialog");
 
 //                        final LayoutInflater factory = getLayoutInflater();
 //                        final View textEntryView = factory.inflate(R.layout.dialogfragment_advanced_search, null);
@@ -352,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements
 //                        builder.setView(R.layout.dialogfragment_advanced_search);
 //                        AlertDialog dialog = builder.create();
 //                        dialog.show();
-                        break;
+//                        break;
 
 //                        case R.id.create_new_spot_menu:
 //                            Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
@@ -442,6 +445,18 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
+    @Override
+    public void fullScreenmode(String action) {
+        if (action.contains(MapFragment.ACTION_ENTER_FULL_SCREEN)){
+            mNavigationBar.setVisibility(View.INVISIBLE);
+            mSearchView.setVisibility(View.INVISIBLE);
+        }
+        if (action.contains(MapFragment.ACTION_EXIT_FULL_SCREEN)){
+            mNavigationBar.setVisibility(View.VISIBLE);
+            mSearchView.setVisibility(View.VISIBLE);
+        }
+    }
+
 //    public void onFragmentInteraction(LatLng spotPosition) {
 //        Intent intent = new Intent(getBaseContext(), SpotDetailActivity.class);
 //        intent.putExtra("com.dhochmanrquick.skatespotorganizer", spotPosition);
@@ -500,7 +515,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handle mNavigationBar view item clicks here.
         switch (item.getItemId()) {
             case R.id.drawer_view_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -508,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements
 //                Toast.makeText(this, "Settings has been selected", Toast.LENGTH_LONG).show();
                 break;
         }
-        // Close navigation drawer
+        // Close mNavigationBar drawer
         mDrawerLayout.closeDrawer(GravityCompat.START); // What is GravityCompat.START?
         return false;
     }
@@ -528,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void sendAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
         if (mCurrentFragment instanceof MapFragment) {
-            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
+//            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
             ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
         }
