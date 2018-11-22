@@ -16,6 +16,8 @@ package com.dhochmanrquick.skatespotorganizer;
  *  limitations under the License.
  */
 
+import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.style.CharacterStyle;
@@ -29,6 +31,9 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotSuggestion;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.data.DataBufferUtils;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -40,6 +45,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -56,6 +62,7 @@ public class PlaceAutocompleteAdapter
 
     private static final String TAG = "PlaceAutocompleteAd";
     private static final CharacterStyle STYLE_BOLD = new StyleSpan(Typeface.BOLD);
+
     /**
      * Current results returned by this adapter.
      */
@@ -76,6 +83,9 @@ public class PlaceAutocompleteAdapter
      */
     private AutocompleteFilter mPlaceFilter;
 
+    private Context mContext;
+    private List<Spot> mSpots;
+
     /**
      * Initializes with a resource for text rows and autocomplete query bounds.
      *
@@ -87,6 +97,8 @@ public class PlaceAutocompleteAdapter
         mGeoDataClient = geoDataClient;
         mBounds = bounds;
         mPlaceFilter = filter;
+
+//        mContext = context;
     }
 
     /**
@@ -150,6 +162,15 @@ public class PlaceAutocompleteAdapter
                     filterData = getAutocomplete(constraint);
                 }
 
+                // My code
+                if (filterData != null) {
+                    for (Spot spot : mSpots) {
+                        if (spot.getName().toLowerCase().contains(((String) constraint).toLowerCase())) {
+                            filterData.add(0, spot);
+                        }
+                    }
+                }
+
                 results.values = filterData;
                 if (filterData != null) {
                     results.count = filterData.size();
@@ -165,7 +186,10 @@ public class PlaceAutocompleteAdapter
 
                 if (results != null && results.count > 0) {
                     // The API returned at least one result, update the data.
+
                     mResultList = (ArrayList<AutocompletePrediction>) results.values;
+//                    mResultList.add(new CustomSpotAutocompletePrediction(10, "MySpot"));
+
                     notifyDataSetChanged();
                 } else {
                     // The API did not return any results, invalidate the data set.
@@ -232,5 +256,9 @@ public class PlaceAutocompleteAdapter
             Log.e(TAG, "Error getting autocomplete prediction API call", e);
             return null;
         }
+    }
+
+    public void setSpots(List<Spot> spots) {
+        mSpots = spots;
     }
 }

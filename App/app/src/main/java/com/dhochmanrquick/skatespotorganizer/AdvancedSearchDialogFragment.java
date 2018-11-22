@@ -1,5 +1,8 @@
 package com.dhochmanrquick.skatespotorganizer;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +18,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dhochmanrquick.skatespotorganizer.data.Spot;
+import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -27,6 +32,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 public class AdvancedSearchDialogFragment extends DialogFragment {
 
@@ -45,6 +52,8 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
     private Place mPlace;
     private LatLng mLatLng;
     private int mRadius = 0;
+    private SpotViewModel mSpotViewModel;
+    private List<Spot> mSpots;
 
     public interface OnAdvancedSearchResult{
         void sendAdvancedSearchResult(LatLng searchResult, int radius);
@@ -63,7 +72,17 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
 
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(getContext(), null); // TODO: I never know if I should use getContext(), getApplication(), etc.
+
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(getContext(), mGeoDataClient, LAT_LNG_BOUNDS, null);
+
+        mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable List<Spot> spots) {
+                mPlaceAutocompleteAdapter.setSpots(spots);
+            }
+        });
+
         mAutoCompleteTextView.setAdapter(mPlaceAutocompleteAdapter);
 
         mAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,31 +91,28 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
 
                 // Get the clicked item from the adapter
                 final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
-                final String placeId = item.getPlaceId();
 
-                // Submit request
-                mGeoDataClient.getPlaceById(placeId).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
-                    @Override
-                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
-                        if (task.isSuccessful()) {
-                            PlaceBufferResponse places = task.getResult();
+                if (item instanceof Spot) {
+                    mLatLng = ((Spot) item).getLatLng();
+                } else {
+                    final String placeId = item.getPlaceId();
+
+                    // Submit request
+                    mGeoDataClient.getPlaceById(placeId).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                        @Override
+                        public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                            if (task.isSuccessful()) {
+                                PlaceBufferResponse places = task.getResult();
 //                            Place myPlace = places.get(0);
-                            mPlace = places.get(0);
-                            mLatLng = mPlace.getLatLng();
-
-//                            Toast.makeText(getContext(), myPlace.getName() + " clicked. LatLng: " + myPlace.getLatLng(), Toast.LENGTH_SHORT).show();
-
-//                            myPlace.
-//                            myPlace.getLatLng();
-//                            Log.i(TAG, "Place found: " + myPlace.getName());
-                            // TODO: This needs to be released later; remember to uncomment this later
-                            places.release();
-                        } else {
+                                mPlace = places.get(0);
+                                mLatLng = mPlace.getLatLng();
+                                places.release();
+                            } else {
 //                            Log.e(TAG, "Place not found.");
+                            }
                         }
-                    }
-                });
-
+                    });
+                }
 //                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
 //                        .getPlaceById(mGeoDataClient, placeId);
 //                placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {

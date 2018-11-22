@@ -49,7 +49,7 @@ public class SpotMasterRecyclerViewGridAdapter extends RecyclerView.Adapter<Spot
 //        }
     } // END ViewHolder class declaration
 
-    private List<Spot> mSpots; // Note that this variable caches the the master list of Dummy spots
+    private List<Spot> mSpots; // Note that this variable caches the the master list of Spots
     private final OnListFragmentInteractionListener mListener;
     private final LayoutInflater mInflater;
     Context mContext;
@@ -62,7 +62,7 @@ public class SpotMasterRecyclerViewGridAdapter extends RecyclerView.Adapter<Spot
         mListener = listener;
     }
 
-    void setWords(List<Spot> spots) {
+    void setSpots(List<Spot> spots) {
         mSpots = spots;
         notifyDataSetChanged();
     }

@@ -6,10 +6,14 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.style.CharacterStyle;
 import android.widget.ImageView;
 
+import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,7 +32,7 @@ import java.util.UUID;
  * @author Rob Quick
  */
 @Entity(tableName = "spot_table")
-public class Spot {
+public class Spot implements AutocompletePrediction {
 
 //    public enum Type{
 //        LEDGE, STAIRS, GAP, HANDRAIL
@@ -498,5 +502,50 @@ public class Spot {
                 break;
         }
         decrementPhotoCount();
+    }
+
+    /* AutocompletePrediction interface methods
+    * We implement them in this class to allow Spots to be included in the list of
+    * AutocompletePrediction search results
+    * *********************************************************************************************/
+
+    @Override
+    public CharSequence getFullText(@Nullable CharacterStyle characterStyle) {
+//        return null;
+        return mName;
+    }
+
+    @Override
+    public CharSequence getPrimaryText(@Nullable CharacterStyle characterStyle) {
+//        return null;
+        return mName;
+    }
+
+    @Override
+    public CharSequence getSecondaryText(@Nullable CharacterStyle characterStyle) {
+//        return null;
+        return mDescription;
+    }
+
+    @Nullable
+    @Override
+    public String getPlaceId() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public List<Integer> getPlaceTypes() {
+        return null;
+    }
+
+    @Override
+    public AutocompletePrediction freeze() {
+        return null;
+    }
+
+    @Override
+    public boolean isDataValid() {
+        return false;
     }
 }

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
@@ -131,7 +130,7 @@ public class SpotMasterFragment extends Fragment {
                 mIsInListView = true;
                 mIsInGridView = false;
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                mListAdapter.setWords(mSpots);
+                mListAdapter.setSpots(mSpots);
                 mRecyclerView.setAdapter(mListAdapter);
             }
         });
@@ -142,7 +141,7 @@ public class SpotMasterFragment extends Fragment {
                 mIsInListView = false;
                 mIsInGridView = true;
                 mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 2));
-                mGridAdapter.setWords(mSpots);
+                mGridAdapter.setSpots(mSpots);
                 mRecyclerView.setAdapter(mGridAdapter);
             }
         });
@@ -167,11 +166,11 @@ public class SpotMasterFragment extends Fragment {
                 mSpots = spots;
 
                 // Update the cached copy of the words in the mListAdapter.
-//                mListAdapter.setWords(words);
+//                mListAdapter.setSpots(words);
                 if (mListAdapter != null && mIsInListView) {
-                    mListAdapter.setWords(spots);
+                    mListAdapter.setSpots(spots);
                 } else if (mGridAdapter != null && mIsInGridView) {
-                    mGridAdapter.setWords(spots);
+                    mGridAdapter.setSpots(spots);
                 }
             }
         });
@@ -224,7 +223,7 @@ public class SpotMasterFragment extends Fragment {
 
 //    public void updateUI(List<Spot> spots) {
 //        // Update the cached copy of the words in the mListAdapter.
-//        mListAdapter.setWords(spots);
+//        mListAdapter.setSpots(spots);
 //    }
 
     public void displayAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
@@ -238,9 +237,9 @@ public class SpotMasterFragment extends Fragment {
         }
 
         if (mListAdapter != null && mIsInListView) {
-            mListAdapter.setWords(spots);
+            mListAdapter.setSpots(spots);
         } else if (mGridAdapter != null && mIsInGridView) {
-            mGridAdapter.setWords(spots);
+            mGridAdapter.setSpots(spots);
         }
     }
 }

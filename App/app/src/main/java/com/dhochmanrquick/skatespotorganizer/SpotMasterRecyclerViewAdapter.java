@@ -62,7 +62,7 @@ public class SpotMasterRecyclerViewAdapter extends RecyclerView.Adapter<SpotMast
         mListener = listener;
     }
 
-    void setWords(List<Spot> spots) {
+    void setSpots(List<Spot> spots) {
         mSpots = spots;
         notifyDataSetChanged();
     }
