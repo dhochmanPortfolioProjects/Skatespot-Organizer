@@ -28,7 +28,7 @@ import com.dhochmanrquick.skatespotorganizer.data.Spot;
 import com.dhochmanrquick.skatespotorganizer.data.SpotViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mCurrentFragmentType;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
 //    private GoogleApiClient mGoogleApiClient;
-//    private GeoDataClient mGeoDataClient;
+    private GeoDataClient mGeoDataClient;
     private AutoCompleteTextView mAutoCompleteTextView;
     private FloatingSearchView mSearchView;
     private CurvedBottomNavigation mNavigationBar;
@@ -327,12 +327,12 @@ public class MainActivity extends AppCompatActivity implements
             public void onActionMenuItemSelected(MenuItem item) {
                 if (mActionBarDrawerToggle.onOptionsItemSelected(item)) ; // What is this? Remove?
                 switch (item.getItemId()) {
-//                    case R.id.options_menu_tune_ic:
-//
-////                        Intent intent = new Intent(getBaseContext(), AdvancedSearchDialogFragment.class);
-////                        startActivity(intent);
-//                        AdvancedSearchDialogFragment advancedSearchActivity = new AdvancedSearchDialogFragment();
-//                        advancedSearchActivity.show(getSupportFragmentManager(), "Advanced search dialog");
+                    case R.id.options_menu_tune_ic:
+
+//                        Intent intent = new Intent(getBaseContext(), AdvancedSearchDialogFragment.class);
+//                        startActivity(intent);
+                        AdvancedSearchDialogFragment advancedSearchActivity = new AdvancedSearchDialogFragment();
+                        advancedSearchActivity.show(getSupportFragmentManager(), "Advanced search dialog");
 
 //                        final LayoutInflater factory = getLayoutInflater();
 //                        final View textEntryView = factory.inflate(R.layout.dialogfragment_advanced_search, null);
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements
 //                        builder.setView(R.layout.dialogfragment_advanced_search);
 //                        AlertDialog dialog = builder.create();
 //                        dialog.show();
-//                        break;
+                        break;
 
 //                        case R.id.create_new_spot_menu:
 //                            Intent intent = new Intent(getBaseContext(), NewSpotActivity.class);
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void sendAdvancedSearchResult(LatLng searchResult_LatLng, int radius) {
         if (mCurrentFragment instanceof MapFragment) {
-//            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
+            ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
         } else if (mCurrentFragment instanceof SpotMasterFragment) {
             ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(searchResult_LatLng, radius);
         }
