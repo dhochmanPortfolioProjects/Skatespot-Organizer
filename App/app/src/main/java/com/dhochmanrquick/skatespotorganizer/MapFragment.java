@@ -74,6 +74,8 @@ public class MapFragment extends Fragment implements
     private static final String EXTRA_NEW_SPOT = "com.dhochmanrquick.skatespotorganizer.extra_new_spot";
     private static final String TEMP_SPOT_NAME = "No name";
     private static final String TAG = MapFragment.class.getSimpleName();
+    public static final String ACTION_ENTER_FULL_SCREEN = "com.dhochmanrquick.skatespotorganizer.enter_full_screen";
+    public static final String ACTION_EXIT_FULL_SCREEN = "com.dhochmanrquick.skatespotorganizer.exit_full_screen";
 
     /**
      * Flag indicating whether a requested permission has been denied after returning in
@@ -278,10 +280,12 @@ public class MapFragment extends Fragment implements
             mCurrentLocationFAB.setVisibility(View.INVISIBLE);
             mMapStyleFAB.setVisibility(View.INVISIBLE);
             mFullScreen = true;
+            mListener.fullScreenmode(ACTION_ENTER_FULL_SCREEN);
         } else {
             mCurrentLocationFAB.setVisibility(View.VISIBLE);
             mMapStyleFAB.setVisibility(View.VISIBLE);
             mFullScreen = false;
+            mListener.fullScreenmode(ACTION_EXIT_FULL_SCREEN);
         }
     }
 
@@ -320,6 +324,7 @@ public class MapFragment extends Fragment implements
 //        void onFragmentInteraction(Uri uri);
         void onFragmentInteraction(int spotId);
 //        void onFragmentInteraction(LatLng spotPosition);
+        void fullScreenmode(String action);
 
     }
 
