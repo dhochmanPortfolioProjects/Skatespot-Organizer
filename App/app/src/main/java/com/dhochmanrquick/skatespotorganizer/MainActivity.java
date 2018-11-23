@@ -303,6 +303,11 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (item instanceof Spot) {
                     mLatLng = ((Spot) item).getLatLng();
+                    if (mCurrentFragment instanceof MapFragment) {
+                        ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
+                    } else if (mCurrentFragment instanceof SpotMasterFragment) {
+                        ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
+                    }
                 } else {
                     final String placeId = item.getPlaceId();
 
@@ -315,6 +320,13 @@ public class MainActivity extends AppCompatActivity implements
 //                            Place myPlace = places.get(0);
 //                                mPlace = places.get(0);
                                 mLatLng = places.get(0).getLatLng();
+
+                                if (mCurrentFragment instanceof MapFragment) {
+                                    ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
+                                } else if (mCurrentFragment instanceof SpotMasterFragment) {
+                                    ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
+                                }
+
                                 places.release();
                             } else {
 //                            Log.e(TAG, "Place not found.");
@@ -323,11 +335,6 @@ public class MainActivity extends AppCompatActivity implements
                     });
                 }
 
-                if (mCurrentFragment instanceof MapFragment) {
-                    ((MapFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
-                } else if (mCurrentFragment instanceof SpotMasterFragment) {
-                    ((SpotMasterFragment) mCurrentFragment).displayAdvancedSearchResult(mLatLng, mSearchRadius);
-                }
 //                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
 //                        .getPlaceById(mGeoDataClient, placeId);
 //                placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {

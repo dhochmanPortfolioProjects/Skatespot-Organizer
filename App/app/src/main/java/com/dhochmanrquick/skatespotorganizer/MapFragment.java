@@ -161,6 +161,13 @@ public class MapFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
 
+        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+            @Override
+            public void onChanged(@Nullable List<Spot> spots) {
+                mSpotList = spots;
+            }
+        });
+
         // Use ViewModelProviders to associate your ViewModel with your UI controller.
         // When the app first starts, the ViewModelProviders will create the ViewModel.
         // When the activity is destroyed, for example through a configuration change,
@@ -408,7 +415,6 @@ public class MapFragment extends Fragment implements
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
 
-
         // If you have added a MapFragment (or MapView) programmatically, then you can configure its
         // initial state by passing in a GoogleMapOptions object with your options specified.
         // The options available to you are exactly the same as those available via XML.
@@ -433,30 +439,34 @@ public class MapFragment extends Fragment implements
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mCameraPosition));
         }
 
-        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
-            @Override
-            public void onChanged(@Nullable List<Spot> spots) {
-                for (Spot spot : spots) {
-                    mSpotList = spots;
+//        mSpotViewModel.getAllSpots().observe(this, new Observer<List<Spot>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Spot> spots) {
+//                for (Spot spot : spots) {
+//                    mSpotList = spots;
 //                    mMap.addMarker(new MarkerOptions()
 //                            .position(new LatLng(spot.getLatLng().latitude, spot.getLatLng().longitude))
 //                            .title(spot.getName())
 //                            .snippet(spot.getDescription()));
 
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(spot.getLatLng())
-                            .title(spot.getName())
-                            .snippet(spot.getDescription());
+        if (mSpotList != null) {
+            for (Spot spot : mSpotList) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(spot.getLatLng())
+                        .title(spot.getName())
+                        .snippet(spot.getDescription());
 
-                    CustomInfoWindow customInfoWindow = new CustomInfoWindow(mContext);
-                    mMap.setInfoWindowAdapter(customInfoWindow);
+                CustomInfoWindow customInfoWindow = new CustomInfoWindow(mContext);
+                mMap.setInfoWindowAdapter(customInfoWindow);
 
-                    Marker m = mMap.addMarker(markerOptions);
-                    m.setTag(spot);
-
-                }
+                Marker m = mMap.addMarker(markerOptions);
+                m.setTag(spot);
             }
-        });
+        }
+//
+//                }
+//            }
+//        });
 
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerClickListener(this);
