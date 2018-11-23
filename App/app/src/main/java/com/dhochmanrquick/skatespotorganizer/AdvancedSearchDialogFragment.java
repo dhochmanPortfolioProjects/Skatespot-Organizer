@@ -72,7 +72,6 @@ public class AdvancedSearchDialogFragment extends DialogFragment {
 
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(getContext(), null); // TODO: I never know if I should use getContext(), getApplication(), etc.
-
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter(getContext(), mGeoDataClient, LAT_LNG_BOUNDS, null);
 
         mSpotViewModel = ViewModelProviders.of(getActivity()).get(SpotViewModel.class);
