@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/dialog_search_filter_root_view"
+    android:id="@+id/dialogfragment_search_filter_root_view"
     android:minWidth="1000dp"
     android:paddingBottom="20dp"
     android:paddingEnd="20dp"
@@ -11,15 +11,15 @@
     <!--android:minHeight="450dp"-->
 
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:text="Advanced search"-->
-        <!--android:textColor="@color/black"-->
-        <!--android:textSize="24sp"-->
-        <!--android:textStyle="bold" />-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="Search filter"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <!--<TextView-->
         <!--android:layout_width="wrap_content"-->
@@ -48,7 +48,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/advanced_search_radius_tv"
+            android:id="@+id/dialogfragment_search_filter_radius_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
@@ -66,7 +66,7 @@
     </LinearLayout>
 
     <SeekBar
-        android:id="@+id/advanced_search_radius_seekbar"
+        android:id="@+id/dialogfragment_search_filter_radius_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -134,11 +134,27 @@
         android:layout_height="wrap_content"
         android:text="Gap" />
 
-    <Button
-        android:id="@+id/dialog_search_filter_apply_btn"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Apply" />
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/dialogfragment_search_filter_apply_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:text="Set filter" />
+
+        <Button
+            android:id="@+id/dialogfragment_search_filter_clear_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="Clear filter"/>
+
+    </RelativeLayout>
+
 
 </LinearLayout>

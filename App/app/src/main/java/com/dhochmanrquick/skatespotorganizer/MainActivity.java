@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mSearchBar = findViewById(R.id.activity_main_searchbar);
+        mTune_ImageView = findViewById(R.id.activity_main_tune_ic);
 
 //        mAutoCompleteTextView = findViewById(R.id.advanced_search_AutoCompleteTextView);
 //        getResources().getLayout(R.layout.dialogfragment_advanced_search).get;
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements
 //        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 //        builder.setTitle("Filter")
 ////        builder.setView(R.layout.dialogfragment_advanced_search);
-//                .setView(R.layout.dialog_search_filter)
+//                .setView(R.layout.dialogfragment_search_filter)
 //                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
 //                    @Override
 //                    public void onClick(DialogInterface dialog, int which) {
@@ -369,11 +370,10 @@ public class MainActivity extends AppCompatActivity implements
 //                .setCancelable(true);
 //        final AlertDialog dialog = builder.create();
 
-        mTune_ImageView = findViewById(R.id.activity_main_tune_ic);
+        final SearchFilterDialogFragment searchFilterDialogFragment = new SearchFilterDialogFragment();
         mTune_ImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SearchFilterDialogFragment searchFilterDialogFragment = new SearchFilterDialogFragment();
                 searchFilterDialogFragment.show(getSupportFragmentManager(), "Search filter dialog");
             }
         });
@@ -662,15 +662,20 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * An interface method declared in AdvancedSearchDialogFragment. MainActivity implements
-     * this interface, AdvancedSearchDialogFragment.OnAdvancedSearchResult, so that
-     * AdvancedSearchDialogFragment can send its results to MainActivity.
+     * An interface method declared in SearchFilterDialogFragment. MainActivity implements
+     * this interface, SearchFilterDialogFragment.OnSearchFilterResult, so that
+     * SearchFilterDialogFragment can send its results to MainActivity.
      *
-     * @param
+     * @param radius    The search radius in kilometers set by the user
      */
     @Override
     public void sendSearchFilterResult(int radius) {
         mSearchRadius = radius;
-        mTune_ImageView.setBackgroundColor(Color.RED);
+        if (mSearchRadius != 0) {
+            mTune_ImageView.setBackgroundColor(Color.RED);
+        } else {
+            // Set background color to transparent
+            mTune_ImageView.setBackgroundColor(0x00000000);
+        }
     }
 }
